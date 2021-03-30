@@ -16,6 +16,7 @@ erDiagram
 		TIMESTAMP created_at
 		TIMESTAMP updated_at
 	}
+
 	COMPANYS o| -- |o ACCOUNTS : "Can has"
   	COMPANYS {
 		INT_PK id
@@ -33,16 +34,18 @@ erDiagram
 		TIMESTAMP created_at
 		TIMESTAMP updated_at
   	}
+
 	ACCOUNTS {
 		INT_PK id
 		DOUBLE balance
 		TIMESTAMP created_at
 		TIMESTAMP updated_at
 	}
+
 	EVENTS |o -- o| USERS  : "Can has"
 	EVENTS |o -- o| CATEGORIES  : "Can has"
 	EVENTS |o -- o| IMAGES : "Can has"
-  EVENTS {
+  	EVENTS{
 		INT_PK id
 		INT_FK user_id
 		STRING name
@@ -58,6 +61,7 @@ erDiagram
 		TIMESTAMP created_at
 		TIMESTAMP updated_at
 	}
+
 	IMAGES {
 		INT_PK id
 		INT_FK event_id
@@ -65,6 +69,7 @@ erDiagram
 		TIMESTAMP created_at
 		TIMESTAMP updated_at
 	}
+
 	PARTICIPANTS }o -- o{ EVENTS : "Can has"
 	PARTICIPANTS }o -- o{ USERS : "Can has"
 	PARTICIPANTS {
@@ -75,6 +80,7 @@ erDiagram
 		TIMESTAMP created_at
 		TIMESTAMP updated_at
 	}
+
 	RATES |o -- o| EVENTS : "Can has"
 	RATES |o -- o| USERS : "Can has"
 	RATES {
@@ -87,6 +93,7 @@ erDiagram
 		TIMESTAMP created_at
 		TIMESTAMP updated_at
 	}
+
 	PAYMENTS }o -- o{ EVENTS : "Can has"
 	PAYMENTS }o -- o{ USERS : "Can has"
 	PAYMENTS }o -- o{ TICKETS : "Can has"
@@ -104,6 +111,7 @@ erDiagram
 		TIMESTAMP created_at
 		TIMESTAMP updated_at
 	}
+
 	INVOICES }o -- o{ USERS : "Can has"
 	INVOICES }o -- o{ COMPANYS : "Can has"
 	INVOICES{
@@ -117,12 +125,15 @@ erDiagram
 		TIMESTAMP created_at
 		TIMESTAMP updated_at
 	}
-	FAVPROTES_CATEGORIES{
+
+
+	FAVORITES_CATEGORIES{
 		INT_FK user_id
 		JSON category
 		TIMESTAMP created_at
 		TIMESTAMP updated_at
 	}
+
 	CATEGORIES{
 		INT_PK id
 		STRING category
@@ -130,6 +141,7 @@ erDiagram
 		TIMESTAMP created_at
 		TIMESTAMP updated_at
 	}
+
 	TICKETS{
 		INT_PK id
 		INT_FK events_id
@@ -139,6 +151,7 @@ erDiagram
 		TIMESTAMP created_at
 		TIMESTAMP updated_at
 	}
+
 	NOTIFICATIONS }o -- o{ USERS : "Can has"
 	NOTIFICATIONS{
 		INT_PK id
@@ -150,6 +163,7 @@ erDiagram
 		TIMESTAMP created_at
 		TIMESTAMP updated_at
 	}
+	
 	POSTS }o -- o{ USERS : "Can has"
 	POSTS }o -- o{ EVENTS : "Have"
 	POSTS{
@@ -162,6 +176,7 @@ erDiagram
 		TIMESTAMP created_at
 		TIMESTAMP updated_at
 	}
+
 	COMMENTS }o -- o{ POSTS : "Can has"
 	COMMENTS }o -- o{ USERS : "Can has"
 	COMMENTS{
@@ -173,5 +188,10 @@ erDiagram
 		ENUM state
 		TIMESTAMP created_at
 		TIMESTAMP updated_at
+	}
+
+	STATES{
+		INT_PK id
+		STRING name
 	}
 ```
