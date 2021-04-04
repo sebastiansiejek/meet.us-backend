@@ -1,6 +1,8 @@
 ```mermaid
 erDiagram
-	USERS o| -- |o COMPANYS : "Can has"
+	USERS o| -- |o COMPANYS : "Can have"
+	USERS o| -- |o IMAGES : "Can have"
+	USERS o| -- |o FAVORITES_CATEGORIES : "Can has"
 	USERS {
 		INT_PK user_id
 		STRING nickname
@@ -9,15 +11,15 @@ erDiagram
 		STRING lastname
 		BOOL is_active
 		STRING password
-		BOOL is_company
 		INT_FK company_id
 		INT_FK favorites_id
-		STRING avatar_path
+		INT_FK image_id
 		TIMESTAMP created_at
 		TIMESTAMP updated_at
 	}
 
-	COMPANYS o| -- |o ACCOUNTS : "Can has"
+	COMPANYS o| -- |o ACCOUNTS : "Have"
+	COMPANYS o| -- |o IMAGES : "Can have"
   	COMPANYS {
 		INT_PK id
 		BOOL is_active
@@ -27,7 +29,7 @@ erDiagram
 		STRING postal_code
 		STRING city
 		STRING country
-		STRING logo_path
+		INT_FK image_id
 		INT_FK account_id
 		STRING name
 		NIP number
@@ -42,15 +44,15 @@ erDiagram
 		TIMESTAMP updated_at
 	}
 
-	EVENTS |o -- o| USERS  : "Can has"
-	EVENTS |o -- o| CATEGORIES  : "Can has"
-	EVENTS |o -- o| IMAGES : "Can has"
+	EVENTS |o -- o| USERS  : "Can have"
+	EVENTS |o -- o| CATEGORIES  : "Can have"
+	EVENTS |o -- o| IMAGES : "Can have"
   	EVENTS{
 		INT_PK id
 		INT_FK user_id
 		STRING name
 		STRING description
-		STRING cover_path
+		INT_FK image_id
 		ENUM type
 		ENUM state
 		DATETIME start_date
@@ -64,7 +66,17 @@ erDiagram
 
 	IMAGES {
 		INT_PK id
+		STRING name
+		STRING path
+		TIMESTAMP created_at
+		TIMESTAMP updated_at
+	}
+
+	GALLERY }o -- o{ EVENTS : "Can has"
+	GALLERY{
+		INT_PK ID
 		INT_FK event_id
+		STRING name
 		STRING path
 		TIMESTAMP created_at
 		TIMESTAMP updated_at
@@ -73,7 +85,7 @@ erDiagram
 	PARTICIPANTS }o -- o{ EVENTS : "Can has"
 	PARTICIPANTS }o -- o{ USERS : "Can has"
 	PARTICIPANTS {
-		INT_PK participant_id
+		INT_PK id
 		INT_FK event_id
 		INT_FK user_id
 		ENUM state_id
@@ -89,18 +101,15 @@ erDiagram
 		INT_FK event_id
 		INT rate
 		STRING description
-		STRING user_nickname
 		TIMESTAMP created_at
 		TIMESTAMP updated_at
 	}
 
-	PAYMENTS }o -- o{ EVENTS : "Can has"
-	PAYMENTS }o -- o{ USERS : "Can has"
+	PAYMENTS }o -- o{ PARTICIPANTS : "Can has"
 	PAYMENTS }o -- o{ TICKETS : "Can has"
 	PAYMENTS {
 		INT_PK id
-		INT_FK user_id
-		INT_FK event_id
+		INT_FK participant_id
 		INT_FK ticket_id
 		ENUM type
 		ENUM status
@@ -127,21 +136,24 @@ erDiagram
 	}
 
 
+	FAVORITES_CATEGORIES }o -- o{ CATEGORIES : "Can has"
 	FAVORITES_CATEGORIES{
 		INT_FK user_id
-		JSON category
+		INT_FK category_id
 		TIMESTAMP created_at
 		TIMESTAMP updated_at
 	}
 
 	CATEGORIES{
 		INT_PK id
-		STRING category
-		STRING sub_category
+        BOOL is_parent
+		STRING name
+		INT parent
 		TIMESTAMP created_at
 		TIMESTAMP updated_at
 	}
 
+	TICKETS }o -- o{ EVENTS : "Can has"
 	TICKETS{
 		INT_PK id
 		INT_FK events_id
@@ -152,7 +164,7 @@ erDiagram
 		TIMESTAMP updated_at
 	}
 
-	NOTIFICATIONS }o -- o{ USERS : "Can has"
+	NOTIFICATIONS }o -- o{ USERS : "Can have"
 	NOTIFICATIONS{
 		INT_PK id
 		INT_FK user_id
@@ -165,12 +177,11 @@ erDiagram
 	}
 	
 	POSTS }o -- o{ USERS : "Can has"
-	POSTS }o -- o{ EVENTS : "Have"
+	POSTS }o -- o{ EVENTS : "Can has"
 	POSTS{
 		INT_PK id
 		INT_FK user_id
 		INT_FK event_id
-		STRING user_nickname
 		STRING body
 		ENUM state
 		TIMESTAMP created_at
@@ -183,15 +194,9 @@ erDiagram
 		INT_PK id
 		INT_FK user_id
 		INT_FK post_id
-		STRING user_nickname
 		STRING body
 		ENUM state
 		TIMESTAMP created_at
 		TIMESTAMP updated_at
-	}
-
-	STATES{
-		INT_PK id
-		STRING name
 	}
 ```
