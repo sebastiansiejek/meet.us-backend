@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { GraphQLModule } from '@nestjs/graphql';
 
 @Module({
   imports: [
@@ -16,6 +17,10 @@ import { ConfigModule } from '@nestjs/config';
       database: process.env.DATABASE_NAME,
       entities: [],
       synchronize: true,
+    }),
+    GraphQLModule.forRoot({
+      autoSchemaFile: true,
+      sortSchema: true,
     }),
   ],
   controllers: [AppController],
