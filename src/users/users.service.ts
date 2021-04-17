@@ -9,13 +9,12 @@ import { Repository } from 'typeorm';
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private usersRepository: Repository<User>,
+    private readonly usersRepository: Repository<User>,
   ) {}
 
   create(createUserInput: CreateUserInput) {
     return this.usersRepository.save(createUserInput);
   }
-
   findAll() {
     return this.usersRepository.find();
   }

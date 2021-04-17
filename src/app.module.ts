@@ -16,6 +16,7 @@ import { UsersModule } from './users/users.module';
       database: process.env.DATABASE_NAME,
       entities: [__dirname + '**/*/entities/*.entity.*'],
       synchronize: true,
+      keepConnectionAlive: true,
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
