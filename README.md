@@ -2,13 +2,13 @@
 
 ## Installation
 
+
 ```bash
+$ cp .env.sample .env
 $ yarn install
 ```
 
-### ENV
-1. copy .env.sample to .env and set values
-
+1. Set values in .env file
 ## Running the app
 
 ```bash
