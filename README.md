@@ -46,3 +46,9 @@ $ yarn test:e2e
 $ yarn test:cov
 ```
 
+## Generate documentation
+[docs.nestjs.com/recipes/documentation](https://docs.nestjs.com/recipes/documentation)
+
+```bash
+npx @compodoc/compodoc -p tsconfig.json -s
+```
