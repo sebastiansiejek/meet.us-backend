@@ -9,6 +9,17 @@ $ yarn install
 ```
 
 1. Set values in .env file
+
+## Run in docker
+```bash
+$ docker compose up -d
+```
+
+### Use docker container terminal
+```bash
+$ docker exec -ti meet.us bash
+```
+
 ## Running the app
 
 ```bash
