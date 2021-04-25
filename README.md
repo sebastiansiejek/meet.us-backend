@@ -1,14 +1,4 @@
-## Description
-
-## Installation
-
-
-```bash
-$ cp .env.sample .env
-$ yarn install
-```
-
-1. Set values in .env file
+# Meet us
 
 ## Run in docker
 ```bash
@@ -19,6 +9,16 @@ $ docker compose up -d
 ```bash
 $ docker exec -ti meet.us bash
 ```
+
+## Installation
+
+
+```bash
+$ cp .env.sample .env
+$ yarn install
+```
+
+1. Set values in .env file
 
 ## Running the app
 
