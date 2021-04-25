@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  dev:
+    container_name: meet.us
+    image: meet.us:1.0.0
+    build:
+      context: .
+      target: development
+      dockerfile: ./Dockerfile
+    command: yarn start:debug
+    networks:
+      - meet.us-network
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: unless-stopped
+    ports:
+      - 3000:3000
+
+networks:
+  meet.us-network:

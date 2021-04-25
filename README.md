@@ -2,12 +2,23 @@
 
 ## Installation
 
+
 ```bash
+$ cp .env.sample .env
 $ yarn install
 ```
 
-### ENV
-1. copy .env.sample to .env and set values
+1. Set values in .env file
+
+## Run in docker
+```bash
+$ docker compose up -d
+```
+
+### Use docker container terminal
+```bash
+$ docker exec -ti meet.us bash
+```
 
 ## Running the app
 
