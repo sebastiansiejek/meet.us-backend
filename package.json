@@ -23,6 +23,7 @@
     "pre-commit": "lint-staged"
   },
   "dependencies": {
+    "@nestjs-modules/mailer": "^1.6.0",
     "@nestjs/common": "^7.6.15",
     "@nestjs/core": "^7.6.15",
     "@nestjs/graphql": "^7.10.3",
@@ -33,7 +34,9 @@
     "faker": "^5.5.3",
     "graphql": "^15.5.0",
     "graphql-tools": "^7.0.4",
+    "handlebars": "^4.7.7",
     "mysql2": "^2.2.5",
+    "nodemailer": "^6.5.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.6",
