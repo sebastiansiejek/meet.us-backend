@@ -36,6 +36,7 @@
     "graphql-tools": "^7.0.4",
     "handlebars": "^4.7.7",
     "mysql2": "^2.2.5",
+    "nestjs-i18n": "^8.1.0",
     "nodemailer": "^6.5.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
