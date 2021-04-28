@@ -51,4 +51,6 @@ $ yarn test:cov
 
 ```bash
 npx @compodoc/compodoc -p tsconfig.json -s
+# or
+yarn doc
 ```
