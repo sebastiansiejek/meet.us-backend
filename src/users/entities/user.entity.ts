@@ -31,8 +31,12 @@ export class User {
   isActive: boolean;
 
   @Field()
-  @Column()
+  @Column({ unique: true,  nullable: false })
   nickname: string;
+
+  @Field()
+  @Column({ nullable: false })
+  password: string;
 
   @CreateDateColumn()
   createdAt: Date;
