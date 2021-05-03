@@ -18,7 +18,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     UsersModule, 
     PassportModule.register({defaultStrategy: 'jwt'}),
     JwtModule.register({
-      secret: "supersecretkey",
+      secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '3600s'}
     }),
     TypeOrmModule.forFeature([User])

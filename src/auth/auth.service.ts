@@ -43,7 +43,7 @@ export class AuthService {
     async verify(token: string) : Promise<User> {
         
         const decoded = this.jwtService.verify(token, {
-            secret: "supersecretkey"
+            secret: process.env.JWT_SECRET
         });
 
         const user = this.userService.findByMail(decoded.email);
