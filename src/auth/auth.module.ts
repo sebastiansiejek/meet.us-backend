@@ -19,7 +19,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     PassportModule.register({defaultStrategy: 'jwt'}),
     JwtModule.register({
       secret: "supersecretkey",
-      signOptions: { expiresIn: '60s'}
+      signOptions: { expiresIn: '3600s'}
     }),
     TypeOrmModule.forFeature([User])
   ],

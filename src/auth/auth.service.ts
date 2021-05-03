@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { User } from '../users/entities/user.entity';
+import { Exception } from 'handlebars';
+import { identity } from 'rxjs';
 
 @Injectable()
 export class AuthService {
@@ -12,10 +14,17 @@ export class AuthService {
     ) {}
 
     async validate(email: string, password: string): Promise<any> {
-        
         const user = await this.userService.findByMail(email);
 
-        if (user && bcrypt.compare(password, user.password)){
+        if (user === undefined) {
+            throw new BadRequestException('Invalid email');
+        }
+        
+        if(!await bcrypt.compare(password, user.password)){
+            throw new BadRequestException('Invalid password');
+        }
+
+        if (user && await bcrypt.compare(password, user.password)){
             const { password, ...result } = user;
             return result;
         }

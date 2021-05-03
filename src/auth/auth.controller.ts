@@ -12,7 +12,7 @@ export class AuthController {
     login(@Req() req): { access_token: string } {
         const user = new User();
         user.email = req.body.email;
-        user.email = req.body.passwordd;
+        user.password = req.body.password;
 
         return this.authService.login(user as User);
     }
