@@ -26,7 +26,7 @@ export class UsersService {
     return this.usersRepository.findOneOrFail(id);
   }
 
-  async findByMail(mail: string): Promise<User | undefined>
+  async findByMail(mail: string)
   {
     return this.usersRepository.findOne({where: {email: mail}});
   }
