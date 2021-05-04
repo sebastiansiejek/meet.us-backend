@@ -18,12 +18,11 @@ export class AuthResolver {
   @Mutation(() => AccessToken)
   @UseGuards(LocalAuthGuard)
   login(@Args('loginUserInput') loginUserInput: LoginUserInput) {
-    const { email, password } = loginUserInput;
-
+    
     const user = new User();
-    user.email = email;
-    user.email = password;
+    user.email = loginUserInput.email;
+    user.password = loginUserInput.password;
 
-    return this.authService.login(user as User);
+    return  this.authService.login(user as User);
   }
 }

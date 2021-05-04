@@ -26,11 +26,6 @@ export class AuthService {
             const { password, ...result } = user;
             return result;
         }
-
-    if (user && bcrypt.compare(password, user.password)) {
-      const { ...result } = user;
-      return result;
-    }
   }
 
   login(usersRepository: User): { access_token: string } {
@@ -45,7 +40,6 @@ export class AuthService {
   }
 
     async verify(token: string) : Promise<User> {
-        
         const decoded = this.jwtService.verify(token, {
             secret: process.env.JWT_SECRET
         });
@@ -54,4 +48,5 @@ export class AuthService {
 
     return user;
   }
+
 }
