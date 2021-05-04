@@ -15,7 +15,10 @@ export class UsersService {
 
   async create(createUserInput: CreateUserInput) {
     const salt = await bcrypt.genSalt(10);
-    createUserInput.password = await bcrypt.hash(createUserInput.password, salt);
+    createUserInput.password = await bcrypt.hash(
+      createUserInput.password,
+      salt,
+    );
     return this.usersRepository.save(createUserInput);
   }
   findAll() {

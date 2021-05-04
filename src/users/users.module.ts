@@ -8,6 +8,6 @@ import { MailModule } from 'src/mail/mail.module';
 @Module({
   imports: [TypeOrmModule.forFeature([User]), MailModule],
   providers: [UsersResolver, UsersService],
-  exports: [UsersService]
+  exports: [UsersService],
 })
 export class UsersModule {}
