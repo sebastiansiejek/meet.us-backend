@@ -48,12 +48,11 @@ erDiagram
 	EVENTS |o -- o| CATEGORIES  : "Can have"
 	EVENTS |o -- o| IMAGES : "Can have"
   	EVENTS{
-		INT_PK id
+		INT_PK event_id
 		INT_FK user_id
-		STRING name
+		STRING title
 		STRING description
-		INT_FK image_id
-		ENUM type
+		ENUM event_type
 		ENUM state
 		DATETIME start_date
 		DATETIME end_date
