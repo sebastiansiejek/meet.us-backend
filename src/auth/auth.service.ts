@@ -44,18 +44,11 @@ export class AuthService {
     };
   }
 
-<<<<<<< HEAD
     async verify(token: string) : Promise<User> {
         
         const decoded = this.jwtService.verify(token, {
             secret: process.env.JWT_SECRET
         });
-=======
-  async verify(token: string): Promise<User> {
-    const decoded = this.jwtService.verify(token, {
-      secret: 'supersecretkey',
-    });
->>>>>>> 5b13b95970de97a8f5f6142941a431a9c80362f3
 
     const user = this.userService.findByMail(decoded.email);
 
