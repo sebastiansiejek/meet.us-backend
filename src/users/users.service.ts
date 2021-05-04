@@ -15,7 +15,10 @@ export class UsersService {
 
   async create(createUserInput: CreateUserInput) {
     const salt = await bcrypt.genSalt(10);
-    createUserInput.password = await bcrypt.hash(createUserInput.password, salt);
+    createUserInput.password = await bcrypt.hash(
+      createUserInput.password,
+      salt,
+    );
     return this.usersRepository.save(createUserInput);
   }
   findAll() {
@@ -26,9 +29,8 @@ export class UsersService {
     return this.usersRepository.findOneOrFail(id);
   }
 
-  async findByMail(mail: string): Promise<User | undefined>
-  {
-    return this.usersRepository.findOne({where: {email: mail}});
+  async findByMail(mail: string): Promise<User | undefined> {
+    return this.usersRepository.findOne({ where: { email: mail } });
   }
 
   async update(id: string, updateUserInput: UpdateUserInput) {

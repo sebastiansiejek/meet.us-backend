@@ -11,19 +11,19 @@ import { User } from 'src/users/entities/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports:[
+  imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    UsersModule, 
-    PassportModule.register({defaultStrategy: 'jwt'}),
+    UsersModule,
+    PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
-      secret: "supersecretkey",
-      signOptions: { expiresIn: '60s'}
+      secret: 'supersecretkey',
+      signOptions: { expiresIn: '60s' },
     }),
-    TypeOrmModule.forFeature([User])
+    TypeOrmModule.forFeature([User]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, LocalStrategy]
+  providers: [AuthService, JwtStrategy, LocalStrategy],
 })
 export class AuthModule {}

@@ -31,7 +31,7 @@ export class User {
   isActive: boolean;
 
   @Field()
-  @Column({ unique: true,  nullable: false })
+  @Column({ unique: true, nullable: false })
   nickname: string;
 
   @Field()
