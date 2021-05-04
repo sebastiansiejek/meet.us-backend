@@ -19,7 +19,7 @@ export class UsersService {
       createUserInput.password,
       salt,
     );
-    return this.usersRepository.save(createUserInput);
+    return await this.usersRepository.save(createUserInput);
   }
   findAll() {
     return this.usersRepository.find();

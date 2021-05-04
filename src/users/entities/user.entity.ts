@@ -15,11 +15,11 @@ export class User {
   id: string;
 
   @Field()
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   firstName: string;
 
   @Field()
-  @Column()
+  @Column({ unique: false, nullable: true })
   lastname: string;
 
   @Field()
@@ -31,7 +31,7 @@ export class User {
   isActive: boolean;
 
   @Field()
-  @Column({ unique: true, nullable: false })
+  @Column({ unique: true, nullable: true })
   nickname: string;
 
   @Field()
