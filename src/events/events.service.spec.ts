@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Event, event_type, state } from './entities/event.entity';
+import { Event, eventType, state } from './entities/event.entity';
 import { EventsService } from './events.service';
 import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -33,7 +33,7 @@ describe('EventsService', () => {
       title: '',
       description: '',
       state: state.Draft, //czy takie przypisanie wartości do enum jest ok?
-      type: event_type.Sport,
+      type: eventType.Sport,
       createdAt: new Date(),
       updatedAt: new Date(),
       startDate: new Date(),

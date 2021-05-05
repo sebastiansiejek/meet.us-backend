@@ -1,5 +1,5 @@
 import { InputType, Field } from '@nestjs/graphql';
-import { event_type, state } from '../entities/event.entity';
+import { eventType, state } from '../entities/event.entity';
 
 @InputType()
 export class CreateEventInput {
@@ -10,7 +10,7 @@ export class CreateEventInput {
   description: string;
 
   @Field()
-  event_type: event_type;
+  eventType: eventType;
 
   @Field()
   state: state;

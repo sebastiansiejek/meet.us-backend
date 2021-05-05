@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-export enum event_type {
+export enum eventType {
   Sport,
   Party,
 }
@@ -18,8 +18,8 @@ export enum state {
   Achieved,
 }
 
-registerEnumType(event_type, {
-  name: 'event_type',
+registerEnumType(eventType, {
+  name: 'eventType',
 });
 
 registerEnumType(state, {
@@ -42,8 +42,8 @@ export class Event {
   description: string;
 
   @Field()
-  @Column({ nullable: false, default: event_type.Party })
-  type: event_type;
+  @Column({ nullable: false, default: eventType.Party })
+  type: eventType;
 
   @Field()
   @Column({ nullable: false, default: state.Draft })

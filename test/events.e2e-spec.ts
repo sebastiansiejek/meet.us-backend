@@ -6,7 +6,7 @@ import { CreateEventInput } from 'src/events/dto/create-event.input';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createInputObject } from './helpers/testHelpers';
-import { event_type, state } from 'src/events/entities/event.entity';
+import { eventType, state } from 'src/events/entities/event.entity';
 
 describe('Events (e2e)', () => {
   let app: INestApplication;
@@ -45,7 +45,7 @@ describe('Events (e2e)', () => {
     const sampleEvent: CreateEventInput = {
       title: faker.firstName.firstName(),
       description: faker.productDescription.productDescription(),
-      event_type: event_type.Party,
+      eventType: eventType.Party,
       state: state.Draft,
     };
 

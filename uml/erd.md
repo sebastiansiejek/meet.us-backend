@@ -52,7 +52,7 @@ erDiagram
 		INT_FK user_id
 		STRING title
 		STRING description
-		ENUM event_type
+		ENUM eventType
 		ENUM state
 		DATETIME start_date
 		DATETIME end_date
