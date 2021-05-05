@@ -48,12 +48,11 @@ erDiagram
 	EVENTS |o -- o| CATEGORIES  : "Can have"
 	EVENTS |o -- o| IMAGES : "Can have"
   	EVENTS{
-		INT_PK id
+		INT_PK eventId
 		INT_FK user_id
-		STRING name
+		STRING title
 		STRING description
-		INT_FK image_id
-		ENUM type
+		ENUM eventType
 		ENUM state
 		DATETIME start_date
 		DATETIME end_date
@@ -75,7 +74,7 @@ erDiagram
 	GALLERY }o -- o{ EVENTS : "Can has"
 	GALLERY{
 		INT_PK ID
-		INT_FK event_id
+		INT_FK eventId
 		STRING name
 		STRING path
 		TIMESTAMP created_at
@@ -86,7 +85,7 @@ erDiagram
 	PARTICIPANTS }o -- o{ USERS : "Can has"
 	PARTICIPANTS {
 		INT_PK id
-		INT_FK event_id
+		INT_FK eventId
 		INT_FK user_id
 		ENUM state_id
 		TIMESTAMP created_at
@@ -98,7 +97,7 @@ erDiagram
 	RATES {
 		INT_PK id
 		INT_FK user_id
-		INT_FK event_id
+		INT_FK eventId
 		INT rate
 		STRING description
 		TIMESTAMP created_at
@@ -181,7 +180,7 @@ erDiagram
 	POSTS{
 		INT_PK id
 		INT_FK user_id
-		INT_FK event_id
+		INT_FK eventId
 		STRING body
 		ENUM state
 		TIMESTAMP created_at

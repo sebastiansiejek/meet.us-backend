@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { MailModule } from './mail/mail.module';
 import { I18nModule, I18nJsonParser } from 'nestjs-i18n';
 import { AuthModule } from './auth/auth.module';
+import { EventsModule } from './events/events.module';
 import * as path from 'path';
 
 @Module({
@@ -41,6 +42,7 @@ import * as path from 'path';
     UsersModule,
     MailModule,
     AuthModule,
+    EventsModule,
   ],
 })
 export class AppModule {}
