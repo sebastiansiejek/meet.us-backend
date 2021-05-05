@@ -32,7 +32,7 @@ describe('EventsService', () => {
       event_id: '',
       title: '',
       description: '',
-      state: state.Draft, //czy takie przypisanie wartości do enum jest ok?
+      state: state.Draft,
       type: eventType.Sport,
       createdAt: new Date(),
       updatedAt: new Date(),
