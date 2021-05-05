@@ -28,7 +28,7 @@ import * as path from 'path';
       username: process.env.DATABASE_USERNAME,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
-      entities: [__dirname + '**/*/entities/*.entity.*'], //czy nie chcemy przejść na pełne auto?
+      entities: [__dirname + '**/*/entities/*.entity.*'],
       synchronize: true,
       keepConnectionAlive: true,
     }),
