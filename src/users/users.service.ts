@@ -29,9 +29,8 @@ export class UsersService {
     return this.usersRepository.findOneOrFail(id);
   }
 
-  async findByMail(mail: string)
-  {
-    return this.usersRepository.findOne({where: {email: mail}});
+  async findByMail(mail: string) {
+    return this.usersRepository.findOne({ where: { email: mail } });
   }
 
   async update(id: string, updateUserInput: UpdateUserInput) {

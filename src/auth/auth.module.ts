@@ -19,7 +19,7 @@ import { AuthResolver } from './auth.resolver';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '3600s'}
+      signOptions: { expiresIn: '3600s' },
     }),
     TypeOrmModule.forFeature([User]),
   ],

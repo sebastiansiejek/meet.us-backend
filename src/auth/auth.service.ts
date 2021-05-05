@@ -11,21 +11,21 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-    async validate(email: string, password: string): Promise<any> {
-        const user = await this.userService.findByMail(email);
+  async validate(email: string, password: string): Promise<any> {
+    const user = await this.userService.findByMail(email);
 
-        if (user === undefined) {
-            throw new BadRequestException('Invalid email');
-        }
-        
-        if(!await bcrypt.compare(password, user.password)){
-            throw new BadRequestException('Invalid password');
-        }
+    if (user === undefined) {
+      throw new BadRequestException('Invalid email');
+    }
 
-        if (user && await bcrypt.compare(password, user.password)){
-            const { password, ...result } = user;
-            return result;
-        }
+    if (!(await bcrypt.compare(password, user.password))) {
+      throw new BadRequestException('Invalid password');
+    }
+
+    if (user && (await bcrypt.compare(password, user.password))) {
+      const { ...result } = user;
+      return result;
+    }
   }
 
   login(usersRepository: User): { access_token: string } {
@@ -39,14 +39,13 @@ export class AuthService {
     };
   }
 
-    async verify(token: string) : Promise<User> {
-        const decoded = this.jwtService.verify(token, {
-            secret: process.env.JWT_SECRET
-        });
+  async verify(token: string): Promise<User> {
+    const decoded = this.jwtService.verify(token, {
+      secret: process.env.JWT_SECRET,
+    });
 
     const user = this.userService.findByMail(decoded.email);
 
     return user;
   }
-
 }

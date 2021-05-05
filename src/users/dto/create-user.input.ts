@@ -1,5 +1,5 @@
 import { InputType, Field } from '@nestjs/graphql';
-import { IsEmail, Matches, Length } from "class-validator";
+import { IsEmail, Matches, Length } from 'class-validator';
 
 @InputType()
 export class CreateUserInput {
@@ -10,6 +10,8 @@ export class CreateUserInput {
 
   @Field()
   @Length(8, 20)
-  @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {message: 'password too weak'})
+  @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+    message: 'password too weak',
+  })
   password?: string;
 }
