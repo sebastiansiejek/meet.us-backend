@@ -15,11 +15,11 @@ export class User {
   id: string;
 
   @Field()
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   firstName: string;
 
   @Field()
-  @Column()
+  @Column({ unique: false, nullable: true })
   lastname: string;
 
   @Field()
@@ -31,8 +31,11 @@ export class User {
   isActive: boolean;
 
   @Field()
-  @Column()
+  @Column({ unique: true, nullable: true })
   nickname: string;
+
+  @Column({ nullable: false })
+  password: string;
 
   @CreateDateColumn()
   createdAt: Date;
