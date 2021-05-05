@@ -34,7 +34,6 @@ export class User {
   @Column({ unique: true, nullable: true })
   nickname: string;
 
-  @Field()
   @Column({ nullable: false })
   password: string;
 
