@@ -29,13 +29,11 @@ export class AuthService {
   }
 
   login(usersRepository: User): { access_token: string } {
-    const payload = {
-      email: usersRepository.email,
-      sub: usersRepository.id,
-    };
-
     return {
-      access_token: this.jwtService.sign(payload),
+      access_token: this.jwtService.sign({
+        email: usersRepository.email,
+        id: usersRepository.id,
+      }),
     };
   }
 
