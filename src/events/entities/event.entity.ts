@@ -54,10 +54,4 @@ export class Event {
 
   @UpdateDateColumn()
   updatedAt: Date;
-
-  @CreateDateColumn()
-  startDate: Date;
-
-  @UpdateDateColumn()
-  endDate: Date;
 }
