@@ -9,15 +9,16 @@ export class MailService {
     private readonly i18n: I18nRequestScopeService,
   ) {}
 
-  async sendUserRegisterConfirmation() {
+  async sendUserRegisterConfirmation(email: string, token: string) {
     await this.mailerService.sendMail({
-      to: '',
+      to: email,
       subject: await this.i18n.translate(
         'emails.REGISTER_CONFIRMATION.SUBJECT',
       ),
       template: './register-confirmation',
       context: {
-        name: '',
+        token: token,
+        email: email,
       },
     });
   }
