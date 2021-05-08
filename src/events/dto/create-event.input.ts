@@ -10,8 +10,14 @@ export class CreateEventInput {
   description: string;
 
   @Field()
-  eventType: eventType;
+  type: eventType;
 
   @Field()
   state: state;
+
+  @Field()
+  startDate: Date;
+
+  @Field()
+  endDate: Date;
 }

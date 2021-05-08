@@ -1,8 +1,11 @@
 import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
+import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -31,7 +34,12 @@ registerEnumType(state, {
 export class Event {
   @Field()
   @PrimaryGeneratedColumn('uuid')
-  eventId: string;
+  id: string;
+
+  @Field()
+  @ManyToOne(() => User, { nullable: false })
+  @JoinColumn({ name: 'user', referencedColumnName: 'id' })
+  user: User;
 
   @Field()
   @Column({ nullable: false })
@@ -48,6 +56,18 @@ export class Event {
   @Field()
   @Column({ nullable: false, default: state.Draft })
   state: state;
+
+  @Field()
+  @Column({ nullable: false })
+  startDate: Date;
+
+  @Field()
+  @Column({ nullable: false })
+  endDate: Date;
+
+  @Field()
+  @Column({ nullable: true })
+  maxParticipants: number;
 
   @CreateDateColumn()
   createdAt: Date;
