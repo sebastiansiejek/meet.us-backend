@@ -9,10 +9,14 @@ export class CreateEventInput {
   @Field()
   description: string;
 
-  @Field()
+  @Field({
+    defaultValue: eventType.Party,
+  })
   type: eventType;
 
-  @Field()
+  @Field({
+    defaultValue: state.Draft,
+  })
   state: state;
 
   @Field()
