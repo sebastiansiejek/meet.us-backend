@@ -9,9 +9,19 @@ export class CreateEventInput {
   @Field()
   description: string;
 
-  @Field()
-  eventType: eventType;
+  @Field({
+    defaultValue: eventType.Party,
+  })
+  type: eventType;
+
+  @Field({
+    defaultValue: state.Draft,
+  })
+  state: state;
 
   @Field()
-  state: state;
+  startDate: Date;
+
+  @Field()
+  endDate: Date;
 }

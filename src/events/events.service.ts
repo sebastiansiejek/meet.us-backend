@@ -4,6 +4,7 @@ import { UpdateEventInput } from './dto/update-event.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Event } from './entities/event.entity';
 import { Repository } from 'typeorm';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class EventsService {
@@ -12,8 +13,11 @@ export class EventsService {
     private readonly eventsRepository: Repository<Event>,
   ) {}
 
-  create(createEventInput: CreateEventInput) {
-    return this.eventsRepository.save(createEventInput);
+  create(createEventInput: CreateEventInput, user: User) {
+    return this.eventsRepository.save({
+      ...createEventInput,
+      user,
+    });
   }
 
   findAll() {
