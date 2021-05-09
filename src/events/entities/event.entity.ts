@@ -30,7 +30,9 @@ registerEnumType(state, {
 });
 
 @ObjectType()
-@Entity()
+@Entity({
+  name: 'events',
+})
 export class Event {
   @Field()
   @PrimaryGeneratedColumn('uuid')
