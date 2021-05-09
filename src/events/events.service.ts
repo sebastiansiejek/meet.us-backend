@@ -14,16 +14,10 @@ export class EventsService {
   ) {}
 
   create(createEventInput: CreateEventInput, user: User) {
-    const createEvent = new Event();
-    createEvent.description = createEventInput.description;
-    createEvent.title = createEventInput.title;
-    createEvent.state = createEventInput.state;
-    createEvent.type = createEventInput.type;
-    createEvent.startDate = createEventInput.startDate;
-    createEvent.endDate = createEventInput.endDate;
-    createEvent.user = user;
-
-    return this.eventsRepository.save(createEvent);
+    return this.eventsRepository.save({
+      ...createEventInput,
+      user,
+    });
   }
 
   findAll() {
