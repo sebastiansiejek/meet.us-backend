@@ -21,7 +21,11 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
-    "doc": "npx @compodoc/compodoc -p tsconfig.json -s"
+    "doc": "npx @compodoc/compodoc -p tsconfig.json -s",
+    "seed:config": "ts-node ./node_modules/typeorm-seeding/dist/cli.js config",
+    "seed:run": "ts-node -r tsconfig-paths/register ./node_modules/typeorm-seeding/dist/cli.js seed",
+    "schema:drop": "ts-node ./node_modules/typeorm/cli.js schema:drop",
+    "schema:sync": "ts-node ./node_modules/typeorm/cli.js schema:sync"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.6.0",
@@ -50,7 +54,8 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.6",
-    "typeorm": "^0.2.32"
+    "typeorm": "^0.2.32",
+    "typeorm-seeding": "^1.6.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^12.1.1",
