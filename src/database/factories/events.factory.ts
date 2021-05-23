@@ -13,6 +13,7 @@ define(Event, (faker: typeof Faker) => {
   event.state = getRandomKeyFromObject(state);
   event.startDate = faker.date.past();
   event.endDate = faker.date.future();
+  event.maxParticipants = faker.random.number();
   event.user = factory(User)() as any;
 
   return event;

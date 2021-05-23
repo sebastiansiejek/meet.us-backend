@@ -22,10 +22,10 @@
     "prepare": "husky install",
     "pre-commit": "lint-staged",
     "doc": "npx @compodoc/compodoc -p tsconfig.json -s",
-    "seed:config": "ts-node ./node_modules/typeorm-seeding/dist/cli.js config",
+    "seed:config": "ts-node -r tsconfig-paths/register ./node_modules/typeorm-seeding/dist/cli.js config",
     "seed:run": "ts-node -r tsconfig-paths/register ./node_modules/typeorm-seeding/dist/cli.js seed",
-    "schema:drop": "ts-node ./node_modules/typeorm/cli.js schema:drop",
-    "schema:sync": "ts-node ./node_modules/typeorm/cli.js schema:sync"
+    "schema:drop": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js schema:drop",
+    "schema:sync": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js schema:sync"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.6.0",
