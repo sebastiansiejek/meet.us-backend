@@ -8,12 +8,12 @@ define(Event, (faker: typeof Faker) => {
   const event = new Event();
 
   event.title = faker.name.title();
-  event.description = faker.lorem.text();
+  event.description = faker.lorem.sentence();
   event.type = getRandomKeyFromObject(eventType);
   event.state = getRandomKeyFromObject(state);
-  event.startDate = faker.date.past();
+  event.startDate = faker.date.future();
   event.endDate = faker.date.future();
-  event.maxParticipants = faker.random.number();
+  event.maxParticipants = faker.random.number(100);
   event.user = factory(User)() as any;
 
   return event;
