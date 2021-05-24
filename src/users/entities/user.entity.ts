@@ -1,8 +1,11 @@
 import { ObjectType, Field } from '@nestjs/graphql';
+import { Image } from 'src/images/entities/image.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -15,6 +18,11 @@ export class User {
   @Field()
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Field()
+  @OneToOne(() => Image, { nullable: true })
+  @JoinColumn({ name: 'image', referencedColumnName: 'id' })
+  image: Image;
 
   @Field()
   @Column({ nullable: true })
