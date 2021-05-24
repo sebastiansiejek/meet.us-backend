@@ -1,4 +1,5 @@
 import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
+import { Image } from 'src/images/entities/image.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
@@ -6,6 +7,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -42,6 +44,11 @@ export class Event {
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'user', referencedColumnName: 'id' })
   user: User;
+
+  @Field()
+  @OneToOne(() => Image, { nullable: true })
+  @JoinColumn({ name: 'image', referencedColumnName: 'id' })
+  image: Image;
 
   @Field()
   @Column({ nullable: false })
