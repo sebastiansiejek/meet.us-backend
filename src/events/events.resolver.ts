@@ -21,14 +21,25 @@ export class EventsResolver {
     return this.eventsService.create(createEventInput, user);
   }
 
-  @Query(() => [Event], { name: 'events' })
-  findAll() {
+  @Query(() => [Event, User], { name: 'events' })
+  async findAll() {
     return this.eventsService.findAll();
   }
 
-  @Query(() => Event, { name: 'event' })
-  findOne(@Args('id') eventId: string) {
+  @Query(() => [Event], { name: 'event' })
+  async findOne(@Args('id') eventId: string) {
     return this.eventsService.findOne(eventId);
+  }
+
+  @Query(() => [Event], { name: 'searchBar' })
+  async searchBar(@Args('query') query: string) {
+    return this.eventsService.searchBar(query);
+  }
+
+  @Query(() => [Event], { name: 'findUserEvents' })
+  @UseGuards(GqlAuthGuard)
+  findUserEvents(@CurrentUser() user: User) {
+    return this.eventsService.findUserEvents(user);
   }
 
   @Mutation(() => Event)
