@@ -1,16 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { TokenService } from './token/token.service';
+import { MailService } from 'src/mail/mail.service';
+import { ActivateUserInput } from './dto/activate-user.input';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    private readonly tokenService: TokenService,
+    private readonly mailService: MailService,
   ) {}
 
   async create(createUserInput: CreateUserInput) {
@@ -19,7 +24,13 @@ export class UsersService {
       createUserInput.password,
       salt,
     );
-    return await this.usersRepository.save(createUserInput);
+
+    const user = await this.usersRepository.save(createUserInput);
+    const token = this.tokenService.encrypt(user.id);
+
+    this.mailService.sendUserRegisterConfirmation(user.email, token);
+
+    return user;
   }
   findAll() {
     return this.usersRepository.find();
@@ -42,5 +53,22 @@ export class UsersService {
     const user = await this.findOne(id);
     this.usersRepository.remove(user);
     return user;
+  }
+
+  async activateUser(activateUserInput: ActivateUserInput) {
+    const decrypted = await this.tokenService.decrypt(activateUserInput.token);
+    const dateIsValid = this.tokenService.validateDate(decrypted.validityDate);
+
+    const user = await this.usersRepository.findOne(decrypted.userId);
+    if (user.isActive == false) {
+      if (dateIsValid) {
+        user.isActive = true;
+      } else {
+        throw new BadRequestException('Invalid token date');
+      }
+    } else {
+      throw new BadRequestException('User is active');
+    }
+    return await this.usersRepository.save(user);
   }
 }

@@ -29,7 +29,7 @@ export class User {
   email: string;
 
   @Field()
-  @Column({ default: true })
+  @Column({ default: false })
   isActive: boolean;
 
   @Field()

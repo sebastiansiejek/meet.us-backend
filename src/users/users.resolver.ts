@@ -6,6 +6,7 @@ import { UpdateUserInput } from './dto/update-user.input';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { UseGuards } from '@nestjs/common';
 import { CurrentUser } from 'src/auth/current-user.decorator';
+import { ActivateUserInput } from './dto/activate-user.input';
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -14,6 +15,11 @@ export class UsersResolver {
   @Mutation(() => User)
   createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
     return this.usersService.create(createUserInput);
+  }
+
+  @Mutation(() => User)
+  activateUser(@Args('activateUser') activateUserInput: ActivateUserInput) {
+    return this.usersService.activateUser(activateUserInput);
   }
 
   @Query(() => [User], { name: 'users' })
