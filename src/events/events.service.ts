@@ -27,7 +27,7 @@ export class EventsService {
   }
 
   findOne(eventId: string) {
-    return this.eventsRepository.find({
+    return this.eventsRepository.findOne({
       relations: ['user'],
       where: { id: eventId },
     });

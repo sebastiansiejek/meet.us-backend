@@ -26,7 +26,7 @@ export class EventsResolver {
     return this.eventsService.findAll();
   }
 
-  @Query(() => [Event], { name: 'event' })
+  @Query(() => Event, { name: 'event' })
   async findOne(@Args('id') eventId: string) {
     return this.eventsService.findOne(eventId);
   }
