@@ -14,6 +14,8 @@ export const getRandomDateFromDate = (
   date: Date = new Date(),
   minDay = 1,
   maxDay = 2,
+  minHours = 1,
+  maxHours = 4,
 ): {
   startDate: Date;
   endDate: Date;
@@ -24,6 +26,7 @@ export const getRandomDateFromDate = (
       Math.floor(Math.random() * getRandomNumberBetween(minDay, maxDay)),
       'day',
     )
+    .add(getRandomNumberBetween(minHours, maxHours), 'hours')
     .toDate();
 
   return {
