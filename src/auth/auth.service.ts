@@ -28,9 +28,9 @@ export class AuthService {
     }
   }
 
-  login(usersRepository: User): { access_token: string } {
+  login(usersRepository: User): { accessToken: string } {
     return {
-      access_token: this.jwtService.sign({
+      accessToken: this.jwtService.sign({
         email: usersRepository.email,
         id: usersRepository.id,
       }),

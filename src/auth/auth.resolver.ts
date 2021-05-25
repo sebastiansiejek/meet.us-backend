@@ -8,7 +8,7 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 @ObjectType()
 export class AccessToken {
   @Field()
-  access_token: string;
+  accessToken: string;
 }
 
 @Resolver()
