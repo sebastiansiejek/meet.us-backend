@@ -1,12 +1,12 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
-import { I18nRequestScopeService } from 'nestjs-i18n';
+import { I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class MailService {
   constructor(
     private mailerService: MailerService,
-    private readonly i18n: I18nRequestScopeService,
+    private readonly i18n: I18nService,
   ) {}
 
   async sendUserRegisterConfirmation(email: string, token: string) {
