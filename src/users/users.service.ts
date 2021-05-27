@@ -60,15 +60,21 @@ export class UsersService {
     const dateIsValid = this.tokenService.validateDate(decrypted.validityDate);
 
     const user = await this.usersRepository.findOne(decrypted.userId);
-    if (user.isActive == false) {
+
+    if (user.isActive) {
+      throw new BadRequestException('User has been activated already');
+    }
+
+    if (!user.isActive) {
       if (dateIsValid) {
         user.isActive = true;
-      } else {
+      }
+
+      if (!dateIsValid) {
         throw new BadRequestException('Invalid token date');
       }
-    } else {
-      throw new BadRequestException('User is active');
     }
+
     return await this.usersRepository.save(user);
   }
 }
