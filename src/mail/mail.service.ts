@@ -19,6 +19,7 @@ export class MailService {
       context: {
         token: token,
         email: email,
+        hostDomain: process.env.HOST_DOMAIN,
       },
     });
   }

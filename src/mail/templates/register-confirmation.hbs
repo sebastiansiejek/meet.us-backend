@@ -1,6 +1,5 @@
 {{> header }}
 
-  <p>
   Hi {{ email }},
   <br><br>
   We just need to verify your email address before you can access.
@@ -14,9 +13,9 @@
         <td>
             <table cellspacing="0" cellpadding="0">
                 <tr>
-                    <td class="button" bgcolor="#ED2939">
-                        <a  class="link" href="http://localhost:3000/activateAccount?token={{token}}" target="_blank">
-                            Click             
+                    <td>
+                        <a href="//{{hostDomain}}/my-account?token={{token}}" target="_blank">
+                            Click
                         </a>
                     </td>
                 </tr>
@@ -24,9 +23,5 @@
         </td>
     </tr>
   </table>
-  
-  <br><br> 
-  Thanks! – The meet.us team
-  </p>
 
 {{> footer }}
