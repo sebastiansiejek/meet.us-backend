@@ -1,0 +1,27 @@
+{{> header }}
+
+  Hi {{ email }},
+  <br><br>
+  We just need to verify your email address before you can access.
+
+  <br>
+  Verify your email address:
+  <br>
+  <br>
+  <table width="100%" cellspacing="0" cellpadding="0">
+    <tr>
+        <td>
+            <table cellspacing="0" cellpadding="0">
+                <tr>
+                    <td>
+                        <a href="//{{hostDomain}}/my-account?token={{token}}" target="_blank">
+                            Click
+                        </a>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+  </table>
+
+{{> footer }}
