@@ -16,11 +16,11 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Field()
+  @Field({ nullable: true })
   @Column({ nullable: true })
   firstName: string;
 
-  @Field()
+  @Field({ nullable: true })
   @Column({ unique: false, nullable: true })
   lastname: string;
 
@@ -32,7 +32,7 @@ export class User {
   @Column({ default: false })
   isActive: boolean;
 
-  @Field()
+  @Field({ nullable: true })
   @Column({ unique: true, nullable: true })
   nickname: string;
 
