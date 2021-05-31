@@ -1,10 +1,10 @@
 import Faker from 'faker';
 import { define, factory } from 'typeorm-seeding';
-import { Event, eventType, state } from 'src/events/entities/event.entity';
+import { Event } from 'src/events/entities/event.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   getRandomDateFromDate,
-  getRandomKeyFromObject,
+  getRandomNumberBetween,
   getRandomValueFromArray,
 } from 'utils/getRandoms';
 
@@ -13,8 +13,8 @@ define(Event, (faker: typeof Faker) => {
 
   event.title = faker.name.title();
   event.description = faker.lorem.sentence();
-  event.type = getRandomKeyFromObject(eventType);
-  event.state = getRandomKeyFromObject(state);
+  event.type = getRandomNumberBetween(0, 1);
+  event.state = getRandomNumberBetween(0, 2);
 
   const today = new Date();
   const dates = [
