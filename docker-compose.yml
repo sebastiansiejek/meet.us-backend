@@ -8,7 +8,7 @@ services:
       context: .
       target: development
       dockerfile: ./Dockerfile
-    command: yarn start:debug
+    command: yarn test:debug
     networks:
       - meet.us-network
     volumes:
@@ -17,6 +17,30 @@ services:
     restart: unless-stopped
     ports:
       - 3000:3000
+  phpmyadmin:
+    depends_on:
+      - db
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - '8081:80'
+    networks:
+      - meet.us-network
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: password
+  db:
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    networks:
+      - meet.us-network
+    environment:
+      MYSQL_ROOT_PASSWORD: password
 
 networks:
   meet.us-network:
+
+volumes:
+  db_data:
