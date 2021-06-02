@@ -8,6 +8,8 @@ import { I18nModule, I18nJsonParser } from 'nestjs-i18n';
 import { AuthModule } from './auth/auth.module';
 import { EventsModule } from './events/events.module';
 import * as path from 'path';
+import { ImagesModule } from './images/images.module';
+import { Upload } from './images/dto/Upload.scalar';
 
 @Module({
   imports: [
@@ -38,11 +40,17 @@ import * as path from 'path';
         connection ? { req: connection.context } : { req },
       autoSchemaFile: true,
       sortSchema: true,
+      uploads: {
+        maxFileSize: 5000000, // 20 MB
+        maxFiles: 5
+      }
     }),
     UsersModule,
     MailModule,
     AuthModule,
     EventsModule,
+    ImagesModule, 
   ],
+  providers: [Upload]
 })
 export class AppModule {}
