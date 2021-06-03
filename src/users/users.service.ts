@@ -3,6 +3,7 @@ import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
+import { Image } from '../images/entities/image.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
@@ -34,13 +35,18 @@ export class UsersService {
   }
 
   async update(id: string, updateUserInput: UpdateUserInput) {
-    const user = await this.findOne(id);
+    const user = await this.usersRepository.findOne(id);
     return this.usersRepository.save({ ...user, ...updateUserInput });
   }
 
   async remove(id: string) {
-    const user = await this.findOne(id);
+    const user = await this.usersRepository.findOne(id);
     this.usersRepository.remove(user);
     return user;
+  }
+  async addImage(id: string, image: Image) {
+    const user = await this.usersRepository.findOne(id);
+    user.image = image;
+    return await this.usersRepository.save(user);
   }
 }
