@@ -10,7 +10,10 @@ export class ImagesService {
     private readonly imageRepository: Repository<Image>,
   ) {}
 
-  async saveImage() {
-    console.log('saveImage');
+  async saveImage(name: string, path: string) {
+    return this.imageRepository.save({
+      name: name,
+      path: path,
+    });
   }
 }
