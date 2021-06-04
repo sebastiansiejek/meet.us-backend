@@ -48,7 +48,7 @@ export class Event {
   title: string;
 
   @Field()
-  @Column()
+  @Column({ nullable: false })
   description: string;
 
   @Field()
@@ -67,7 +67,7 @@ export class Event {
   @Column({ nullable: false })
   endDate: Date;
 
-  @Field()
+  @Field({ nullable: true })
   @Column({ nullable: true })
   maxParticipants: number;
 
