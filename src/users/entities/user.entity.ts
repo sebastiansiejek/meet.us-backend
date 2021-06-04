@@ -20,7 +20,7 @@ export class User {
   id: string;
 
   @Field()
-  @OneToOne(() => Image, { nullable: true })
+  @OneToOne(() => Image, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'image', referencedColumnName: 'id' })
   image: Image;
 
