@@ -6,12 +6,14 @@ import { User } from './entities/user.entity';
 import { Image } from '../images/entities/image.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { ImagesService } from 'src/images/images.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    private readonly imageService: ImagesService,
   ) {}
 
   async create(createUserInput: CreateUserInput) {
@@ -27,7 +29,10 @@ export class UsersService {
   }
 
   findOne(id: string) {
-    return this.usersRepository.findOneOrFail(id);
+    return this.usersRepository.findOne({
+      relations: ['image'],
+      where: { id: id },
+    });
   }
 
   async findByMail(mail: string) {
@@ -44,8 +49,14 @@ export class UsersService {
     this.usersRepository.remove(user);
     return user;
   }
+
   async addImage(id: string, image: Image) {
-    const user = await this.usersRepository.findOne(id);
+    const user = await this.findOne(id);
+
+    if (user.image != null) {
+      await this.imageService.removeImage(user.image);
+    }
+
     user.image = image;
     return await this.usersRepository.save(user);
   }

@@ -1,3 +1,4 @@
+import { ImagesService } from './../images/images.service';
 import { Injectable } from '@nestjs/common';
 import { CreateEventInput } from './dto/create-event.input';
 import { UpdateEventInput } from './dto/update-event.input';
@@ -12,6 +13,7 @@ export class EventsService {
   constructor(
     @InjectRepository(Event)
     private readonly eventsRepository: Repository<Event>,
+    private readonly imageService: ImagesService,
   ) {}
 
   create(createEventInput: CreateEventInput, user: User) {
@@ -28,7 +30,10 @@ export class EventsService {
   }
 
   findOne(eventId: string) {
-    return this.eventsRepository.findOneOrFail(eventId);
+    return this.eventsRepository.findOne({
+      relations: ['user', 'image'],
+      where: { id: eventId },
+    });
   }
 
   async update(eventId: string, updateEventInput: UpdateEventInput) {
@@ -41,8 +46,14 @@ export class EventsService {
     this.eventsRepository.remove(event);
     return event;
   }
+
   async addImage(id: string, image: Image) {
-    const event = await this.eventsRepository.findOne(id);
+    const event = await this.findOne(id);
+
+    if (event.image != null) {
+      await this.imageService.removeImage(event.image);
+    }
+
     event.image = image;
     return await this.eventsRepository.save(event);
   }
