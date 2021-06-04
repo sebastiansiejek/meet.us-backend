@@ -1,0 +1,6 @@
+{
+    "ERRORS": {
+        "USER_IS_NOT_OWNER_OF_ACCOUNT": "User is not the owner of the account",
+        "USER_IS_NOT_OWNER_OF_EVENT": "User is not the owner of event"
+    }
+}
