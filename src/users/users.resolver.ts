@@ -30,14 +30,30 @@ export class UsersResolver {
 
   @Query(() => User, { name: 'user' })
   @UseGuards(GqlAuthGuard)
-  findOne(@CurrentUser() user: User, @Args('id') id: string) {
-    return this.usersService.findOne(id);
+  findOne(
+    @CurrentUser() user: User,
+    @Args({
+      name: 'id',
+      nullable: true,
+    })
+    id: string,
+  ) {
+    return this.usersService.findOne(id ? id : user.id);
   }
 
   @Mutation(() => User)
   @UseGuards(GqlAuthGuard)
-  updateUser(@Args('updateUserInput') updateUserInput: UpdateUserInput) {
-    return this.usersService.update(updateUserInput.id, updateUserInput);
+  updateUser(
+    @CurrentUser() user: User,
+    @Args({
+      name: 'updateUserInput',
+    })
+    updateUserInput: UpdateUserInput,
+  ) {
+    return this.usersService.update(
+      updateUserInput.id ? updateUserInput.id : user.id,
+      updateUserInput,
+    );
   }
 
   @Mutation(() => User)
