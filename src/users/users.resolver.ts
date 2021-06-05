@@ -7,6 +7,9 @@ import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { UseGuards } from '@nestjs/common';
 import { CurrentUser } from 'src/auth/current-user.decorator';
 import { ActivateUserInput } from './dto/activate-user.input';
+import { connectionFromArraySlice } from 'graphql-relay';
+import ConnectionArgs from 'src/pagination/types/connection.args';
+import UserResponse from './dto/user.response';
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -22,10 +25,23 @@ export class UsersResolver {
     return this.usersService.activateUser(activateUserInput);
   }
 
-  @Query(() => [User], { name: 'users' })
+  @Query(() => UserResponse, { name: 'users' })
   @UseGuards(GqlAuthGuard)
-  findAll() {
-    return this.usersService.findAll();
+  async findAll(@Args() args: ConnectionArgs): Promise<UserResponse> {
+    const { limit, offset } = args.pagingParams();
+    const { field, sort } = args.orderParams();
+    const [events, count] = await this.usersService.findAll(
+      limit,
+      offset,
+      field,
+      sort,
+    );
+    const page = connectionFromArraySlice(events, args, {
+      arrayLength: count,
+      sliceStart: offset || 0,
+    });
+
+    return { page, pageData: { count, limit, offset } };
   }
 
   @Query(() => User, { name: 'user' })
