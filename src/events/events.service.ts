@@ -20,9 +20,11 @@ export class EventsService {
     });
   }
 
-  findAll() {
-    return this.eventsRepository.find({
+  findAll(limit: number, offset: number): Promise<[Event[], number]> {
+    return this.eventsRepository.findAndCount({
       relations: ['user'],
+      take: limit,
+      skip: offset,
     });
   }
 
@@ -33,24 +35,28 @@ export class EventsService {
     });
   }
 
-  searchBar(query: string) {
-    return this.eventsRepository.find({
+  searchBar(limit: number, offset: number, query: string) {
+    return this.eventsRepository.findAndCount({
       relations: ['user'],
       where: [
         { title: ILike(`%${query}%`) },
         { description: ILike(`%${query}%`) },
       ],
+      take: limit,
+      skip: offset,
     });
   }
 
-  findUserEvents(user: User) {
-    return this.eventsRepository.find({
+  findUserEvents(limit: number, offset: number, user: User) {
+    return this.eventsRepository.findAndCount({
       relations: ['user'],
       where: {
         user: {
           id: user.id,
         },
       },
+      take: limit,
+      skip: offset,
     });
   }
 
