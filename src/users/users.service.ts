@@ -32,10 +32,18 @@ export class UsersService {
 
     return user;
   }
-  findAll(limit: number, offset: number): Promise<[User[], number]> {
+  findAll(
+    limit: number,
+    offset: number,
+    field: string,
+    sort: string,
+  ): Promise<[User[], number]> {
     return this.usersRepository.findAndCount({
       take: limit,
       skip: offset,
+      order: {
+        [field]: sort,
+      },
     });
   }
 

@@ -29,8 +29,13 @@ export class UsersResolver {
   @UseGuards(GqlAuthGuard)
   async findAll(@Args() args: ConnectionArgs): Promise<UserResponse> {
     const { limit, offset } = args.pagingParams();
-    // const { field, sort } = args.orderParams();
-    const [events, count] = await this.usersService.findAll(limit, offset);
+    const { field, sort } = args.orderParams();
+    const [events, count] = await this.usersService.findAll(
+      limit,
+      offset,
+      field,
+      sort,
+    );
     const page = connectionFromArraySlice(events, args, {
       arrayLength: count,
       sliceStart: offset || 0,

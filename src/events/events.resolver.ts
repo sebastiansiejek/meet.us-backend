@@ -27,7 +27,13 @@ export class EventsResolver {
   @Query(() => EventResponse)
   async events(@Args() args: ConnectionArgs): Promise<EventResponse> {
     const { limit, offset } = args.pagingParams();
-    const [events, count] = await this.eventsService.findAll(limit, offset);
+    const { field, sort } = args.orderParams();
+    const [events, count] = await this.eventsService.findAll(
+      limit,
+      offset,
+      field,
+      sort,
+    );
     const page = connectionFromArraySlice(events, args, {
       arrayLength: count,
       sliceStart: offset || 0,
@@ -47,9 +53,12 @@ export class EventsResolver {
     @Args('query') query: string,
   ): Promise<EventResponse> {
     const { limit, offset } = args.pagingParams();
+    const { field, sort } = args.orderParams();
     const [events, count] = await this.eventsService.searchBar(
       limit,
       offset,
+      field,
+      sort,
       query,
     );
     const page = connectionFromArraySlice(events, args, {
@@ -67,9 +76,12 @@ export class EventsResolver {
     @Args() args: ConnectionArgs,
   ): Promise<EventResponse> {
     const { limit, offset } = args.pagingParams();
+    const { field, sort } = args.orderParams();
     const [events, count] = await this.eventsService.findUserEvents(
       limit,
       offset,
+      field,
+      sort,
       user,
     );
     const page = connectionFromArraySlice(events, args, {

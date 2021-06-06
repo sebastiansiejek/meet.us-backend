@@ -20,12 +20,26 @@ export class EventsService {
     });
   }
 
-  findAll(limit: number, offset: number): Promise<[Event[], number]> {
+  findAll(
+    limit: number,
+    offset: number,
+    field: string,
+    sort: string,
+  ): Promise<[Event[], number]> {
     return this.eventsRepository.findAndCount({
       relations: ['user'],
       take: limit,
       skip: offset,
+      order: {
+        [field]: sort,
+      },
     });
+  }
+
+  orderColumns() {
+    const test = this.eventsRepository.metadata;
+    console.log(test.propertiesMap);
+    return test;
   }
 
   findOne(eventId: string) {
@@ -35,7 +49,13 @@ export class EventsService {
     });
   }
 
-  searchBar(limit: number, offset: number, query: string) {
+  searchBar(
+    limit: number,
+    offset: number,
+    field: string,
+    sort: string,
+    query: string,
+  ) {
     return this.eventsRepository.findAndCount({
       relations: ['user'],
       where: [
@@ -44,10 +64,19 @@ export class EventsService {
       ],
       take: limit,
       skip: offset,
+      order: {
+        [field]: sort,
+      },
     });
   }
 
-  findUserEvents(limit: number, offset: number, user: User) {
+  findUserEvents(
+    limit: number,
+    offset: number,
+    field: string,
+    sort: string,
+    user: User,
+  ) {
     return this.eventsRepository.findAndCount({
       relations: ['user'],
       where: {
@@ -57,6 +86,9 @@ export class EventsService {
       },
       take: limit,
       skip: offset,
+      order: {
+        [field]: sort,
+      },
     });
   }
 
