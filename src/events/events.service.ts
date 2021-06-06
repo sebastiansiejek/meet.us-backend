@@ -36,12 +36,6 @@ export class EventsService {
     });
   }
 
-  orderColumns() {
-    const test = this.eventsRepository.metadata;
-    console.log(test.propertiesMap);
-    return test;
-  }
-
   findOne(eventId: string) {
     return this.eventsRepository.findOne({
       relations: ['user'],
