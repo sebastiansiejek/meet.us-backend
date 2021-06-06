@@ -41,10 +41,18 @@ const getId = (cursor: ConnectionCursor) =>
 const nextId = (cursor: ConnectionCursor) => getId(cursor) + 1;
 
 function getOrderParameters(args: ConnectionArgs) {
-  console.log(args);
-  const field = 'id';
-  const sort = 'ASC';
-
+  let field: string;
+  let sort: string;
+  if (args.orderField != null || args.orderField != undefined) {
+    field = args.orderField;
+  } else {
+    field = 'id';
+  }
+  if (args.orderSort === 'ASC' || args.orderSort === 'DESC') {
+    sort = args.orderSort;
+  } else {
+    sort = 'ASC';
+  }
   return { field, sort };
 }
 
