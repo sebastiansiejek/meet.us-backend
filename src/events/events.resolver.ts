@@ -7,6 +7,9 @@ import { CurrentUser } from 'src/auth/current-user.decorator';
 import { User } from 'src/users/entities/user.entity';
 import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
 import { UseGuards } from '@nestjs/common';
+import EventResponse from './dto/event.response';
+import ConnectionArgs from 'src/pagination/types/connection.args';
+import { connectionFromArraySlice } from 'graphql-relay';
 
 @Resolver(() => Event)
 export class EventsResolver {
@@ -21,9 +24,22 @@ export class EventsResolver {
     return this.eventsService.create(createEventInput, user);
   }
 
-  @Query(() => [Event, User], { name: 'events' })
-  async findAll() {
-    return this.eventsService.findAll();
+  @Query(() => EventResponse)
+  async events(@Args() args: ConnectionArgs): Promise<EventResponse> {
+    const { limit, offset } = args.pagingParams();
+    const { field, sort } = args.orderParams();
+    const [events, count] = await this.eventsService.findAll(
+      limit,
+      offset,
+      field,
+      sort,
+    );
+    const page = connectionFromArraySlice(events, args, {
+      arrayLength: count,
+      sliceStart: offset || 0,
+    });
+
+    return { page, pageData: { count, limit, offset } };
   }
 
   @Query(() => Event, { name: 'event' })
@@ -31,15 +47,49 @@ export class EventsResolver {
     return this.eventsService.findOne(eventId);
   }
 
-  @Query(() => [Event], { name: 'searchBar' })
-  async searchBar(@Args('query') query: string) {
-    return this.eventsService.searchBar(query);
+  @Query(() => EventResponse)
+  async searchBar(
+    @Args() args: ConnectionArgs,
+    @Args('query') query: string,
+  ): Promise<EventResponse> {
+    const { limit, offset } = args.pagingParams();
+    const { field, sort } = args.orderParams();
+    const [events, count] = await this.eventsService.searchBar(
+      limit,
+      offset,
+      field,
+      sort,
+      query,
+    );
+    const page = connectionFromArraySlice(events, args, {
+      arrayLength: count,
+      sliceStart: offset || 0,
+    });
+
+    return { page, pageData: { count, limit, offset } };
   }
 
-  @Query(() => [Event], { name: 'findUserEvents' })
+  @Query(() => EventResponse)
   @UseGuards(GqlAuthGuard)
-  findUserEvents(@CurrentUser() user: User) {
-    return this.eventsService.findUserEvents(user);
+  async userEvents(
+    @CurrentUser() user: User,
+    @Args() args: ConnectionArgs,
+  ): Promise<EventResponse> {
+    const { limit, offset } = args.pagingParams();
+    const { field, sort } = args.orderParams();
+    const [events, count] = await this.eventsService.findUserEvents(
+      limit,
+      offset,
+      field,
+      sort,
+      user,
+    );
+    const page = connectionFromArraySlice(events, args, {
+      arrayLength: count,
+      sliceStart: offset || 0,
+    });
+
+    return { page, pageData: { count, limit, offset } };
   }
 
   @Mutation(() => Event)
