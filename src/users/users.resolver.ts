@@ -26,7 +26,6 @@ export class UsersResolver {
   }
 
   @Query(() => UserResponse, { name: 'users' })
-  @UseGuards(GqlAuthGuard)
   async findAll(@Args() args: ConnectionArgs): Promise<UserResponse> {
     const { limit, offset } = args.pagingParams();
     const { field, sort } = args.orderParams();
