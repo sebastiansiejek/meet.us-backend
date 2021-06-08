@@ -39,7 +39,7 @@ export class Event {
   id: string;
 
   @Field()
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User, { nullable: false, onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'user', referencedColumnName: 'id' })
   user: User;
 
@@ -70,6 +70,10 @@ export class Event {
   @Field(() => Int, { nullable: true })
   @Column({ nullable: true })
   maxParticipants: number;
+
+  @Field()
+  @Column({ default: false })
+  isArchive: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
