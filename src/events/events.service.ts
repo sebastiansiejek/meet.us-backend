@@ -3,8 +3,9 @@ import { CreateEventInput } from './dto/create-event.input';
 import { UpdateEventInput } from './dto/update-event.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Event } from './entities/event.entity';
-import { ILike, Repository } from 'typeorm';
+import { ILike, LessThan, Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class EventsService {
@@ -33,6 +34,9 @@ export class EventsService {
       order: {
         [field]: sort,
       },
+      where: {
+        isArchive: 0,
+      },
     });
   }
 
@@ -53,8 +57,8 @@ export class EventsService {
     return this.eventsRepository.findAndCount({
       relations: ['user'],
       where: [
-        { title: ILike(`%${query}%`) },
-        { description: ILike(`%${query}%`) },
+        { title: ILike(`%${query}%`), description: ILike(`%${query}%`) },
+        { isArchive: 0 },
       ],
       take: limit,
       skip: offset,
@@ -74,6 +78,7 @@ export class EventsService {
     return this.eventsRepository.findAndCount({
       relations: ['user'],
       where: {
+        isArchive: 0,
         user: {
           id: user.id,
         },
@@ -95,5 +100,21 @@ export class EventsService {
     const event = await this.findOne(eventId);
     this.eventsRepository.remove(event);
     return event;
+  }
+
+  @Cron('0 * * * *')
+  async updateArchiveEvents() {
+    const events = await this.eventsRepository.find({
+      where: {
+        isArchive: 0,
+        startDate: LessThan(new Date()),
+        endDate: LessThan(new Date()),
+      },
+    });
+    for (const i in events) {
+      const updateEvent = events[i];
+      updateEvent.isArchive = true;
+      await this.eventsRepository.save({ ...events[i], ...updateEvent });
+    }
   }
 }
