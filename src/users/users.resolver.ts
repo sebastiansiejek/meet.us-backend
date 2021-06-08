@@ -45,7 +45,6 @@ export class UsersResolver {
   }
 
   @Query(() => User, { name: 'user' })
-  @UseGuards(GqlAuthGuard)
   findOne(
     @CurrentUser() user: User,
     @Args({
