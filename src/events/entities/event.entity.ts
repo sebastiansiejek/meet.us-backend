@@ -1,4 +1,4 @@
-import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
+import { ObjectType, Field, registerEnumType, Int } from '@nestjs/graphql';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
@@ -48,7 +48,7 @@ export class Event {
   title: string;
 
   @Field()
-  @Column()
+  @Column({ nullable: false })
   description: string;
 
   @Field()
@@ -67,7 +67,7 @@ export class Event {
   @Column({ nullable: false })
   endDate: Date;
 
-  @Field()
+  @Field(() => Int, { nullable: true })
   @Column({ nullable: true })
   maxParticipants: number;
 

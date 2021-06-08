@@ -1,4 +1,4 @@
-import { InputType, Field } from '@nestjs/graphql';
+import { InputType, Field, Int } from '@nestjs/graphql';
 import { eventType, state } from '../entities/event.entity';
 
 @InputType()
@@ -24,4 +24,7 @@ export class CreateEventInput {
 
   @Field()
   endDate: Date;
+
+  @Field(() => Int, { nullable: true })
+  maxParticipants: number;
 }

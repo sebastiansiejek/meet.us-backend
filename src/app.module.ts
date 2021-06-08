@@ -8,6 +8,7 @@ import { I18nModule, I18nJsonParser } from 'nestjs-i18n';
 import { AuthModule } from './auth/auth.module';
 import { EventsModule } from './events/events.module';
 import * as path from 'path';
+import { QueryResolver } from './i18n/QueryResolver';
 
 @Module({
   imports: [
@@ -16,11 +17,15 @@ import * as path from 'path';
     }),
     I18nModule.forRoot({
       fallbackLanguage: 'en',
+      fallbacks: {
+        'pl-*': 'pl',
+      },
       parser: I18nJsonParser,
       parserOptions: {
         path: path.join(__dirname, 'i18n'),
         watch: true,
       },
+      resolvers: [{ use: QueryResolver, options: [] }],
     }),
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -34,8 +39,6 @@ import * as path from 'path';
       keepConnectionAlive: true,
     }),
     GraphQLModule.forRoot({
-      context: ({ req, connection }) =>
-        connection ? { req: connection.context } : { req },
       autoSchemaFile: true,
       sortSchema: true,
     }),

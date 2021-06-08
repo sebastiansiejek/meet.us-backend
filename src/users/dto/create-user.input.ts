@@ -11,7 +11,7 @@ export class CreateUserInput {
   @Field()
   @Length(8, 20)
   @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
-    message: 'password too weak',
+    message: 'Password should contains a capital letter and a number',
   })
   password?: string;
 }
