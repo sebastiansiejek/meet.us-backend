@@ -13,6 +13,7 @@ import {
 export enum eventType {
   Sport,
   Party,
+  Social,
 }
 
 export enum state {
