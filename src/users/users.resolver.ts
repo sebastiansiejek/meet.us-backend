@@ -44,15 +44,14 @@ export class UsersResolver {
   }
 
   @Query(() => User, { name: 'user' })
-  findOne(
-    @CurrentUser() user: User,
-    @Args({
-      name: 'id',
-      nullable: true,
-    })
-    id: string,
-  ) {
-    return this.usersService.findOne(id ? id : user.id);
+  findOne(@Args('id') userId: string) {
+    return this.usersService.findOne(userId);
+  }
+
+  @Query(() => User, { name: 'currentUser' })
+  @UseGuards(GqlAuthGuard)
+  currentUser(@CurrentUser() user: User) {
+    return this.usersService.findOne(user.id);
   }
 
   @Mutation(() => User)
