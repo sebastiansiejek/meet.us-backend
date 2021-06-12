@@ -3,8 +3,9 @@ import { CreateEventInput } from './dto/create-event.input';
 import { UpdateEventInput } from './dto/update-event.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Event } from './entities/event.entity';
-import { ILike, Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
+import { Cron } from '@nestjs/schedule';
 
 @Injectable()
 export class EventsService {
@@ -25,6 +26,7 @@ export class EventsService {
     offset: number,
     field: string,
     sort: string,
+    archive: boolean,
   ): Promise<[Event[], number]> {
     return this.eventsRepository.findAndCount({
       relations: ['user'],
@@ -32,6 +34,9 @@ export class EventsService {
       skip: offset,
       order: {
         [field]: sort,
+      },
+      where: {
+        isArchive: archive,
       },
     });
   }
@@ -43,25 +48,49 @@ export class EventsService {
     });
   }
 
-  searchBar(
+  async searchBar(
     limit: number,
     offset: number,
     field: string,
     sort: string,
     query: string,
+    archive: boolean,
   ) {
-    return this.eventsRepository.findAndCount({
-      relations: ['user'],
-      where: [
-        { title: ILike(`%${query}%`) },
-        { description: ILike(`%${query}%`) },
-      ],
-      take: limit,
-      skip: offset,
-      order: {
-        [field]: sort,
-      },
-    });
+    const events = await this.eventsRepository
+      .createQueryBuilder('events')
+      .innerJoinAndMapOne(
+        'events.user',
+        User,
+        'users',
+        'events.user = users.id',
+      )
+      .where('events.isArchive = :isArchive', { isArchive: archive })
+      .andWhere('events.title like  :title', { title: `%${query}%` })
+      .orWhere('events.description like :description', {
+        description: `%${query}%`,
+      })
+      .take(limit)
+      .skip(offset)
+      .orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC')
+      .getMany();
+
+    const totalRecords = await this.eventsRepository
+      .createQueryBuilder('events')
+      .innerJoinAndMapOne(
+        'events.user',
+        User,
+        'users',
+        'events.user = users.id',
+      )
+      .where('events.isArchive = :isArchive', { isArchive: archive })
+      .andWhere('events.title like  :title', { title: `%${query}%` })
+      .orWhere('events.description like :description', {
+        description: `%${query}%`,
+      })
+      .orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC')
+      .getMany();
+
+    return { events, totalRecords };
   }
 
   findUserEvents(
@@ -70,10 +99,12 @@ export class EventsService {
     field: string,
     sort: string,
     user: User,
+    archive: boolean,
   ) {
     return this.eventsRepository.findAndCount({
       relations: ['user'],
       where: {
+        isArchive: archive,
         user: {
           id: user.id,
         },
@@ -95,5 +126,21 @@ export class EventsService {
     const event = await this.findOne(eventId);
     this.eventsRepository.remove(event);
     return event;
+  }
+
+  @Cron('0 * * * *')
+  async updateArchiveEvents() {
+    const events = await this.eventsRepository.find({
+      where: {
+        isArchive: 0,
+        startDate: LessThan(new Date()),
+        endDate: LessThan(new Date()),
+      },
+    });
+    for (const i in events) {
+      const updateEvent = events[i];
+      updateEvent.isArchive = true;
+      await this.eventsRepository.save({ ...events[i], ...updateEvent });
+    }
   }
 }

@@ -25,7 +25,10 @@ export class EventsResolver {
   }
 
   @Query(() => EventResponse)
-  async events(@Args() args: ConnectionArgs): Promise<EventResponse> {
+  async events(
+    @Args() args: ConnectionArgs,
+    @Args('isArchive') isArchive: boolean,
+  ): Promise<EventResponse> {
     const { limit, offset } = args.pagingParams();
     const { field, sort } = args.orderParams();
     const [events, count] = await this.eventsService.findAll(
@@ -33,6 +36,7 @@ export class EventsResolver {
       offset,
       field,
       sort,
+      isArchive,
     );
     const page = connectionFromArraySlice(events, args, {
       arrayLength: count,
@@ -51,16 +55,20 @@ export class EventsResolver {
   async searchBar(
     @Args() args: ConnectionArgs,
     @Args('query') query: string,
+    @Args('isArchive') isArchive: boolean,
   ): Promise<EventResponse> {
     const { limit, offset } = args.pagingParams();
     const { field, sort } = args.orderParams();
-    const [events, count] = await this.eventsService.searchBar(
+    const records = await this.eventsService.searchBar(
       limit,
       offset,
       field,
       sort,
       query,
+      isArchive,
     );
+    const events = records.events;
+    const count = records.totalRecords.length;
     const page = connectionFromArraySlice(events, args, {
       arrayLength: count,
       sliceStart: offset || 0,
@@ -74,6 +82,7 @@ export class EventsResolver {
   async userEvents(
     @CurrentUser() user: User,
     @Args() args: ConnectionArgs,
+    @Args('isArchive') isArchive: boolean,
   ): Promise<EventResponse> {
     const { limit, offset } = args.pagingParams();
     const { field, sort } = args.orderParams();
@@ -83,6 +92,7 @@ export class EventsResolver {
       field,
       sort,
       user,
+      isArchive,
     );
     const page = connectionFromArraySlice(events, args, {
       arrayLength: count,
