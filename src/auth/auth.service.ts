@@ -3,23 +3,29 @@ import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { User } from '../users/entities/user.entity';
+import { I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly i18n: I18nService,
   ) {}
 
   async validate(email: string, password: string): Promise<any> {
     const user = await this.userService.findByMail(email);
 
     if (user === undefined) {
-      throw new BadRequestException('Invalid email');
+      throw new BadRequestException(
+        await this.i18n.translate('errors.ERROR.INVALID_EMAIL'),
+      );
     }
 
     if (!(await bcrypt.compare(password, user.password))) {
-      throw new BadRequestException('Invalid password');
+      throw new BadRequestException(
+        await this.i18n.translate('errors.ERROR.INVALID_PASSWORD'),
+      );
     }
 
     if (user && (await bcrypt.compare(password, user.password))) {
