@@ -27,7 +27,8 @@ export class EventsResolver {
   @Query(() => EventResponse)
   async events(
     @Args() args: ConnectionArgs,
-    @Args('isArchive') isArchive: boolean,
+    @Args({ name: 'isArchive', defaultValue: false, nullable: true })
+    isArchive: boolean,
   ): Promise<EventResponse> {
     const { limit, offset } = args.pagingParams();
     const { field, sort } = args.orderParams();
@@ -55,7 +56,8 @@ export class EventsResolver {
   async searchBar(
     @Args() args: ConnectionArgs,
     @Args('query') query: string,
-    @Args('isArchive') isArchive: boolean,
+    @Args({ name: 'isArchive', defaultValue: false, nullable: true })
+    isArchive: boolean,
   ): Promise<EventResponse> {
     const { limit, offset } = args.pagingParams();
     const { field, sort } = args.orderParams();
@@ -82,7 +84,8 @@ export class EventsResolver {
   async userEvents(
     @CurrentUser() user: User,
     @Args() args: ConnectionArgs,
-    @Args('isArchive') isArchive: boolean,
+    @Args({ name: 'isArchive', defaultValue: false, nullable: true })
+    isArchive: boolean,
   ): Promise<EventResponse> {
     const { limit, offset } = args.pagingParams();
     const { field, sort } = args.orderParams();

@@ -64,11 +64,11 @@ export class EventsService {
         'users',
         'events.user = users.id',
       )
-      .where('events.isArchive = :isArchive', { isArchive: archive })
-      .andWhere('events.title like  :title', { title: `%${query}%` })
-      .orWhere('events.description like :description', {
-        description: `%${query}%`,
-      })
+      .where('isArchive = :isArchive', { isArchive: archive })
+      .andWhere(
+        '(events.title like  :title or events.description like :description)',
+        { title: `%${query}%`, description: `%${query}%` },
+      )
       .take(limit)
       .skip(offset)
       .orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC')
@@ -82,11 +82,11 @@ export class EventsService {
         'users',
         'events.user = users.id',
       )
-      .where('events.isArchive = :isArchive', { isArchive: archive })
-      .andWhere('events.title like  :title', { title: `%${query}%` })
-      .orWhere('events.description like :description', {
-        description: `%${query}%`,
-      })
+      .where('isArchive = :isArchive', { isArchive: archive })
+      .andWhere(
+        '(events.title like  :title or events.description like :description)',
+        { title: `%${query}%`, description: `%${query}%` },
+      )
       .orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC')
       .getMany();
 
