@@ -6,6 +6,7 @@ import { Event } from './entities/event.entity';
 import { LessThan, Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Cron } from '@nestjs/schedule';
+import { IEventStatus } from './IEvents';
 
 @Injectable()
 export class EventsService {
@@ -54,7 +55,7 @@ export class EventsService {
     field: string,
     sort: string,
     query: string,
-    archive: boolean,
+    status: IEventStatus,
   ) {
     const currentDate = new Date();
 
@@ -66,10 +67,10 @@ export class EventsService {
         'users',
         'events.user = users.id',
       )
-      .where(archive === false && 'events.startDate <= :startDate', {
+      .where(status === 'DURING' && 'events.startDate <= :startDate', {
         startDate: currentDate,
       })
-      .andWhere(archive === false && 'events.endDate >= :endDate', {
+      .andWhere(status === 'DURING' && 'events.endDate >= :endDate', {
         endDate: currentDate,
       })
       .andWhere(
@@ -89,7 +90,6 @@ export class EventsService {
         'users',
         'events.user = users.id',
       )
-      .where('isArchive = :isArchive', { isArchive: archive })
       .andWhere(
         '(events.title like  :title or events.description like :description)',
         { title: `%${query}%`, description: `%${query}%` },

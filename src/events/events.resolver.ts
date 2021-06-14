@@ -10,6 +10,7 @@ import { UseGuards } from '@nestjs/common';
 import EventResponse from './dto/event.response';
 import ConnectionArgs from 'src/pagination/types/connection.args';
 import { connectionFromArraySlice } from 'graphql-relay';
+import { IEventStatus } from './IEvents';
 
 @Resolver(() => Event)
 export class EventsResolver {
@@ -56,8 +57,8 @@ export class EventsResolver {
   async searchBar(
     @Args() args: ConnectionArgs,
     @Args('query') query: string,
-    @Args({ name: 'isArchive', defaultValue: false, nullable: true })
-    isArchive: boolean,
+    @Args({ name: 'status', defaultValue: 'DURING', nullable: true })
+    status: IEventStatus,
   ): Promise<EventResponse> {
     const { limit, offset } = args.pagingParams();
     const { field, sort } = args.orderParams();
@@ -67,7 +68,7 @@ export class EventsResolver {
       field,
       sort,
       query,
-      isArchive,
+      status,
     );
     const events = records.events;
     const count = records.totalRecords.length;
