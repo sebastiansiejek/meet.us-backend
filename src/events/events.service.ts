@@ -3,12 +3,7 @@ import { CreateEventInput } from './dto/create-event.input';
 import { UpdateEventInput } from './dto/update-event.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Event } from './entities/event.entity';
-import {
-  LessThan,
-  LessThanOrEqual,
-  MoreThanOrEqual,
-  Repository,
-} from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Cron } from '@nestjs/schedule';
 import { IEventState } from './IEvents';
@@ -39,7 +34,7 @@ export class EventsService {
     offset: number,
     field: string,
     sort: string,
-    query: string,
+    query = '',
     status: IEventState,
   ) {
     const currentDate = new Date().toISOString().replace('T', ' ');
@@ -52,27 +47,29 @@ export class EventsService {
         'users',
         'events.user = users.id',
       )
-      .andWhere(
+      .where(
         '(events.title like  :title or events.description like :description)',
         { title: `%${query}%`, description: `%${query}%` },
       )
       .orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC');
 
     if (status === 'DURING') {
-      events.where({
-        startDate: LessThanOrEqual(currentDate),
-        endDate: MoreThanOrEqual(currentDate),
+      events.andWhere('events.startDate <= :startDate', {
+        startDate: currentDate,
+      });
+      events.andWhere('events.endDate >= :endDate', {
+        endDate: currentDate,
       });
     }
 
     if (status === 'FUTURE') {
-      events.where(status === 'FUTURE' && 'events.startDate > :startDate', {
+      events.andWhere('events.startDate > :startDate', {
         startDate: currentDate,
       });
     }
 
     if (status === 'PAST') {
-      events.where(status === 'PAST' && 'events.startDate < :startDate', {
+      events.andWhere('events.startDate < :startDate', {
         startDate: currentDate,
       });
     }
