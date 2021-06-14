@@ -76,9 +76,7 @@ export class EventsService {
         '(events.title like  :title or events.description like :description)',
         { title: `%${query}%`, description: `%${query}%` },
       )
-      .orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC')
-      .take(limit)
-      .skip(offset);
+      .orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC');
 
     if (status === 'DURING') {
       events.where({
@@ -99,22 +97,9 @@ export class EventsService {
       });
     }
 
-    const totalRecords = await this.eventsRepository
-      .createQueryBuilder('events')
-      .innerJoinAndMapOne(
-        'events.user',
-        User,
-        'users',
-        'events.user = users.id',
-      )
-      .andWhere(
-        '(events.title like  :title or events.description like :description)',
-        { title: `%${query}%`, description: `%${query}%` },
-      )
-      .orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC')
-      .getMany();
+    const totalRecords = await events.getMany();
 
-    const eventsMapped = await events.getMany();
+    const eventsMapped = await events.take(limit).skip(offset).getMany();
     eventsMapped.map((event) => {
       event['state'] = status;
     });
