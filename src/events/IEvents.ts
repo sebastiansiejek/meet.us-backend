@@ -1,1 +1,1 @@
-export type IEventStatus = 'PAST' | 'DURING' | 'FUTURE';
+export type IEventState = 'PAST' | 'DURING' | 'FUTURE';

@@ -10,7 +10,7 @@ import { UseGuards } from '@nestjs/common';
 import EventResponse from './dto/event.response';
 import ConnectionArgs from 'src/pagination/types/connection.args';
 import { connectionFromArraySlice } from 'graphql-relay';
-import { IEventStatus } from './IEvents';
+import { IEventState } from './IEvents';
 
 @Resolver(() => Event)
 export class EventsResolver {
@@ -58,7 +58,7 @@ export class EventsResolver {
     @Args() args: ConnectionArgs,
     @Args('query') query: string,
     @Args({ name: 'status', defaultValue: 'DURING', nullable: true })
-    status: IEventStatus,
+    status: IEventState,
   ): Promise<EventResponse> {
     const { limit, offset } = args.pagingParams();
     const { field, sort } = args.orderParams();

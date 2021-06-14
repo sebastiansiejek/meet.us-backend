@@ -6,7 +6,7 @@ import { Event } from './entities/event.entity';
 import { LessThan, Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Cron } from '@nestjs/schedule';
-import { IEventStatus } from './IEvents';
+import { IEventState } from './IEvents';
 
 @Injectable()
 export class EventsService {
@@ -55,7 +55,7 @@ export class EventsService {
     field: string,
     sort: string,
     query: string,
-    status: IEventStatus,
+    status: IEventState,
   ) {
     const currentDate = new Date();
 
