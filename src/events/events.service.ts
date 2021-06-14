@@ -66,8 +66,11 @@ export class EventsService {
         'users',
         'events.user = users.id',
       )
-      .where(archive === false && 'events.startDate > :startDate', {
+      .where(archive === false && 'events.startDate <= :startDate', {
         startDate: currentDate,
+      })
+      .andWhere(archive === false && 'events.endDate >= :endDate', {
+        endDate: currentDate,
       })
       .andWhere(
         '(events.title like  :title or events.description like :description)',
