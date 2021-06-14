@@ -33,9 +33,9 @@ export class EventsResolver {
   @Query(() => EventResponse)
   async events(
     @Args() args: ConnectionArgs,
-    @Args('query') query: string,
-    @Args({ name: 'status', defaultValue: 'DURING', nullable: true })
-    status: IEventState,
+    @Args({ name: 'query', defaultValue: '' }) query: string,
+    @Args({ name: 'state', nullable: true })
+    state: IEventState,
   ): Promise<EventResponse> {
     const { limit, offset } = args.pagingParams();
     const { field, sort } = args.orderParams();
@@ -45,7 +45,7 @@ export class EventsResolver {
       field,
       sort,
       query,
-      status,
+      state,
     );
     const events = records.events;
     const count = records.totalRecords.length;

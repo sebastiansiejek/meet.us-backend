@@ -47,7 +47,7 @@ export class Event {
   @Column({ nullable: false, default: eventType.Party })
   type: eventType;
 
-  @Field()
+  @Field({ nullable: true })
   state: IEventState;
 
   @Field()

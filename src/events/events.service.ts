@@ -33,8 +33,8 @@ export class EventsService {
     offset: number,
     field: string,
     sort: string,
-    query = '',
-    status: IEventState,
+    query: string,
+    state: IEventState,
   ) {
     const currentDate = new Date().toISOString().replace('T', ' ');
 
@@ -52,7 +52,7 @@ export class EventsService {
       )
       .orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC');
 
-    if (status === 'DURING') {
+    if (state === 'DURING') {
       events.andWhere('events.startDate <= :startDate', {
         startDate: currentDate,
       });
@@ -61,13 +61,13 @@ export class EventsService {
       });
     }
 
-    if (status === 'FUTURE') {
+    if (state === 'FUTURE') {
       events.andWhere('events.startDate > :startDate', {
         startDate: currentDate,
       });
     }
 
-    if (status === 'PAST') {
+    if (state === 'PAST') {
       events.andWhere('events.startDate < :startDate', {
         startDate: currentDate,
       });
@@ -77,7 +77,7 @@ export class EventsService {
 
     const eventsMapped = await events.take(limit).skip(offset).getMany();
     eventsMapped.map((event) => {
-      event['state'] = status;
+      event['state'] = state;
     });
 
     return { events: eventsMapped, totalRecords };
