@@ -59,7 +59,7 @@ export class EventsService {
   ) {
     const currentDate = new Date();
 
-    const events = await this.eventsRepository
+    const events = this.eventsRepository
       .createQueryBuilder('events')
       .innerJoinAndMapOne(
         'events.user',
@@ -67,23 +67,35 @@ export class EventsService {
         'users',
         'events.user = users.id',
       )
-      .where(status === 'DURING' && 'events.startDate <= :startDate', {
-        startDate: currentDate,
-      })
-      .andWhere(status === 'DURING' && 'events.endDate >= :endDate', {
-        endDate: currentDate,
-      })
-      .where(status === 'FUTURE' && 'events.startDate > :startDate', {
-        startDate: currentDate,
-      })
       .andWhere(
         '(events.title like  :title or events.description like :description)',
         { title: `%${query}%`, description: `%${query}%` },
       )
       .orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC')
       .take(limit)
-      .skip(offset)
-      .getMany();
+      .skip(offset);
+
+    if (status === 'DURING') {
+      events
+        .where(status === 'DURING' && 'events.startDate <= :startDate', {
+          startDate: currentDate,
+        })
+        .andWhere(status === 'DURING' && 'events.endDate >= :endDate', {
+          endDate: currentDate,
+        });
+    }
+
+    if (status === 'FUTURE') {
+      events.where(status === 'FUTURE' && 'events.startDate > :startDate', {
+        startDate: currentDate,
+      });
+    }
+
+    if (status === 'PAST') {
+      events.where(status === 'PAST' && 'events.startDate < :startDate', {
+        startDate: currentDate,
+      });
+    }
 
     const totalRecords = await this.eventsRepository
       .createQueryBuilder('events')
@@ -100,7 +112,7 @@ export class EventsService {
       .orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC')
       .getMany();
 
-    return { events, totalRecords };
+    return { events: await events.getMany(), totalRecords };
   }
 
   findUserEvents(
