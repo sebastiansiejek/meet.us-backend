@@ -56,6 +56,8 @@ export class EventsService {
     query: string,
     archive: boolean,
   ) {
+    const currentDate = new Date();
+
     const events = await this.eventsRepository
       .createQueryBuilder('events')
       .innerJoinAndMapOne(
@@ -64,14 +66,16 @@ export class EventsService {
         'users',
         'events.user = users.id',
       )
-      .where('isArchive = :isArchive', { isArchive: archive })
+      .where(archive === false && 'events.startDate > :startDate', {
+        startDate: currentDate,
+      })
       .andWhere(
         '(events.title like  :title or events.description like :description)',
         { title: `%${query}%`, description: `%${query}%` },
       )
+      .orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC')
       .take(limit)
       .skip(offset)
-      .orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC')
       .getMany();
 
     const totalRecords = await this.eventsRepository
