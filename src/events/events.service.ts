@@ -73,6 +73,9 @@ export class EventsService {
       .andWhere(status === 'DURING' && 'events.endDate >= :endDate', {
         endDate: currentDate,
       })
+      .where(status === 'FUTURE' && 'events.startDate > :startDate', {
+        startDate: currentDate,
+      })
       .andWhere(
         '(events.title like  :title or events.description like :description)',
         { title: `%${query}%`, description: `%${query}%` },
