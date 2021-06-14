@@ -25,36 +25,13 @@ export class EventsResolver {
     return this.eventsService.create(createEventInput, user);
   }
 
-  @Query(() => EventResponse)
-  async events(
-    @Args() args: ConnectionArgs,
-    @Args({ name: 'isArchive', defaultValue: false, nullable: true })
-    isArchive: boolean,
-  ): Promise<EventResponse> {
-    const { limit, offset } = args.pagingParams();
-    const { field, sort } = args.orderParams();
-    const [events, count] = await this.eventsService.findAll(
-      limit,
-      offset,
-      field,
-      sort,
-      isArchive,
-    );
-    const page = connectionFromArraySlice(events, args, {
-      arrayLength: count,
-      sliceStart: offset || 0,
-    });
-
-    return { page, pageData: { count, limit, offset } };
-  }
-
   @Query(() => Event, { name: 'event' })
   async findOne(@Args('id') eventId: string) {
     return this.eventsService.findOne(eventId);
   }
 
   @Query(() => EventResponse)
-  async searchBar(
+  async events(
     @Args() args: ConnectionArgs,
     @Args('query') query: string,
     @Args({ name: 'status', defaultValue: 'DURING', nullable: true })
@@ -62,7 +39,7 @@ export class EventsResolver {
   ): Promise<EventResponse> {
     const { limit, offset } = args.pagingParams();
     const { field, sort } = args.orderParams();
-    const records = await this.eventsService.searchBar(
+    const records = await this.eventsService.findAll(
       limit,
       offset,
       field,

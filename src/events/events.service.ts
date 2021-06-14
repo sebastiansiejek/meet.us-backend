@@ -27,26 +27,6 @@ export class EventsService {
     });
   }
 
-  findAll(
-    limit: number,
-    offset: number,
-    field: string,
-    sort: string,
-    archive: boolean,
-  ): Promise<[Event[], number]> {
-    return this.eventsRepository.findAndCount({
-      relations: ['user'],
-      take: limit,
-      skip: offset,
-      order: {
-        [field]: sort,
-      },
-      where: {
-        isArchive: archive,
-      },
-    });
-  }
-
   findOne(eventId: string) {
     return this.eventsRepository.findOne({
       relations: ['user'],
@@ -54,7 +34,7 @@ export class EventsService {
     });
   }
 
-  async searchBar(
+  async findAll(
     limit: number,
     offset: number,
     field: string,
