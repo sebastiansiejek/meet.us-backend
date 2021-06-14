@@ -3,7 +3,12 @@ import { CreateEventInput } from './dto/create-event.input';
 import { UpdateEventInput } from './dto/update-event.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Event } from './entities/event.entity';
-import { LessThan, Repository } from 'typeorm';
+import {
+  LessThan,
+  LessThanOrEqual,
+  MoreThanOrEqual,
+  Repository,
+} from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Cron } from '@nestjs/schedule';
 import { IEventState } from './IEvents';
@@ -57,7 +62,7 @@ export class EventsService {
     query: string,
     status: IEventState,
   ) {
-    const currentDate = new Date();
+    const currentDate = new Date().toISOString().replace('T', ' ');
 
     const events = this.eventsRepository
       .createQueryBuilder('events')
@@ -76,13 +81,10 @@ export class EventsService {
       .skip(offset);
 
     if (status === 'DURING') {
-      events
-        .where(status === 'DURING' && 'events.startDate <= :startDate', {
-          startDate: currentDate,
-        })
-        .andWhere(status === 'DURING' && 'events.endDate >= :endDate', {
-          endDate: currentDate,
-        });
+      events.where({
+        startDate: LessThanOrEqual(currentDate),
+        endDate: MoreThanOrEqual(currentDate),
+      });
     }
 
     if (status === 'FUTURE') {
@@ -112,7 +114,12 @@ export class EventsService {
       .orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC')
       .getMany();
 
-    return { events: await events.getMany(), totalRecords };
+    const eventsMapped = await events.getMany();
+    eventsMapped.map((event) => {
+      event['state'] = status;
+    });
+
+    return { events: eventsMapped, totalRecords };
   }
 
   findUserEvents(
