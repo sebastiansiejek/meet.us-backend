@@ -1,5 +1,5 @@
 import { InputType, Field, Int } from '@nestjs/graphql';
-import { eventType, state } from '../entities/event.entity';
+import { eventType } from '../entities/event.entity';
 
 @InputType()
 export class CreateEventInput {
@@ -13,11 +13,6 @@ export class CreateEventInput {
     defaultValue: eventType.Party,
   })
   type: eventType;
-
-  @Field({
-    defaultValue: state.Draft,
-  })
-  state: state;
 
   @Field()
   startDate: Date;
