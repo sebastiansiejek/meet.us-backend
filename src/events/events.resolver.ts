@@ -10,6 +10,7 @@ import { UseGuards } from '@nestjs/common';
 import EventResponse from './dto/event.response';
 import ConnectionArgs from 'src/pagination/types/connection.args';
 import { connectionFromArraySlice } from 'graphql-relay';
+import { IEventState } from './IEvents';
 
 @Resolver(() => Event)
 export class EventsResolver {
@@ -24,79 +25,32 @@ export class EventsResolver {
     return this.eventsService.create(createEventInput, user);
   }
 
-  @Query(() => EventResponse)
-  async events(
-    @Args() args: ConnectionArgs,
-    @Args({ name: 'isArchive', defaultValue: false, nullable: true })
-    isArchive: boolean,
-  ): Promise<EventResponse> {
-    const { limit, offset } = args.pagingParams();
-    const { field, sort } = args.orderParams();
-    const [events, count] = await this.eventsService.findAll(
-      limit,
-      offset,
-      field,
-      sort,
-      isArchive,
-    );
-    const page = connectionFromArraySlice(events, args, {
-      arrayLength: count,
-      sliceStart: offset || 0,
-    });
-
-    return { page, pageData: { count, limit, offset } };
-  }
-
   @Query(() => Event, { name: 'event' })
   async findOne(@Args('id') eventId: string) {
     return this.eventsService.findOne(eventId);
   }
 
   @Query(() => EventResponse)
-  async searchBar(
+  async events(
     @Args() args: ConnectionArgs,
-    @Args('query') query: string,
-    @Args({ name: 'isArchive', defaultValue: false, nullable: true })
-    isArchive: boolean,
+    @Args({ name: 'query', defaultValue: '' }) query: string,
+    @Args({ name: 'state', nullable: true })
+    state: IEventState,
+    @Args({ name: 'userId', nullable: true }) userId: string,
   ): Promise<EventResponse> {
     const { limit, offset } = args.pagingParams();
     const { field, sort } = args.orderParams();
-    const records = await this.eventsService.searchBar(
+    const records = await this.eventsService.findAll(
       limit,
       offset,
       field,
       sort,
       query,
-      isArchive,
+      state,
+      userId,
     );
     const events = records.events;
     const count = records.totalRecords.length;
-    const page = connectionFromArraySlice(events, args, {
-      arrayLength: count,
-      sliceStart: offset || 0,
-    });
-
-    return { page, pageData: { count, limit, offset } };
-  }
-
-  @Query(() => EventResponse)
-  @UseGuards(GqlAuthGuard)
-  async userEvents(
-    @CurrentUser() user: User,
-    @Args() args: ConnectionArgs,
-    @Args({ name: 'isArchive', defaultValue: false, nullable: true })
-    isArchive: boolean,
-  ): Promise<EventResponse> {
-    const { limit, offset } = args.pagingParams();
-    const { field, sort } = args.orderParams();
-    const [events, count] = await this.eventsService.findUserEvents(
-      limit,
-      offset,
-      field,
-      sort,
-      user,
-      isArchive,
-    );
     const page = connectionFromArraySlice(events, args, {
       arrayLength: count,
       sliceStart: offset || 0,

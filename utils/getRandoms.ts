@@ -1,4 +1,4 @@
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 
 export const getRandomKeyFromObject = (someObject: any): any =>
   Object.keys(someObject)[

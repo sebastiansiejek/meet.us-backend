@@ -9,6 +9,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { IEventState } from '../IEvents';
 
 export enum eventType {
   Sport,
@@ -16,18 +17,8 @@ export enum eventType {
   Social,
 }
 
-export enum state {
-  Draft,
-  Active,
-  Achieved,
-}
-
 registerEnumType(eventType, {
   name: 'eventType',
-});
-
-registerEnumType(state, {
-  name: 'state',
 });
 
 @ObjectType()
@@ -56,9 +47,8 @@ export class Event {
   @Column({ nullable: false, default: eventType.Party })
   type: eventType;
 
-  @Field()
-  @Column({ nullable: false, default: state.Draft })
-  state: state;
+  @Field({ nullable: true })
+  state: IEventState;
 
   @Field()
   @Column({ nullable: false })
