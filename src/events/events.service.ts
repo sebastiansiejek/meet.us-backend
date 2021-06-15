@@ -35,6 +35,7 @@ export class EventsService {
     sort: string,
     query: string,
     state: IEventState,
+    userId: string,
   ) {
     const currentDate = new Date().toISOString().replace('T', ' ');
 
@@ -73,6 +74,12 @@ export class EventsService {
       });
     }
 
+    if (userId) {
+      events.andWhere('events.user = :userId', {
+        userId,
+      });
+    }
+
     const totalRecords = await events.getMany();
 
     const eventsMapped = await events.take(limit).skip(offset).getMany();
@@ -81,30 +88,6 @@ export class EventsService {
     });
 
     return { events: eventsMapped, totalRecords };
-  }
-
-  findUserEvents(
-    limit: number,
-    offset: number,
-    field: string,
-    sort: string,
-    user: User,
-    archive: boolean,
-  ) {
-    return this.eventsRepository.findAndCount({
-      relations: ['user'],
-      where: {
-        isArchive: archive,
-        user: {
-          id: user.id,
-        },
-      },
-      take: limit,
-      skip: offset,
-      order: {
-        [field]: sort,
-      },
-    });
   }
 
   async update(eventId: string, updateEventInput: UpdateEventInput) {
