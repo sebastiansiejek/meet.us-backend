@@ -54,12 +54,13 @@ export class EventsService {
       .orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC');
 
     if (state === 'DURING') {
-      events.andWhere('events.startDate <= :startDate', {
-        startDate: currentDate,
-      });
-      events.andWhere('events.endDate >= :endDate', {
-        endDate: currentDate,
-      });
+      events
+        .andWhere('events.startDate <= :startDate', {
+          startDate: currentDate,
+        })
+        .andWhere('events.endDate >= :endDate', {
+          endDate: currentDate,
+        });
     }
 
     if (state === 'FUTURE') {
