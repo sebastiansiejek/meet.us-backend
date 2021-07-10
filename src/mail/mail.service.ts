@@ -23,4 +23,16 @@ export class MailService {
       },
     });
   }
+  async sendUserResetPassword(email: string, token: string) {
+    await this.mailerService.sendMail({
+      to: email,
+      subject: await this.i18n.translate('emails.RESET_PASSWORD.SUBJECT'),
+      template: './reset-password',
+      context: {
+        token: token,
+        email: email,
+        hostDomain: process.env.HOST_DOMAIN,
+      },
+    });
+  }
 }

@@ -3,6 +3,7 @@
         "SUBJECT": "Thank you for joining to meet.us!"
     },
     "RESET_PASSWORD": {
+        "SUBJECT": "Reset your password",
         "RESET_PASSWORD_MAIL": "Password reset mail has been sent successfully"
     }
 }
