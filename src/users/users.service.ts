@@ -9,7 +9,6 @@ import { TokenService } from './token/token.service';
 import { MailService } from 'src/mail/mail.service';
 import { ActivateUserInput } from './dto/activate-user.input';
 import { I18nService } from 'nestjs-i18n';
-import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class UsersService {
@@ -99,28 +98,19 @@ export class UsersService {
         await this.i18n.translate('errors.ERROR.INVALID_EMAIL'),
       );
     }
-    const token = this.createToken(user);
+    const token = this.tokenService.createToken(user);
 
     user.resetPasswordToken = token;
     user.resetPasswordExpires = new Date(new Date().getTime() + 20 * 60 * 1000);
     this.usersRepository.save(user);
     //TODO send mail with token and validate password reset
 
+    this.mailService.sendUserResetPassword(user.email, user.resetPasswordToken);
+
     return {
       message: await this.i18n.translate(
         'emails.RESET_PASSWORD.RESET_PASSWORD_MAIL',
       ),
     };
-  }
-
-  private createToken(user: User) {
-    return jwt.sign(
-      {
-        id: user.id,
-        email: user.email,
-      },
-      process.env.JWT_RESET_PASSWORD_SECRET,
-      { expiresIn: '20m' },
-    );
   }
 }

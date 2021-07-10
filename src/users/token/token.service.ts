@@ -1,5 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import * as crypto from 'crypto';
+import { User } from '../entities/user.entity';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class TokenService {
@@ -57,5 +59,16 @@ export class TokenService {
     } else {
       return true;
     }
+  }
+
+  createToken(user: User) {
+    return jwt.sign(
+      {
+        id: user.id,
+        email: user.email,
+      },
+      process.env.JWT_RESET_PASSWORD_SECRET,
+      { expiresIn: '20m' },
+    );
   }
 }
