@@ -1,6 +1,7 @@
 {
     "ERROR": {
         "INVALID_EMAIL": "Invalid email",
-        "INVALID_PASSWORD": "Invalid password"
+        "INVALID_PASSWORD": "Invalid password",
+        "USER_NOT_ACTIVE": "User not activated"
     }
 }
