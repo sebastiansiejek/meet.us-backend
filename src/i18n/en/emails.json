@@ -1,5 +1,8 @@
 {
     "REGISTER_CONFIRMATION": {
         "SUBJECT": "Thank you for joining to meet.us!"
+    },
+    "RESET_PASSWORD": {
+        "RESET_PASSWORD_MAIL": "Password reset mail has been sent successfully"
     }
 }
