@@ -8,6 +8,8 @@ import * as bcrypt from 'bcrypt';
 import { TokenService } from './token/token.service';
 import { MailService } from 'src/mail/mail.service';
 import { ActivateUserInput } from './dto/activate-user.input';
+import { I18nService } from 'nestjs-i18n';
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class UsersService {
@@ -16,6 +18,7 @@ export class UsersService {
     private readonly usersRepository: Repository<User>,
     private readonly tokenService: TokenService,
     private readonly mailService: MailService,
+    private readonly i18n: I18nService,
   ) {}
 
   async create(createUserInput: CreateUserInput) {
@@ -87,5 +90,37 @@ export class UsersService {
     }
 
     return await this.usersRepository.save(user);
+  }
+
+  async resetPassword(email: string): Promise<{ message: string }> {
+    const user = await this.findByMail(email);
+    if (!user) {
+      throw new BadRequestException(
+        await this.i18n.translate('errors.ERROR.INVALID_EMAIL'),
+      );
+    }
+    const token = this.createToken(user);
+
+    user.resetPasswordToken = token;
+    user.resetPasswordExpires = new Date(new Date().getTime() + 20 * 60 * 1000);
+    this.usersRepository.save(user);
+    //TODO send mail with token and validate password reset
+
+    return {
+      message: await this.i18n.translate(
+        'emails.RESET_PASSWORD.RESET_PASSWORD_MAIL',
+      ),
+    };
+  }
+
+  private createToken(user: User) {
+    return jwt.sign(
+      {
+        id: user.id,
+        email: user.email,
+      },
+      process.env.JWT_RESET_PASSWORD_SECRET,
+      { expiresIn: '20m' },
+    );
   }
 }
