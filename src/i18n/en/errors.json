@@ -2,6 +2,8 @@
     "ERROR": {
         "INVALID_EMAIL": "Invalid email",
         "INVALID_PASSWORD": "Invalid password",
-        "USER_NOT_ACTIVE": "User not activated"
+        "USER_NOT_ACTIVE": "User not activated",
+        "TOKEN_NOT_FOUND": "Token not found",
+        "PASSWORDS_NOT_MATCH": "Passwrod do not match"
     }
 }

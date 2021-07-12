@@ -18,6 +18,7 @@ import { connectionFromArraySlice } from 'graphql-relay';
 import ConnectionArgs from 'src/pagination/types/connection.args';
 import UserResponse from './dto/user.response';
 import { ResetPasswordInput } from './dto/reset-password.input';
+import { ResetPasswordTokenInput } from './dto/reset-password-token.input';
 
 @ObjectType()
 export class ResetResponse {
@@ -90,9 +91,17 @@ export class UsersResolver {
   }
 
   @Mutation(() => ResetResponse)
-  resetEmail(
+  resetPassword(
     @Args('resetPasswordInput') resetPasswordInput: ResetPasswordInput,
   ) {
     return this.usersService.resetPassword(resetPasswordInput.email);
+  }
+
+  @Mutation(() => ResetResponse)
+  confirmResetPassword(
+    @Args('confirmResetPassword')
+    resetPasswordTokenInput: ResetPasswordTokenInput,
+  ) {
+    return this.usersService.resetPasswordToken(resetPasswordTokenInput);
   }
 }
