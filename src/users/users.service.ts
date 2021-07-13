@@ -118,7 +118,7 @@ export class UsersService {
     resetPasswordToken: ResetPasswordTokenInput,
   ): Promise<{ message: string }> {
     const user = await this.usersRepository.findOne({
-      where: { token: resetPasswordToken.token },
+      where: { resetPasswordToken: resetPasswordToken.token },
     });
 
     if (!user) {
@@ -126,29 +126,35 @@ export class UsersService {
         await this.i18n.translate('errors.ERROR.TOKEN_NOT_FOUND'),
       );
     }
+    if (user.resetPasswordExpires < new Date()) {
+      throw new BadRequestException(
+        await this.i18n.translate('errors.ERROR.EXPIRED_TOKEN'),
+      );
+    }
+
     const salt = await bcrypt.genSalt(10);
-
-    const newPassword = await bcrypt.hash(resetPasswordToken.newPassword, salt);
-
     const confirmPassword = await bcrypt.hash(
       resetPasswordToken.confirmPassword,
       salt,
     );
 
-    if (!(await bcrypt.compare(newPassword, confirmPassword))) {
+    if (
+      !(await bcrypt.compare(resetPasswordToken.newPassword, confirmPassword))
+    ) {
       throw new BadRequestException(
         await this.i18n.translate('errors.ERROR.PASSWORDS_NOT_MATCH'),
       );
     }
 
-    user.password = newPassword;
-    this.usersRepository.save(user);
+    user.password = confirmPassword;
+    user.resetPasswordToken = null;
+    user.resetPasswordExpires = null;
 
-    //TODO validate password innput
+    this.usersRepository.save(user);
 
     return {
       message: await this.i18n.translate(
-        'emails.RESET_PASSWORD.RESET_PASSWORD_MAIL',
+        'errors.ERROR.PASSWROD_RESET_SUCCESSFULY',
       ),
     };
   }
