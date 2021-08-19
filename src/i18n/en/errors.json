@@ -3,6 +3,7 @@
         "INVALID_EMAIL": "Invalid email",
         "INVALID_PASSWORD": "Invalid password",
         "USER_NOT_ACTIVE": "User not activated",
+        "USER_NOT_FOUND": "User not found",
         "TOKEN_NOT_FOUND": "Token not found",
         "EXPIRED_TOKEN": "Expired token",
         "PASSWORDS_NOT_MATCH": "Password do not match",
