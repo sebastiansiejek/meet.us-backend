@@ -158,4 +158,11 @@ export class UsersService {
       ),
     };
   }
+  async saveRefreshToken(userId: string, token: any, date: Date) {
+    const user = await this.findOne(userId);
+    user.refreshToken = token.encryptedToken;
+    user.refreshTokenExpires = date;
+    this.usersRepository.save(user);
+    return token.raw;
+  }
 }

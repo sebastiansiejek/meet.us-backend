@@ -39,15 +39,21 @@ export class User {
   @Column({ nullable: false })
   password: string;
 
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-
   @Column({ nullable: true })
   resetPasswordToken: string;
 
   @Column({ nullable: true })
   resetPasswordExpires: Date;
+
+  @Column({ nullable: true })
+  refreshToken: string;
+
+  @Column({ nullable: true })
+  refreshTokenExpires: Date;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }
