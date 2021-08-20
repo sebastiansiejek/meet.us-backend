@@ -3,7 +3,7 @@
 ## Demo
 https://meet-us-frontend-inz.herokuapp.com
 
-### App support
+### App supports
 * GraphQL
 * Seeders based on faker
 * Mailer
