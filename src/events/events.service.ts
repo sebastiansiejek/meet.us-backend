@@ -36,6 +36,9 @@ export class EventsService {
     query: string,
     state: IEventState,
     userId: string,
+    distance: number,
+    userLat: number,
+    userLong: number,
   ) {
     const currentDate = new Date().toISOString().replace('T', ' ');
 
@@ -52,6 +55,33 @@ export class EventsService {
         { title: `%${query}%`, description: `%${query}%` },
       )
       .orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC');
+
+    if (distance !== null && userLat !== null && userLong !== null) {
+      // console.log('test');
+      // console.log(distance);
+      // console.log(userLat);
+      // console.log(userLong);
+      // console.log(events);
+      // events.addSelect(`
+      //         (ATAN(
+      //           SQRT(
+      //               POW(COS(RADIANS(${userLat})) * SIN(RADIANS(${userLong}) - RADIANS(-99.165660)), 2) +
+      //               POW(COS(RADIANS(19.391124)) * SIN(RADIANS(${userLat})) -
+      //              SIN(RADIANS(19.391124)) * cos(RADIANS(${userLat})) * cos(RADIANS(${userLong}) - RADIANS(-99.165660)), 2)
+      //           )
+      //           ,
+      //           SIN(RADIANS(19.391124)) *
+      //           SIN(RADIANS(${userLat})) +
+      //           COS(RADIANS(19.391124)) *
+      //           COS(RADIANS(${userLat})) *
+      //           COS(RADIANS(${userLong}) - RADIANS(-99.165660))
+      //         ) * 6371) as event_distance
+      // `);
+      // .where({ username: 'breckhouse0' })
+      // events.addSelect(['100 as "distance"'])
+      // 3959 * acos( cos( radians(6.414478) ) * cos( radians( lat ) ) * cos( radians( lng ) - radians(12.466646) ) + sin( radians(6.414478) ) * sin( radians( lat ) ) ) ) AS distance
+      // .addSelect('DATE_DIFF(CURRENT_DATE(), employee.start_date) as "daysInEnterprise"')
+    }
 
     if (state === 'DURING') {
       events

@@ -1,4 +1,10 @@
-import { ObjectType, Field, registerEnumType, Int } from '@nestjs/graphql';
+import {
+  ObjectType,
+  Field,
+  registerEnumType,
+  Int,
+  Float,
+} from '@nestjs/graphql';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
@@ -61,6 +67,17 @@ export class Event {
   @Field(() => Int, { nullable: true })
   @Column({ nullable: true })
   maxParticipants: number;
+
+  @Field()
+  @Column({ type: 'decimal', precision: 10, scale: 6, default: 0 })
+  lat: number;
+
+  @Field()
+  @Column({ type: 'decimal', precision: 10, scale: 6, default: 0 })
+  long: number;
+
+  @Field(() => Float, { nullable: true })
+  distance: number;
 
   @Field()
   @Column({ default: false })
