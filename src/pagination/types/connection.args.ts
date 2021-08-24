@@ -27,8 +27,6 @@ function checkPagingSanity(args: ConnectionArgs): PagingMeta {
   if (last && !before) {
     throw new Error("When paging backwards, a 'before' argument is required!");
   }
-
-  // eslint-disable-next-line no-nested-ternary
   return isForwardPaging
     ? { pagingType: 'forward', after, first }
     : isBackwardPaging
@@ -39,6 +37,14 @@ function checkPagingSanity(args: ConnectionArgs): PagingMeta {
 const getId = (cursor: ConnectionCursor) =>
   parseInt(fromGlobalId(cursor).id, 10);
 const nextId = (cursor: ConnectionCursor) => getId(cursor) + 1;
+
+function getDistanceParameters(args: ConnectionArgs) {
+  let distance = args.distance;
+  let userLat = args.userLat;
+  let userLong = args.userLong;
+  return { distance, userLat, userLong };
+}
+
 
 function getOrderParameters(args: ConnectionArgs) {
   let field: string;
@@ -103,10 +109,23 @@ export default class ConnectionArgs implements ConnectionArguments {
   @Field({ nullable: true, description: 'Orderby sort' })
   public orderSort?: string;
 
+  @Field({ nullable: true, description: 'Distance' })
+  public distance?: number;
+
+  @Field({ nullable: true, description: 'User latitude' })
+  public userLat?: number;
+
+  @Field({ nullable: true, description: 'User longitude' })
+  public userLong?: number;
+
   pagingParams() {
     return getPagingParameters(this);
   }
   orderParams() {
     return getOrderParameters(this);
   }
+  distanceParams() {
+    return getDistanceParameters(this);
+  }
 }
+
