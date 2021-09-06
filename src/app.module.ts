@@ -1,3 +1,4 @@
+import { Upload } from './scalar/upload';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
@@ -40,6 +41,7 @@ import { ImagesModule } from './images/images.module';
       autoSchemaFile: true,
       sortSchema: true,
     }),
+    Upload,
     UsersModule,
     MailModule,
     AuthModule,

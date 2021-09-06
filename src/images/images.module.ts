@@ -5,6 +5,7 @@ import { ImagesService } from './images.service';
 import { ImagesController } from './images.controller';
 import { UsersModule } from 'src/users/users.module';
 import { EventsModule } from 'src/events/events.module';
+import { ImagesResolver } from './images.resolver';
 
 @Module({
   imports: [
@@ -12,7 +13,7 @@ import { EventsModule } from 'src/events/events.module';
     forwardRef(() => UsersModule),
     forwardRef(() => EventsModule),
   ],
-  providers: [ImagesService],
+  providers: [ImagesService, ImagesResolver],
   controllers: [ImagesController],
   exports: [ImagesService],
 })
