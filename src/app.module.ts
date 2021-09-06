@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { EventsModule } from './events/events.module';
 import * as path from 'path';
 import { QueryResolver } from './i18n/QueryResolver';
+import { ParticipantsModule } from './participants/participants.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { QueryResolver } from './i18n/QueryResolver';
     MailModule,
     AuthModule,
     EventsModule,
+    ParticipantsModule,
   ],
 })
 export class AppModule {}
