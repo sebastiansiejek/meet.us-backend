@@ -1,5 +1,23 @@
 # Meet us
 
+## Demo
+https://meet-us-frontend-inz.herokuapp.com
+
+### App support
+* GraphQL
+* Seeders based on faker
+* Mailer
+* JWT tokens for authorisation requests to api
+* Typeorm for MySQL
+* Password encryption
+
+### Dev Tools
+* [pretter](https://github.com/prettier/prettier)
+* [eslint](https://github.com/eslint/eslint)
+* [husky](https://github.com/typicode/husky)
+* [lint-staged](https://github.com/conventional-changelog/commitlint)
+* [commitlint](https://commitlint.js.org/#/)
+
 ## Run in docker
 ```bash
 $ docker compose up -d

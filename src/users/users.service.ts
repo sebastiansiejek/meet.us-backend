@@ -32,8 +32,19 @@ export class UsersService {
 
     return user;
   }
-  findAll() {
-    return this.usersRepository.find();
+  findAll(
+    limit: number,
+    offset: number,
+    field: string,
+    sort: string,
+  ): Promise<[User[], number]> {
+    return this.usersRepository.findAndCount({
+      take: limit,
+      skip: offset,
+      order: {
+        [field]: sort,
+      },
+    });
   }
 
   findOne(id: string) {

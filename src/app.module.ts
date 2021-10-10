@@ -10,6 +10,7 @@ import { EventsModule } from './events/events.module';
 import * as path from 'path';
 import { QueryResolver } from './i18n/QueryResolver';
 import { ParticipantsModule } from './participants/participants.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { ParticipantsModule } from './participants/participants.module';
     AuthModule,
     EventsModule,
     ParticipantsModule,
+    ScheduleModule.forRoot(),
   ],
 })
 export class AppModule {}

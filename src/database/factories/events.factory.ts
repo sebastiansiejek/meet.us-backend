@@ -14,7 +14,6 @@ define(Event, (faker: typeof Faker) => {
   event.title = faker.name.title();
   event.description = faker.lorem.sentence();
   event.type = getRandomNumberBetween(0, 1);
-  event.state = getRandomNumberBetween(0, 2);
 
   const today = new Date();
   const dates = [

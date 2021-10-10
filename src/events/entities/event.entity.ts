@@ -1,4 +1,4 @@
-import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
+import { ObjectType, Field, registerEnumType, Int } from '@nestjs/graphql';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
@@ -9,24 +9,16 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { IEventState } from '../IEvents';
 
 export enum eventType {
   Sport,
   Party,
-}
-
-export enum state {
-  Draft,
-  Active,
-  Achieved,
+  Social,
 }
 
 registerEnumType(eventType, {
   name: 'eventType',
-});
-
-registerEnumType(state, {
-  name: 'state',
 });
 
 @ObjectType()
@@ -39,7 +31,7 @@ export class Event {
   id: string;
 
   @Field()
-  @ManyToOne(() => User, { nullable: false })
+  @ManyToOne(() => User, { nullable: false, onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'user', referencedColumnName: 'id' })
   user: User;
 
@@ -55,9 +47,8 @@ export class Event {
   @Column({ nullable: false, default: eventType.Party })
   type: eventType;
 
-  @Field()
-  @Column({ nullable: false, default: state.Draft })
-  state: state;
+  @Field({ nullable: true })
+  state: IEventState;
 
   @Field()
   @Column({ nullable: false })
@@ -67,9 +58,13 @@ export class Event {
   @Column({ nullable: false })
   endDate: Date;
 
-  @Field({ nullable: true })
+  @Field(() => Int, { nullable: true })
   @Column({ nullable: true })
   maxParticipants: number;
+
+  @Field()
+  @Column({ default: false })
+  isArchive: boolean;
 
   @CreateDateColumn()
   createdAt: Date;

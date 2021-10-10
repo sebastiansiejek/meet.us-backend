@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Event, eventType, state } from './entities/event.entity';
+import { Event, eventType } from './entities/event.entity';
 import { EventsService } from './events.service';
 import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -32,7 +32,6 @@ describe('EventsService', () => {
       eventId: '',
       title: '',
       description: '',
-      state: state.Draft,
       type: eventType.Sport,
       createdAt: new Date(),
       updatedAt: new Date(),

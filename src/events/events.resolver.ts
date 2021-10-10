@@ -7,6 +7,10 @@ import { CurrentUser } from 'src/auth/current-user.decorator';
 import { User } from 'src/users/entities/user.entity';
 import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
 import { UseGuards } from '@nestjs/common';
+import EventResponse from './dto/event.response';
+import ConnectionArgs from 'src/pagination/types/connection.args';
+import { connectionFromArraySlice } from 'graphql-relay';
+import { IEventState } from './IEvents';
 
 @Resolver(() => Event)
 export class EventsResolver {
@@ -21,25 +25,38 @@ export class EventsResolver {
     return this.eventsService.create(createEventInput, user);
   }
 
-  @Query(() => [Event, User], { name: 'events' })
-  async findAll() {
-    return this.eventsService.findAll();
-  }
-
   @Query(() => Event, { name: 'event' })
   async findOne(@Args('id') eventId: string) {
     return this.eventsService.findOne(eventId);
   }
 
-  @Query(() => [Event], { name: 'searchBar' })
-  async searchBar(@Args('query') query: string) {
-    return this.eventsService.searchBar(query);
-  }
+  @Query(() => EventResponse)
+  async events(
+    @Args() args: ConnectionArgs,
+    @Args({ name: 'query', defaultValue: '' }) query: string,
+    @Args({ name: 'state', nullable: true })
+    state: IEventState,
+    @Args({ name: 'userId', nullable: true }) userId: string,
+  ): Promise<EventResponse> {
+    const { limit, offset } = args.pagingParams();
+    const { field, sort } = args.orderParams();
+    const records = await this.eventsService.findAll(
+      limit,
+      offset,
+      field,
+      sort,
+      query,
+      state,
+      userId,
+    );
+    const events = records.events;
+    const count = records.totalRecords.length;
+    const page = connectionFromArraySlice(events, args, {
+      arrayLength: count,
+      sliceStart: offset || 0,
+    });
 
-  @Query(() => [Event], { name: 'findUserEvents' })
-  @UseGuards(GqlAuthGuard)
-  findUserEvents(@CurrentUser() user: User) {
-    return this.eventsService.findUserEvents(user);
+    return { page, pageData: { count, limit, offset } };
   }
 
   @Mutation(() => Event)
