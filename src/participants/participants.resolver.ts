@@ -3,6 +3,7 @@ import { Args, Mutation, Resolver } from '@nestjs/graphql';
 import { CurrentUser } from 'src/auth/current-user.decorator';
 import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
 import { User } from 'src/users/entities/user.entity';
+import { ParticipantResponse } from './dto/participant-response.input';
 import { ParticipantUpdate } from './dto/participant-update.input';
 import { Participant } from './entities/participant.entity';
 import { ParticipantsService } from './participants.service';
@@ -13,20 +14,9 @@ export class ParticipantsResolver {
 
     @Mutation(() => Participant)
     @UseGuards(GqlAuthGuard)
-    interested(@CurrentUser() user: User, @Args('interested') participantUpdate: ParticipantUpdate) {
-        return this.participantService.interested(participantUpdate.eventId, user.id, participantUpdate.type);
+    participateInEvent(@CurrentUser() user: User, @Args('participateInEvent') participantUpdate: ParticipantUpdate): Promise<ParticipantResponse> {
+        return this.participantService.participateInEvent(participantUpdate.eventId, user, participantUpdate.type);
     }
   
-    @Mutation(() => Participant)
-    @UseGuards(GqlAuthGuard)
-    going(@CurrentUser() user: User, @Args('interested') participantUpdate: ParticipantUpdate) {
-        return this.participantService.interested(participantUpdate.eventId, user.id, participantUpdate.type);
-    }
-  
-    @Mutation(() => Participant)
-    @UseGuards(GqlAuthGuard)
-    canceled(@CurrentUser() user: User, @Args('interested') participantUpdate: ParticipantUpdate) {
-        return this.participantService.interested(participantUpdate.eventId, user.id, participantUpdate.type);
-    }
 
 }
