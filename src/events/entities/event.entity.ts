@@ -1,10 +1,4 @@
-import {
-  ObjectType,
-  Field,
-  registerEnumType,
-  Int,
-  Float,
-} from '@nestjs/graphql';
+import { ObjectType, Field, registerEnumType, Int } from '@nestjs/graphql';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
@@ -76,8 +70,8 @@ export class Event {
   @Column({ type: 'decimal', precision: 10, scale: 6, default: 0 })
   long: number;
 
-  @Field(() => Float, { nullable: true })
-  distance: number;
+  @Field()
+  eventDistance: number;
 
   @Field()
   @Column({ default: false })
