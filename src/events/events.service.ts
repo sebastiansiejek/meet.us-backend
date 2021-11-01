@@ -36,6 +36,9 @@ export class EventsService {
     query: string,
     state: IEventState,
     userId: string,
+    distance: number,
+    userLat: number,
+    userLong: number,
   ) {
     const currentDate = new Date().toISOString().replace('T', ' ');
 
@@ -52,6 +55,17 @@ export class EventsService {
         { title: `%${query}%`, description: `%${query}%` },
       )
       .orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC');
+
+    if (distance !== null && userLat !== null && userLong !== null) {
+      console.log('test');
+      console.log(userLat);
+      console.log(userLong);
+      console.log(distance);
+      //TODO  GET DISTANCE
+      events.select(
+        `( 6371 * acos( cos( radians(${userLat}) ) * cos( radians( events.lat ) ) * cos( radians( events.long ) - radians(${userLong}) ) + sin( radians(${userLat}) )* sin( radians( events.lat ) ) ) ) AS event_distance `,
+      );
+    }
 
     if (state === 'DURING') {
       events
@@ -84,8 +98,10 @@ export class EventsService {
     const totalRecords = await events.getMany();
 
     const eventsMapped = await events.take(limit).skip(offset).getMany();
+
     eventsMapped.map((event) => {
-      event['state'] = state;
+      console.log(event);
+      event.state = state;
     });
 
     return { events: eventsMapped, totalRecords };

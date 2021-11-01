@@ -63,6 +63,17 @@ export class Event {
   maxParticipants: number;
 
   @Field()
+  @Column({ type: 'decimal', precision: 10, scale: 6, default: 0 })
+  lat: number;
+
+  @Field()
+  @Column({ type: 'decimal', precision: 10, scale: 6, default: 0 })
+  long: number;
+
+  @Field()
+  eventDistance: number;
+
+  @Field()
   @Column({ default: false })
   isArchive: boolean;
 
