@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
-import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
-import * as crypto from 'crypto';
-import { User } from '../users/entities/user.entity';
 import { I18nService } from 'nestjs-i18n';
+import { JwtService } from '@nestjs/jwt';
+import { User } from '../users/entities/user.entity';
+import { UsersService } from 'src/users/users.service';
+import { compare, genSalt, hash } from 'bcrypt';
+import { randomBytes } from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -23,13 +23,13 @@ export class AuthService {
       );
     }
 
-    if (!(await bcrypt.compare(password, user.password))) {
+    if (!(await compare(password, user.password))) {
       throw new BadRequestException(
         await this.i18n.translate('errors.ERROR.INVALID_PASSWORD'),
       );
     }
 
-    if (user && (await bcrypt.compare(password, user.password))) {
+    if (user && (await compare(password, user.password))) {
       const { ...result } = user;
       return result;
     }
@@ -63,7 +63,7 @@ export class AuthService {
         await this.i18n.translate('errors.ERROR.EXPIRED_TOKEN'),
       );
     }
-    if (await bcrypt.compare(token, searchedUser.refreshToken)) {
+    if (await compare(token, searchedUser.refreshToken)) {
       throw new BadRequestException(
         await this.i18n.translate('errors.ERROR.TOKEN_NOT_FOUND'),
       );
@@ -95,9 +95,9 @@ export class AuthService {
   }
 
   async randomTokenString(): Promise<{ raw: string; encryptedToken: string }> {
-    const randomString = crypto.randomBytes(100).toString('hex');
-    const salt = await bcrypt.genSalt(10);
-    const token = await bcrypt.hash(randomString, salt);
+    const randomString = randomBytes(100).toString('hex');
+    const salt = await genSalt(10);
+    const token = await hash(randomString, salt);
     return { raw: randomString, encryptedToken: token };
   }
 }

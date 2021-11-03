@@ -1,15 +1,15 @@
+import { ActivateUserInput } from './dto/activate-user.input';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserInput } from './dto/create-user.input';
-import { UpdateUserInput } from './dto/update-user.input';
-import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
-import { TokenService } from './token/token.service';
-import { MailService } from 'src/mail/mail.service';
-import { ActivateUserInput } from './dto/activate-user.input';
 import { I18nService } from 'nestjs-i18n';
+import { InjectRepository } from '@nestjs/typeorm';
+import { MailService } from 'src/mail/mail.service';
+import { Repository } from 'typeorm';
 import { ResetPasswordTokenInput } from './dto/reset-password-token.input';
+import { TokenService } from './token/token.service';
+import { UpdateUserInput } from './dto/update-user.input';
+import { User } from './entities/user.entity';
+import { genSalt, hash, compare } from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -22,11 +22,8 @@ export class UsersService {
   ) {}
 
   async create(createUserInput: CreateUserInput) {
-    const salt = await bcrypt.genSalt(10);
-    createUserInput.password = await bcrypt.hash(
-      createUserInput.password,
-      salt,
-    );
+    const salt = await genSalt(10);
+    createUserInput.password = await hash(createUserInput.password, salt);
 
     const user = await this.usersRepository.save(createUserInput);
     const token = this.tokenService.encrypt(user.id);
@@ -132,15 +129,13 @@ export class UsersService {
       );
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const confirmPassword = await bcrypt.hash(
+    const salt = await genSalt(10);
+    const confirmPassword = await hash(
       resetPasswordToken.confirmPassword,
       salt,
     );
 
-    if (
-      !(await bcrypt.compare(resetPasswordToken.newPassword, confirmPassword))
-    ) {
+    if (!(await compare(resetPasswordToken.newPassword, confirmPassword))) {
       throw new BadRequestException(
         await this.i18n.translate('errors.ERROR.PASSWORDS_NOT_MATCH'),
       );
