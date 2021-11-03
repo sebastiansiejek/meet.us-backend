@@ -40,7 +40,7 @@ export class EventsResolver {
   ): Promise<EventResponse> {
     const { limit, offset } = args.pagingParams();
     const { field, sort } = args.orderParams();
-    const { distance, userLat, userLong } = args.distanceParams();
+    const { distance, latitude, longitude } = args.distanceParams();
     const records = await this.eventsService.findAll(
       limit,
       offset,
@@ -50,8 +50,8 @@ export class EventsResolver {
       state,
       userId,
       distance,
-      userLat,
-      userLong,
+      latitude,
+      longitude,
     );
     const events = records.events;
     const count = records.totalRecords.length;

@@ -69,9 +69,10 @@ export class Event {
   @Field()
   @Column({ type: 'decimal', precision: 10, scale: 6, default: 0 })
   long: number;
-
+  
   @Field()
-  eventDistance: number;
+  @Column({ select: false, insert: false, readonly: true, update: false })
+  distance: number;
 
   @Field()
   @Column({ default: false })

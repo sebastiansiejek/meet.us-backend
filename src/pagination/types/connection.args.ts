@@ -40,9 +40,9 @@ const nextId = (cursor: ConnectionCursor) => getId(cursor) + 1;
 
 function getDistanceParameters(args: ConnectionArgs) {
   let distance = args.distance;
-  let userLat = args.userLat;
-  let userLong = args.userLong;
-  return { distance, userLat, userLong };
+  let latitude = args.latitude;
+  let longitude = args.longitude;
+  return { distance, latitude, longitude };
 }
 
 
@@ -113,10 +113,10 @@ export default class ConnectionArgs implements ConnectionArguments {
   public distance?: number;
 
   @Field({ nullable: true, description: 'User latitude' })
-  public userLat?: number;
+  public latitude?: number;
 
   @Field({ nullable: true, description: 'User longitude' })
-  public userLong?: number;
+  public longitude?: number;
 
   pagingParams() {
     return getPagingParameters(this);
