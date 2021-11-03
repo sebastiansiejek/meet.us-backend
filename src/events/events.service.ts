@@ -37,8 +37,8 @@ export class EventsService {
     state: IEventState,
     userId: string,
     distance: number,
-    userLat: number,
-    userLong: number,
+    latitude: number,
+    longitude: number,
   ) {
     const currentDate = new Date().toISOString().replace('T', ' ');
 
@@ -53,17 +53,16 @@ export class EventsService {
       .where(
         '(events.title like  :title or events.description like :description)',
         { title: `%${query}%`, description: `%${query}%` },
-      )
-      .orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC');
+      );
 
-    if (distance !== null && userLat !== null && userLong !== null) {
-      console.log('test');
-      console.log(userLat);
-      console.log(userLong);
-      console.log(distance);
-      //TODO  GET DISTANCE
-      events.select(
-        `( 6371 * acos( cos( radians(${userLat}) ) * cos( radians( events.lat ) ) * cos( radians( events.long ) - radians(${userLong}) ) + sin( radians(${userLat}) )* sin( radians( events.lat ) ) ) ) AS event_distance `,
+    if (distance !== null && latitude !== null && longitude !== null) {
+      events.addSelect(
+        `ROUND( 6371 * acos( cos( radians(${latitude}) ) * cos( radians( events.lat ) ) * cos( radians( events.long ) - radians(${longitude}) ) + sin( radians(${latitude}) )* sin( radians( events.lat ) ) ) ,2)`,
+        'events_distance',
+      );
+      events.andWhere(
+        `ROUND( 6371 * acos( cos( radians(${latitude}) ) * cos( radians( events.lat ) ) * cos( radians( events.long ) - radians(${longitude}) ) + sin( radians(${latitude}) )* sin( radians( events.lat ) ) ) ,2) <= :userDistanceLimit`,
+        { userDistanceLimit: distance },
       );
     }
 
@@ -97,10 +96,20 @@ export class EventsService {
 
     const totalRecords = await events.getMany();
 
+    if (
+      distance !== null &&
+      latitude !== null &&
+      longitude !== null &&
+      field == 'distance'
+    ) {
+      events.orderBy(`events_distance`, 'ASC' == sort ? 'ASC' : 'DESC');
+    } else {
+      events.orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC');
+    }
+
     const eventsMapped = await events.take(limit).skip(offset).getMany();
 
     eventsMapped.map((event) => {
-      console.log(event);
       event.state = state;
     });
 
