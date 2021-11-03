@@ -51,7 +51,6 @@ export class AuthService {
 
   async refreshLoginToken(user: User, token: string) {
     const searchedUser = await this.userService.findOne(user.id);
-    console.log(searchedUser);
 
     if (searchedUser === undefined) {
       throw new BadRequestException(
