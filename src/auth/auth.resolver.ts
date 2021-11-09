@@ -2,13 +2,19 @@ import { UseGuards } from '@nestjs/common';
 import { Args, Field, Mutation, ObjectType, Resolver } from '@nestjs/graphql';
 import { User } from 'src/users/entities/user.entity';
 import { AuthService } from './auth.service';
+import { CurrentUser } from './current-user.decorator';
 import { LoginUserInput } from './dto/login-user.input';
+import { RefreshUserToken } from './dto/refresh-user-token.input';
+import { GqlAuthGuard } from './guards/gql-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 
 @ObjectType()
 export class AccessToken {
   @Field()
   accessToken: string;
+
+  @Field()
+  refreshToken: string;
 }
 
 @Resolver()
@@ -17,11 +23,20 @@ export class AuthResolver {
 
   @Mutation(() => AccessToken)
   @UseGuards(LocalAuthGuard)
-  login(@Args('loginUserInput') loginUserInput: LoginUserInput) {
+  async login(@Args('loginUserInput') loginUserInput: LoginUserInput) {
     const user = new User();
     user.email = loginUserInput.email;
     user.password = loginUserInput.password;
 
-    return this.authService.login(user);
+    return await this.authService.login(user);
+  }
+
+  @Mutation(() => AccessToken)
+  @UseGuards(GqlAuthGuard)
+  async refresh(
+    @CurrentUser() user: User,
+    @Args('refreshToken') refreshToken: RefreshUserToken,
+  ) {
+    return await this.authService.refreshLoginToken(user, refreshToken.token);
   }
 }

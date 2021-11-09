@@ -1,4 +1,11 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ObjectType,
+  Field,
+} from '@nestjs/graphql';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
@@ -10,6 +17,14 @@ import { ActivateUserInput } from './dto/activate-user.input';
 import { connectionFromArraySlice } from 'graphql-relay';
 import ConnectionArgs from 'src/pagination/types/connection.args';
 import UserResponse from './dto/user.response';
+import { ResetPasswordInput } from './dto/reset-password.input';
+import { ResetPasswordTokenInput } from './dto/reset-password-token.input';
+
+@ObjectType()
+export class ResetResponse {
+  @Field()
+  message: string;
+}
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -73,5 +88,20 @@ export class UsersResolver {
   @UseGuards(GqlAuthGuard)
   removeUser(@Args('id') id: string) {
     return this.usersService.remove(id);
+  }
+
+  @Mutation(() => ResetResponse)
+  resetPassword(
+    @Args('resetPasswordInput') resetPasswordInput: ResetPasswordInput,
+  ) {
+    return this.usersService.resetPassword(resetPasswordInput.email);
+  }
+
+  @Mutation(() => ResetResponse)
+  confirmResetPassword(
+    @Args('confirmResetPassword')
+    resetPasswordTokenInput: ResetPasswordTokenInput,
+  ) {
+    return this.usersService.resetPasswordToken(resetPasswordTokenInput);
   }
 }

@@ -20,6 +20,12 @@ export class CreateEventInput {
   @Field()
   endDate: Date;
 
+  @Field()
+  lat: number;
+
+  @Field()
+  lng: number;
+
   @Field(() => Int, { nullable: true })
   maxParticipants: number;
 }

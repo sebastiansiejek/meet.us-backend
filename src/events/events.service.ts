@@ -36,6 +36,9 @@ export class EventsService {
     query: string,
     state: IEventState,
     userId: string,
+    distance: number,
+    latitude: number,
+    longitude: number,
   ) {
     const currentDate = new Date().toISOString().replace('T', ' ');
 
@@ -50,8 +53,18 @@ export class EventsService {
       .where(
         '(events.title like  :title or events.description like :description)',
         { title: `%${query}%`, description: `%${query}%` },
-      )
-      .orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC');
+      );
+
+    if (distance && latitude && longitude) {
+      events.addSelect(
+        `ROUND( 6371 * acos( cos( radians(${latitude}) ) * cos( radians( events.lat ) ) * cos( radians( events.lng ) - radians(${longitude}) ) + sin( radians(${latitude}) )* sin( radians( events.lat ) ) ) ,2)`,
+        'events_distance',
+      );
+      events.andWhere(
+        `ROUND( 6371 * acos( cos( radians(${latitude}) ) * cos( radians( events.lat ) ) * cos( radians( events.lng ) - radians(${longitude}) ) + sin( radians(${latitude}) )* sin( radians( events.lat ) ) ) ,2) <= :userDistanceLimit`,
+        { userDistanceLimit: distance },
+      );
+    }
 
     if (state === 'DURING') {
       events
@@ -83,9 +96,16 @@ export class EventsService {
 
     const totalRecords = await events.getMany();
 
+    if (distance && latitude && longitude && field == 'distance') {
+      events.orderBy(`events_distance`, 'ASC' == sort ? 'ASC' : 'DESC');
+    } else {
+      events.orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC');
+    }
+
     const eventsMapped = await events.take(limit).skip(offset).getMany();
+
     eventsMapped.map((event) => {
-      event['state'] = state;
+      event.state = state;
     });
 
     return { events: eventsMapped, totalRecords };

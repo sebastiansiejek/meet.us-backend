@@ -1,15 +1,15 @@
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
-import { GraphQLModule } from '@nestjs/graphql';
-import { UsersModule } from './users/users.module';
-import { MailModule } from './mail/mail.module';
-import { I18nModule, I18nJsonParser } from 'nestjs-i18n';
 import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 import { EventsModule } from './events/events.module';
-import * as path from 'path';
+import { GraphQLModule } from '@nestjs/graphql';
+import { I18nModule, I18nJsonParser } from 'nestjs-i18n';
+import { MailModule } from './mail/mail.module';
+import { Module } from '@nestjs/common';
 import { QueryResolver } from './i18n/QueryResolver';
 import { ScheduleModule } from '@nestjs/schedule';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersModule } from './users/users.module';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -23,7 +23,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       },
       parser: I18nJsonParser,
       parserOptions: {
-        path: path.join(__dirname, 'i18n'),
+        path: join(__dirname, 'i18n'),
         watch: true,
       },
       resolvers: [{ use: QueryResolver, options: [] }],
