@@ -55,7 +55,7 @@ export class EventsService {
         { title: `%${query}%`, description: `%${query}%` },
       );
 
-    if (distance !== null && latitude !== null && longitude !== null) {
+    if (distance && latitude && longitude) {
       events.addSelect(
         `ROUND( 6371 * acos( cos( radians(${latitude}) ) * cos( radians( events.lat ) ) * cos( radians( events.lng ) - radians(${longitude}) ) + sin( radians(${latitude}) )* sin( radians( events.lat ) ) ) ,2)`,
         'events_distance',
@@ -96,12 +96,7 @@ export class EventsService {
 
     const totalRecords = await events.getMany();
 
-    if (
-      distance !== null &&
-      latitude !== null &&
-      longitude !== null &&
-      field == 'distance'
-    ) {
+    if (distance && latitude && longitude && field == 'distance') {
       events.orderBy(`events_distance`, 'ASC' == sort ? 'ASC' : 'DESC');
     } else {
       events.orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC');
