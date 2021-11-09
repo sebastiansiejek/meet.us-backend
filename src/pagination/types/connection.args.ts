@@ -39,12 +39,12 @@ const getId = (cursor: ConnectionCursor) =>
 const nextId = (cursor: ConnectionCursor) => getId(cursor) + 1;
 
 function getDistanceParameters(args: ConnectionArgs) {
-  let distance = args.distance;
-  let latitude = args.latitude;
-  let longitude = args.longitude;
+  const distance = args.distance;
+  const latitude = args.latitude;
+  const longitude = args.longitude;
+
   return { distance, latitude, longitude };
 }
-
 
 function getOrderParameters(args: ConnectionArgs) {
   let field: string;
@@ -75,7 +75,7 @@ function getPagingParameters(args: ConnectionArgs) {
     case 'backward': {
       const { last, before } = meta;
       let limit = last;
-      let offset = getId(before!) - last;
+      let offset = getId(before) - last;
 
       if (offset < 0) {
         limit = Math.max(last + offset, 0);
@@ -128,4 +128,3 @@ export default class ConnectionArgs implements ConnectionArguments {
     return getDistanceParameters(this);
   }
 }
-
