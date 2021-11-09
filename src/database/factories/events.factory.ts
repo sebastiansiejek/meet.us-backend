@@ -28,7 +28,7 @@ define(Event, (faker: typeof Faker) => {
   event.startDate = startDate;
   event.endDate = endDate;
   event.lat = faker.random.number({ min: -90, max: 90, precision: 0.01 });
-  event.long = faker.random.number({ min: -180, max: 180, precision: 0.01 });
+  event.lng = faker.random.number({ min: -180, max: 180, precision: 0.01 });
 
   event.maxParticipants = faker.random.number(100);
   event.user = factory(User)() as any;

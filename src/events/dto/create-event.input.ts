@@ -24,7 +24,7 @@ export class CreateEventInput {
   lat: number;
 
   @Field()
-  long: number;
+  lng: number;
 
   @Field(() => Int, { nullable: true })
   maxParticipants: number;
