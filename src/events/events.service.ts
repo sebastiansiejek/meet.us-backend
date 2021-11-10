@@ -42,6 +42,7 @@ export class EventsService {
   ) {
     const currentDate = new Date().toISOString().replace('T', ' ');
 
+    //TODO do events trzeba dodać left join dla paricipantow 
     const events = this.eventsRepository
       .createQueryBuilder('events')
       .innerJoinAndMapOne(
@@ -103,6 +104,7 @@ export class EventsService {
     }
 
     const eventsMapped = await events.take(limit).skip(offset).getMany();
+    console.log(eventsMapped);
 
     eventsMapped.map((event) => {
       event.state = state;

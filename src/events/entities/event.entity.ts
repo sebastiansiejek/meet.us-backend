@@ -1,3 +1,5 @@
+import { Participant } from './../../participants/entities/participant.entity';
+
 import { ObjectType, Field, registerEnumType, Int } from '@nestjs/graphql';
 import { User } from 'src/users/entities/user.entity';
 import {
@@ -6,6 +8,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -63,11 +66,11 @@ export class Event {
   maxParticipants: number;
 
   @Field()
-  @Column({ type: 'decimal', precision: 10, scale: 6, default: 0 })
+  @Column({ type: 'decimal', precision: 10, scale: 6, nullable: true })
   lat: number;
 
   @Field()
-  @Column({ type: 'decimal', precision: 10, scale: 6, default: 0 })
+  @Column({ type: 'decimal', precision: 10, scale: 6, nullable: true })
   lng: number;
 
   @Field()
@@ -83,4 +86,8 @@ export class Event {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Field(type => Participant, { nullable: true })
+  @OneToMany(() => Participant, participant => participant.event)
+  participants: Participant[];
 }

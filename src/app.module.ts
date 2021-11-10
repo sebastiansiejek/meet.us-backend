@@ -10,6 +10,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { join } from 'path';
+import { ParticipantsModule } from './participants/participants.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { join } from 'path';
     AuthModule,
     EventsModule,
     ScheduleModule.forRoot(),
+    ParticipantsModule,
   ],
 })
 export class AppModule {}
