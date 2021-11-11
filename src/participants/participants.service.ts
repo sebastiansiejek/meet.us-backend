@@ -74,8 +74,7 @@ export class ParticipantsService {
         const participate = this.participantRepository.findOne({
             relations: ['user', 'event'],
             where: { event: event, user: user },
-          });
-        console.log(participate);
+        });
         return participate;
     }
 

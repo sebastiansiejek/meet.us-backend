@@ -57,7 +57,7 @@ export class EventsService {
         Participant,
         'participants',
         'events.id = participants.event',
-        {limit: 2}
+        {limit: "2"}
       )
       .leftJoinAndMapOne(
         'participants.user',
@@ -118,7 +118,6 @@ export class EventsService {
     }
 
     const totalRecords = await events.getMany();
-    console.log(totalRecords);
 
     if (distance && latitude && longitude && field == 'distance') {
       events.orderBy(`events_distance`, 'ASC' == sort ? 'ASC' : 'DESC');
