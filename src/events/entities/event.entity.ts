@@ -87,7 +87,14 @@ export class Event {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Field(type => Participant, { nullable: true })
+  @Field(type => [Participant], { nullable: true })
   @OneToMany(() => Participant, participant => participant.event)
-  participants: Participant[];
+  @JoinColumn({ name: 'event' })
+  participants?: Participant[];
+
+  @Field({ nullable: true })
+  interestedCount: number;
+
+  @Field({ nullable: true })
+  goingCount: number;
 }

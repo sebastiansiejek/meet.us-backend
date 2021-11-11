@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { EventsService } from 'src/events/events.service';
 import { ParticipantResponse } from './dto/participant-response.input';
 import { User } from 'src/users/entities/user.entity';
+import { Event } from 'src/events/entities/event.entity';
 
 @Injectable()
 export class ParticipantsService {
@@ -95,4 +96,67 @@ export class ParticipantsService {
       const participantRemove = await this.find(user, event);
       this.participantRepository.remove(participantRemove);
       return participantRemove;
-    }}
+    }
+
+    async findAll(
+        limit: number,
+        offset: number,
+        field: string,
+        sort: string,
+        eventId: string,
+        userId: string,
+        type: number,
+        query: string,
+      ) {
+        const participants = this.participantRepository
+        .createQueryBuilder('participants')
+        .innerJoinAndMapOne(
+          'participants.user',
+          User,
+          'users',
+          'participants.user = users.id',
+        )
+        .innerJoinAndMapOne(
+          'participants.event',
+          Event,
+          'events',
+          'participants.event = events.id',
+        );
+        if(query){
+            participants.andWhere(
+              '(events.title like  :title or events.description like :description)',
+              { title: `%${query}%`, description: `%${query}%` },
+            );
+        }
+
+        if(eventId){
+            participants.andWhere('(participants.event = :id)', { id: eventId})
+        }
+
+        if(userId){
+            participants.andWhere('(participants.user = :id)', { id: userId})
+        }
+
+        if(type == 2 || type == 1){
+            participants.andWhere('(participants.type = :type)', { type: type})
+        }
+
+
+        participants.orderBy(`participants.${field}`, 'ASC' == sort ? 'ASC' : 'DESC');
+        
+
+        const totalRecords = await participants.getMany();
+        const participantsMapped = await participants.take(limit).skip(offset).getMany();
+
+        return { participants: participantsMapped, totalRecords };
+      }
+
+
+
+
+
+
+
+
+
+}
