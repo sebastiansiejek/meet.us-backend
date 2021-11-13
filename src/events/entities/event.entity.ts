@@ -74,7 +74,13 @@ export class Event {
   lng: number;
 
   @Field()
-  @Column({ select: false, insert: false, readonly: true, update: false })
+  @Column({
+    select: false,
+    insert: false,
+    readonly: true,
+    update: false,
+    default: 0,
+  })
   distance: number;
 
   @Field()
