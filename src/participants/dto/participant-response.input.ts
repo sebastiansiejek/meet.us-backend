@@ -11,9 +11,8 @@ export class ParticipantResponse {
   user: User;
 
   @Field()
-  type: Number;
+  type: number;
 
   @Field()
-  message: String;
-
+  message: string;
 }

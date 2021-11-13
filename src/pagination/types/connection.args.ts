@@ -118,7 +118,6 @@ export default class ConnectionArgs implements ConnectionArguments {
   @Field({ nullable: true, description: 'User longitude' })
   public longitude?: number;
 
-
   pagingParams() {
     return getPagingParameters(this);
   }

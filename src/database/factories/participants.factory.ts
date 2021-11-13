@@ -4,7 +4,6 @@ import { Event } from 'src/events/entities/event.entity';
 import { User } from 'src/users/entities/user.entity';
 import { getRandomNumberBetween } from 'utils/getRandoms';
 
-
 define(Participant, () => {
   const participant = new Participant();
   participant.type = getRandomNumberBetween(1, 2);

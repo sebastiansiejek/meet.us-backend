@@ -7,7 +7,7 @@ import { EventsModule } from 'src/events/events.module';
 import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Participant]), EventsModule, UsersModule ],
-  providers: [ParticipantsService, ParticipantsResolver]
+  imports: [TypeOrmModule.forFeature([Participant]), EventsModule, UsersModule],
+  providers: [ParticipantsService, ParticipantsResolver],
 })
 export class ParticipantsModule {}

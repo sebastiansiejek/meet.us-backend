@@ -25,21 +25,21 @@ registerEnumType(participationType, {
 @Entity({
   name: 'participants',
 })
-export class Participant{
+export class Participant {
   @Field()
   @PrimaryGeneratedColumn('uuid')
   id: string;
-  
-  @Field(type => User)
+
+  @Field(() => User)
   @ManyToOne(() => User, { nullable: false })
   @JoinColumn({ name: 'user', referencedColumnName: 'id' })
   user: User;
 
-  @Field(type => Event)
+  @Field(() => Event)
   @ManyToOne(() => Event, { nullable: false })
   @JoinColumn({ name: 'event', referencedColumnName: 'id' })
   event: Event;
-  
+
   @Field()
   @Column({ nullable: false })
   type: participationType;

@@ -8,5 +8,4 @@ export class ParticipantUpdate {
 
   @Field()
   type: participationType;
-
 }
