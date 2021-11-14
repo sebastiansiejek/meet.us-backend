@@ -7,6 +7,7 @@
         "TOKEN_NOT_FOUND": "Token not found",
         "EXPIRED_TOKEN": "Expired token",
         "PASSWORDS_NOT_MATCH": "Password do not match",
-        "PASSWROD_RESET_SUCCESSFULY": "Password reset successfully"
+        "PASSWROD_RESET_SUCCESSFULY": "Password reset successfully",
+        "EVENT_NOT_FOUND": "Event not found"
     }
 }

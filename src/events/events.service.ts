@@ -1,3 +1,4 @@
+import { Participant } from './../participants/entities/participant.entity';
 import { Injectable } from '@nestjs/common';
 import { CreateEventInput } from './dto/create-event.input';
 import { UpdateEventInput } from './dto/update-event.input';
@@ -42,6 +43,7 @@ export class EventsService {
   ) {
     const currentDate = new Date().toISOString().replace('T', ' ');
 
+    //TODO do events trzeba dodać left join dla paricipantow
     const events = this.eventsRepository
       .createQueryBuilder('events')
       .innerJoinAndMapOne(
@@ -49,6 +51,31 @@ export class EventsService {
         User,
         'users',
         'events.user = users.id',
+      )
+      .leftJoinAndMapMany(
+        'events.participants',
+        Participant,
+        'participants',
+        'events.id = participants.event',
+        { limit: '2' },
+      )
+      .leftJoinAndMapOne(
+        'participants.user',
+        User,
+        'u',
+        'participants.user = u.id',
+      )
+      .loadRelationCountAndMap(
+        'events.interestedCount',
+        'events.participants',
+        'p',
+        (qb) => qb.andWhere('p.type = 1'),
+      )
+      .loadRelationCountAndMap(
+        'events.goingCount',
+        'events.participants',
+        'p',
+        (qb) => qb.andWhere('p.type = 2'),
       )
       .where(
         '(events.title like  :title or events.description like :description)',

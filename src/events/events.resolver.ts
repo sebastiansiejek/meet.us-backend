@@ -34,8 +34,7 @@ export class EventsResolver {
   async events(
     @Args() args: ConnectionArgs,
     @Args({ name: 'query', defaultValue: '' }) query: string,
-    @Args({ name: 'state', nullable: true })
-    state: IEventState,
+    @Args({ name: 'state', nullable: true }) state: IEventState,
     @Args({ name: 'userId', nullable: true }) userId: string,
   ): Promise<EventResponse> {
     const { limit, offset } = args.pagingParams();
