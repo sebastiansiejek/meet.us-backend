@@ -87,12 +87,11 @@ export class ParticipantsService {
     return result;
   }
 
-  async removeUserFromEvent(user: User, event: Event): Promise<boolean> {
+  async removeUserFromEvent(user: User, event: Event) {
     const participantRemove = await this.find(user, event);
+    const result = await this.participantRepository.remove(participantRemove);
 
-    this.participantRepository.remove(participantRemove);
-
-    return true;
+    return result;
   }
 
   async findAll(
