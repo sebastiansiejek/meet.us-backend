@@ -12,7 +12,4 @@ export class ParticipantResponse {
 
   @Field()
   type: number;
-
-  @Field()
-  message: string;
 }

@@ -6,6 +6,7 @@ import { EventsService } from 'src/events/events.service';
 import { ParticipantResponse } from './dto/participant-response.input';
 import { User } from 'src/users/entities/user.entity';
 import { Event } from 'src/events/entities/event.entity';
+import { I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class ParticipantsService {
@@ -13,6 +14,7 @@ export class ParticipantsService {
     @InjectRepository(Participant)
     private readonly participantRepository: Repository<Participant>,
     private readonly eventsService: EventsService,
+    private readonly i18n: I18nService,
   ) {}
 
   async participateInEvent(
@@ -23,38 +25,32 @@ export class ParticipantsService {
     const event = await this.eventsService.findOne(eventId);
 
     if (!event) {
-      throw new BadRequestException('Event not found');
+      throw new BadRequestException(
+        await this.i18n.translate('errors.ERROR.EVENT_NOT_FOUND'),
+      );
     }
-    let message;
     if (type == 0) {
-      message = this.removeUserFromEvent(user, event);
+      this.removeUserFromEvent(user, event);
     } else {
-      message = this.addUserToEvent(user, event, type);
+      this.addUserToEvent(user, event, type);
     }
 
     const participantResponse: ParticipantResponse = {
       user: user,
       event: event,
       type: type,
-      message: message,
     };
 
     return participantResponse;
   }
 
-  addUserToEvent(user: User, event: any, type: number): string {
+  addUserToEvent(user: User, event: any, type: number) {
     let participate = this.find(user, event);
     if (!participate) {
       participate = this.create(user, event, type);
     } else {
       participate = this.update(user, event, type);
     }
-
-    return 'Dodano użytkownika do wydarzenia';
-  }
-  removeUserFromEvent(user: User, event: any): string {
-    this.remove(user, event);
-    return 'Usunięto użtykownika z wydarzenia';
   }
 
   create(user: User, event: any, type: number) {
@@ -91,10 +87,12 @@ export class ParticipantsService {
     return result;
   }
 
-  async remove(user: User, event: Event) {
+  async removeUserFromEvent(user: User, event: Event): Promise<boolean> {
     const participantRemove = await this.find(user, event);
+
     this.participantRepository.remove(participantRemove);
-    return participantRemove;
+
+    return true;
   }
 
   async findAll(
