@@ -1,5 +1,12 @@
 import { UseGuards } from '@nestjs/common';
-import { Args, Field, Mutation, ObjectType, Resolver } from '@nestjs/graphql';
+import {
+  Args,
+  Field,
+  Mutation,
+  ObjectType,
+  Resolver,
+  Query,
+} from '@nestjs/graphql';
 import { User } from 'src/users/entities/user.entity';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './current-user.decorator';
@@ -15,6 +22,11 @@ export class AccessToken {
 
   @Field()
   refreshToken: string;
+}
+@ObjectType()
+export class IsVaild {
+  @Field()
+  isValid: boolean;
 }
 
 @Resolver()
@@ -38,5 +50,13 @@ export class AuthResolver {
     @Args('refreshToken') refreshToken: RefreshUserToken,
   ) {
     return await this.authService.refreshLoginToken(user, refreshToken.token);
+  }
+
+  @Query(() => IsVaild)
+  @UseGuards(GqlAuthGuard)
+  async tokenIsValid(@CurrentUser() user: User) {
+    if (!user) return { isValid: false };
+
+    return { isValid: true };
   }
 }
