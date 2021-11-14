@@ -24,7 +24,7 @@ export class AccessToken {
   refreshToken: string;
 }
 @ObjectType()
-export class IsVaild {
+export class isValid {
   @Field()
   isValid: boolean;
 }
@@ -52,7 +52,7 @@ export class AuthResolver {
     return await this.authService.refreshLoginToken(user, refreshToken.token);
   }
 
-  @Query(() => IsVaild)
+  @Query(() => isValid)
   @UseGuards(GqlAuthGuard)
   async tokenIsValid(@CurrentUser() user: User) {
     if (!user) return { isValid: false };
