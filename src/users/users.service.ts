@@ -10,6 +10,7 @@ import { TokenService } from './token/token.service';
 import { UpdateUserInput } from './dto/update-user.input';
 import { User } from './entities/user.entity';
 import { genSalt, hash, compare } from 'bcrypt';
+import { Company } from 'src/companies/entities/company.entity';
 
 @Injectable()
 export class UsersService {
@@ -153,11 +154,26 @@ export class UsersService {
       ),
     };
   }
+
   async saveRefreshToken(userId: string, token: any, date: Date) {
     const user = await this.findOne(userId);
     user.refreshToken = token.encryptedToken;
     user.refreshTokenExpires = date;
     this.usersRepository.save(user);
     return token.raw;
+  }
+
+  async updateCompany(company: Company, user: User){
+    user.company = company;
+    
+    return this.usersRepository.save(user);
+  }
+
+  async findOneWithCompany(user: User){
+    
+    return await this.usersRepository.findOne({
+      relations: ['company'],
+      where: { id: user.id },
+    });
   }
 }

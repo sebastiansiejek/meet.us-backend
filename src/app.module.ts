@@ -11,6 +11,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
 import { join } from 'path';
 import { ParticipantsModule } from './participants/participants.module';
+import { CompaniesModule } from './companies/companies.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { ParticipantsModule } from './participants/participants.module';
     EventsModule,
     ScheduleModule.forRoot(),
     ParticipantsModule,
+    CompaniesModule,
   ],
 })
 export class AppModule {}

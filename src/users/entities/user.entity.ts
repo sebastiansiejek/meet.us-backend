@@ -1,8 +1,11 @@
 import { ObjectType, Field } from '@nestjs/graphql';
+import { Company } from 'src/companies/entities/company.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -50,6 +53,10 @@ export class User {
 
   @Column({ nullable: true })
   refreshTokenExpires: Date;
+
+  @OneToOne(() => Company, company => company.id, {cascade: true})
+  @JoinColumn({name: 'company', referencedColumnName: 'id'})
+  company: Company;
 
   @CreateDateColumn()
   createdAt: Date;
