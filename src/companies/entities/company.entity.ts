@@ -5,7 +5,6 @@ import {
   CreateDateColumn,
   Entity,
   JoinColumn,
-  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -23,7 +22,7 @@ export class Company {
   @Field()
   @Column()
   name: string;
-  
+
   @Field()
   @Column()
   address: string;
@@ -40,7 +39,8 @@ export class Company {
   @Column()
   nip: string;
 
-  @OneToOne(() => User, user => user.company) // specify inverse side as a second parameter
+  @OneToOne(() => User, (user) => user.id)
+  @JoinColumn({ name: 'user', referencedColumnName: 'id' })
   user: User;
 
   @CreateDateColumn()

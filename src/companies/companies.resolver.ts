@@ -5,7 +5,7 @@ import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
 import { User } from 'src/users/entities/user.entity';
 import { CompaniesService } from './companies.service';
 import { CreateCompanyInput } from './dto/create-company.input';
-import { UpdateCompanyInput } from './dto/update-event.input';
+import { UpdateCompanyInput } from './dto/update-company.input';
 import { Company } from './entities/company.entity';
 
 @Resolver()
@@ -14,13 +14,21 @@ export class CompaniesResolver {
 
   @Mutation(() => Company)
   @UseGuards(GqlAuthGuard)
-  createCompany(@CurrentUser() user: User, @Args({name: 'createCompany'}) createCompanyInput: CreateCompanyInput) {
+  createCompany(
+    @CurrentUser() user: User,
+    @Args({ name: 'createCompanyInput' })
+    createCompanyInput: CreateCompanyInput,
+  ) {
     return this.companiesService.create(createCompanyInput, user);
   }
 
   @Mutation(() => Company)
   @UseGuards(GqlAuthGuard)
-  updateCompany(@CurrentUser() user: User, @Args({name: 'createCompany'}) updateCompanyInput: UpdateCompanyInput) {
+  updateCompany(
+    @CurrentUser() user: User,
+    @Args({ name: 'updateCompanyInput' })
+    updateCompanyInput: UpdateCompanyInput,
+  ) {
     return this.companiesService.update(updateCompanyInput, user);
   }
 
@@ -29,5 +37,4 @@ export class CompaniesResolver {
   findCompany(@CurrentUser() user: User) {
     return this.companiesService.findOne(user);
   }
-
 }

@@ -10,7 +10,6 @@ import { TokenService } from './token/token.service';
 import { UpdateUserInput } from './dto/update-user.input';
 import { User } from './entities/user.entity';
 import { genSalt, hash, compare } from 'bcrypt';
-import { Company } from 'src/companies/entities/company.entity';
 
 @Injectable()
 export class UsersService {
@@ -40,6 +39,7 @@ export class UsersService {
     sort: string,
   ): Promise<[User[], number]> {
     return this.usersRepository.findAndCount({
+      relations: ['company'],
       take: limit,
       skip: offset,
       order: {
@@ -48,8 +48,13 @@ export class UsersService {
     });
   }
 
-  findOne(id: string) {
-    return this.usersRepository.findOneOrFail(id);
+  async findOne(id: string) {
+    const user = await this.usersRepository.findOneOrFail({
+      where: { id: id },
+      relations: ['company'],
+    });
+
+    return user;
   }
 
   async findByMail(mail: string) {
@@ -161,19 +166,5 @@ export class UsersService {
     user.refreshTokenExpires = date;
     this.usersRepository.save(user);
     return token.raw;
-  }
-
-  async updateCompany(company: Company, user: User){
-    user.company = company;
-    
-    return this.usersRepository.save(user);
-  }
-
-  async findOneWithCompany(user: User){
-    
-    return await this.usersRepository.findOne({
-      relations: ['company'],
-      where: { id: user.id },
-    });
   }
 }

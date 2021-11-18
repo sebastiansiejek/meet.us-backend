@@ -4,7 +4,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -54,8 +53,8 @@ export class User {
   @Column({ nullable: true })
   refreshTokenExpires: Date;
 
-  @OneToOne(() => Company, company => company.id, {cascade: true})
-  @JoinColumn({name: 'company', referencedColumnName: 'id'})
+  @Field({ nullable: true })
+  @OneToOne(() => Company, (company) => company.user)
   company: Company;
 
   @CreateDateColumn()
