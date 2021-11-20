@@ -1,3 +1,4 @@
+import { EventAddress } from './event-address.entity';
 import { Participant } from './../../participants/entities/participant.entity';
 
 import { ObjectType, Field, registerEnumType, Int } from '@nestjs/graphql';
@@ -9,6 +10,7 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -97,6 +99,10 @@ export class Event {
   @OneToMany(() => Participant, (participant) => participant.event)
   @JoinColumn({ name: 'event' })
   participants?: Participant[];
+
+  @Field(() => EventAddress, { nullable: true })
+  @OneToOne(() => EventAddress, (eventAddress) => eventAddress.event)
+  eventAddress?: EventAddress;
 
   @Field({ nullable: true })
   interestedCount: number;

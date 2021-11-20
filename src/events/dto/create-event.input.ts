@@ -1,3 +1,4 @@
+import { CreateEventAddressInput } from './create-event-address.input';
 import { InputType, Field, Int } from '@nestjs/graphql';
 import { eventType } from '../entities/event.entity';
 
@@ -25,6 +26,9 @@ export class CreateEventInput {
 
   @Field()
   lng: number;
+
+  @Field()
+  eventAddress: CreateEventAddressInput;
 
   @Field(() => Int, { nullable: true })
   maxParticipants: number;

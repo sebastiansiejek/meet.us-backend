@@ -1,3 +1,4 @@
+import { EventAddress } from './entities/event-address.entity';
 import { Participant } from './../participants/entities/participant.entity';
 import { Injectable } from '@nestjs/common';
 import { CreateEventInput } from './dto/create-event.input';
@@ -7,19 +8,30 @@ import { Event } from './entities/event.entity';
 import { Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { IEventState } from './IEvents';
+import { CreateEventAddressInput } from './dto/create-event-address.input';
 
 @Injectable()
 export class EventsService {
   constructor(
     @InjectRepository(Event)
     private readonly eventsRepository: Repository<Event>,
+    @InjectRepository(EventAddress)
+    private readonly eventAddressRepository: Repository<EventAddress>,
   ) {}
 
-  create(createEventInput: CreateEventInput, user: User) {
-    return this.eventsRepository.save({
+  async create(createEventInput: CreateEventInput, user: User) {
+    const event = await this.eventsRepository.save({
       ...createEventInput,
       user,
     });
+
+    const address = await this.saveAddress(
+      event,
+      createEventInput.eventAddress,
+    );
+    event.eventAddress = address;
+
+    return event;
   }
 
   findOne(eventId: string) {
@@ -43,7 +55,6 @@ export class EventsService {
   ) {
     const currentDate = new Date().toISOString().replace('T', ' ');
 
-    //TODO do events trzeba dodać left join dla paricipantow
     const events = this.eventsRepository
       .createQueryBuilder('events')
       .innerJoinAndMapOne(
@@ -58,6 +69,12 @@ export class EventsService {
         'participants',
         'events.id = participants.event',
         { limit: '2' },
+      )
+      .leftJoinAndMapOne(
+        'events.eventAddress',
+        EventAddress,
+        'event_address',
+        'events.id = event_address.event',
       )
       .leftJoinAndMapOne(
         'participants.user',
@@ -140,12 +157,39 @@ export class EventsService {
 
   async update(eventId: string, updateEventInput: UpdateEventInput) {
     const event = await this.findOne(eventId);
-    return this.eventsRepository.save({ ...event, ...updateEventInput });
+
+    const updatedEvent = await this.eventAddressRepository.save({
+      ...event,
+      ...updateEventInput,
+    });
+    const address = await this.updateAddress(
+      event,
+      updateEventInput.eventAddress,
+    );
+
+    updatedEvent.eventAddress = address;
+
+    return updatedEvent;
   }
 
   async remove(eventId: string) {
     const event = await this.findOne(eventId);
     this.eventsRepository.remove(event);
     return event;
+  }
+
+  async saveAddress(event: Event, eventAddress: CreateEventAddressInput) {
+    return await this.eventAddressRepository.save({
+      ...eventAddress,
+      event,
+    });
+  }
+
+  async updateAddress(event: Event, eventAddress: CreateEventAddressInput) {
+    const address = await this.eventAddressRepository.findOne({
+      where: { event: event.id },
+    });
+
+    return this.eventAddressRepository.save({ ...address, ...eventAddress });
   }
 }
