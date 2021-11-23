@@ -39,6 +39,7 @@ export class UsersService {
     sort: string,
   ): Promise<[User[], number]> {
     return this.usersRepository.findAndCount({
+      relations: ['company'],
       take: limit,
       skip: offset,
       order: {
@@ -47,8 +48,13 @@ export class UsersService {
     });
   }
 
-  findOne(id: string) {
-    return this.usersRepository.findOneOrFail(id);
+  async findOne(id: string) {
+    const user = await this.usersRepository.findOneOrFail({
+      where: { id: id },
+      relations: ['company'],
+    });
+
+    return user;
   }
 
   async findByMail(mail: string) {
@@ -153,6 +159,7 @@ export class UsersService {
       ),
     };
   }
+
   async saveRefreshToken(userId: string, token: any, date: Date) {
     const user = await this.findOne(userId);
     user.refreshToken = token.encryptedToken;
