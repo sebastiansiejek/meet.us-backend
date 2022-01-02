@@ -32,6 +32,7 @@ export class EventsResolver {
 
   @Query(() => EventResponse)
   async events(
+    @CurrentUser() user: User,
     @Args() args: ConnectionArgs,
     @Args({ name: 'query', defaultValue: '' }) query: string,
     @Args({ name: 'state', nullable: true }) state: IEventState,
@@ -51,6 +52,42 @@ export class EventsResolver {
       distance,
       latitude,
       longitude,
+      user,
+    );
+    const events = records.events;
+    const count = records.totalRecords.length;
+    const page = connectionFromArraySlice(events, args, {
+      arrayLength: count,
+      sliceStart: offset || 0,
+    });
+
+    return { page, pageData: { count, limit, offset } };
+  }
+
+  @Query(() => EventResponse)
+  @UseGuards(GqlAuthGuard)
+  async userLoggedEvents(
+    @CurrentUser() user: User,
+    @Args() args: ConnectionArgs,
+    @Args({ name: 'query', defaultValue: '' }) query: string,
+    @Args({ name: 'state', nullable: true }) state: IEventState,
+    @Args({ name: 'userId', nullable: true }) userId: string,
+  ): Promise<EventResponse> {
+    const { limit, offset } = args.pagingParams();
+    const { field, sort } = args.orderParams();
+    const { distance, latitude, longitude } = args.distanceParams();
+    const records = await this.eventsService.findAll(
+      limit,
+      offset,
+      field,
+      sort,
+      query,
+      state,
+      userId,
+      distance,
+      latitude,
+      longitude,
+      user,
     );
     const events = records.events;
     const count = records.totalRecords.length;
