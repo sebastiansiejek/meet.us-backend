@@ -7,6 +7,7 @@ import { ParticipantResponse } from './dto/participant-response.input';
 import { User } from 'src/users/entities/user.entity';
 import { Event } from 'src/events/entities/event.entity';
 import { I18nService } from 'nestjs-i18n';
+import { UserActivityService } from 'src/user-activity/user-activity.service';
 
 @Injectable()
 export class ParticipantsService {
@@ -15,6 +16,7 @@ export class ParticipantsService {
     private readonly participantRepository: Repository<Participant>,
     private readonly eventsService: EventsService,
     private readonly i18n: I18nService,
+    private readonly userActivityService: UserActivityService,
   ) {}
 
   async participateInEvent(
@@ -60,6 +62,8 @@ export class ParticipantsService {
       event: event,
     });
 
+    this.userActivityService.saveParticipantActivity(type, user, event);
+
     return participate;
   }
 
@@ -83,6 +87,8 @@ export class ParticipantsService {
       ...participate,
       ...update,
     });
+
+    this.userActivityService.saveParticipantActivity(type, user, event);
 
     return result;
   }

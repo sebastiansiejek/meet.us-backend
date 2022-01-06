@@ -1,3 +1,4 @@
+import { UserActivityModule } from './../user-activity/user-activity.module';
 import { Module } from '@nestjs/common';
 import { ParticipantsService } from './participants.service';
 import { ParticipantsResolver } from './participants.resolver';
@@ -7,7 +8,12 @@ import { EventsModule } from 'src/events/events.module';
 import { UsersModule } from 'src/users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Participant]), EventsModule, UsersModule],
+  imports: [
+    TypeOrmModule.forFeature([Participant]),
+    EventsModule,
+    UsersModule,
+    UserActivityModule,
+  ],
   providers: [ParticipantsService, ParticipantsResolver],
 })
 export class ParticipantsModule {}

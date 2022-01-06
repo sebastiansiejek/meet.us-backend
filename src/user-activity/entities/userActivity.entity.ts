@@ -1,7 +1,7 @@
-import { ObjectType, Field } from '@nestjs/graphql';
-import { Event } from 'src/events/entities/event.entity';
+import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
 import { User } from 'src/users/entities/user.entity';
 import {
+  Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
@@ -10,6 +10,26 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+export enum eventType {
+  Sport,
+  Party,
+  Social,
+}
+
+export enum actionType {
+  Category,
+  Duration,
+  TakePart,
+  Interested,
+}
+
+registerEnumType(actionType, {
+  name: 'actionType',
+});
+
+registerEnumType(eventType, {
+  name: 'eventType',
+});
 @ObjectType()
 @Entity({
   name: 'user_activity',
@@ -24,10 +44,25 @@ export class UserActivity {
   @JoinColumn({ name: 'user', referencedColumnName: 'id' })
   user: User;
 
-  @Field(() => Event)
-  @ManyToOne(() => Event, { nullable: false })
-  @JoinColumn({ name: 'event', referencedColumnName: 'id' })
-  event: Event;
+  @Field()
+  @Column({ nullable: false })
+  actionType: actionType;
+
+  @Field()
+  @Column({ nullable: false })
+  eventType: eventType;
+
+  @Field()
+  @Column({ nullable: false })
+  count: number;
+
+  @Field()
+  @Column({ nullable: false })
+  score: number;
+
+  @Field()
+  @Column({ type: 'decimal', precision: 6, scale: 2, nullable: true })
+  weight: number;
 
   @CreateDateColumn()
   createdAt: Date;
