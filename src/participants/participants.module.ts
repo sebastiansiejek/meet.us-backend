@@ -15,5 +15,6 @@ import { UsersModule } from 'src/users/users.module';
     UserActivityModule,
   ],
   providers: [ParticipantsService, ParticipantsResolver],
+  exports: [ParticipantsService],
 })
 export class ParticipantsModule {}

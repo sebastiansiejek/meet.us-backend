@@ -36,6 +36,38 @@ export class EventsService {
     return event;
   }
 
+  async find(eventId: string, user: User) {
+    const event = this.eventsRepository
+      .createQueryBuilder('events')
+      .innerJoinAndMapOne(
+        'events.user',
+        User,
+        'users',
+        'events.user = users.id',
+      );
+
+    if (user) {
+      event
+        .leftJoinAndMapOne(
+          'events.loggedInParticipants',
+          Participant,
+          'loggedInParticipants',
+          `events.id = loggedInParticipants.event and loggedInParticipants.user = "${user.id}"`,
+        )
+        .leftJoinAndMapOne(
+          'loggedInParticipants.user',
+          User,
+          'u2',
+          'loggedInParticipants.user = u2.id',
+        );
+    }
+    event.andWhere('events.id = :eventId', {
+      eventId: eventId,
+    });
+
+    return await event.getOne();
+  }
+
   findOne(eventId: string) {
     return this.eventsRepository.findOne({
       relations: ['user'],
@@ -212,5 +244,16 @@ export class EventsService {
     });
 
     return this.eventAddressRepository.save({ ...address, ...eventAddress });
+  }
+
+  async updateRate(eventId: any, rate: number) {
+    const event = await this.findOne(eventId.id);
+    const updateEvent = event;
+    updateEvent.rate = rate;
+
+    await this.eventsRepository.save({
+      ...event,
+      ...updateEvent,
+    });
   }
 }

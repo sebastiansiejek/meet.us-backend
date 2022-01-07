@@ -108,6 +108,10 @@ export class Event {
   interestedCount: number;
 
   @Field({ nullable: true })
+  @Column({ type: 'decimal', precision: 6, scale: 2, nullable: true })
+  rate: number;
+
+  @Field({ nullable: true })
   goingCount: number;
 
   @Field({ nullable: true })

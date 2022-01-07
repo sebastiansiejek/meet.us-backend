@@ -13,6 +13,7 @@ import { join } from 'path';
 import { ParticipantsModule } from './participants/participants.module';
 import { CompaniesModule } from './companies/companies.module';
 import { UserActivityModule } from './user-activity/user-activity.module';
+import { RatingsModule } from './ratings/ratings.module';
 
 @Module({
   imports: [
@@ -45,6 +46,10 @@ import { UserActivityModule } from './user-activity/user-activity.module';
     GraphQLModule.forRoot({
       autoSchemaFile: true,
       sortSchema: true,
+      cors: {
+        credentials: true,
+        origin: true,
+      },
     }),
     UsersModule,
     MailModule,
@@ -54,6 +59,7 @@ import { UserActivityModule } from './user-activity/user-activity.module';
     ParticipantsModule,
     CompaniesModule,
     UserActivityModule,
+    RatingsModule,
   ],
 })
 export class AppModule {}

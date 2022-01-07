@@ -27,7 +27,13 @@ export class EventsResolver {
 
   @Query(() => Event, { name: 'event' })
   async findOne(@Args('id') eventId: string) {
-    return this.eventsService.findOne(eventId);
+    return this.eventsService.find(eventId, null);
+  }
+
+  @Query(() => Event, { name: 'loggedFindOne' })
+  @UseGuards(GqlAuthGuard)
+  async loggedFindOne(@CurrentUser() user: User, @Args('id') eventId: string) {
+    return this.eventsService.find(eventId, user);
   }
 
   @Query(() => EventResponse)
