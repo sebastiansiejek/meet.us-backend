@@ -7,9 +7,10 @@ import { CurrentUser } from 'src/auth/current-user.decorator';
 import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
 import ConnectionArgs from 'src/pagination/types/connection.args';
 import { User } from 'src/users/entities/user.entity';
-import { RatingResponse } from './dto/rating-response.input';
 
 import RatingListResponse from './dto/rating-list.response';
+import { RatingUpdate } from './dto/rating-update.input';
+import { RatingResponse } from './dto/rating-response.input';
 
 @Resolver()
 export class RatingsResolver {
@@ -19,12 +20,12 @@ export class RatingsResolver {
   @UseGuards(GqlAuthGuard)
   rateEvent(
     @CurrentUser() user: User,
-    @Args('rateEvent') RatingUpdate: RatingUpdate,
+    @Args('rateEvent') ratingUpdate: RatingUpdate,
   ): Promise<RatingResponse> {
     return this.ratingsService.rateEvent(
-      RatingUpdate.eventId,
+      ratingUpdate.eventId,
       user,
-      RatingUpdate.rate,
+      ratingUpdate.rate,
     );
   }
 

@@ -1,4 +1,5 @@
 import { ObjectType, Field } from '@nestjs/graphql';
+import { Max, Min } from 'class-validator';
 import { Event } from 'src/events/entities/event.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
@@ -32,6 +33,8 @@ export class Rating {
 
   @Field()
   @Column({ nullable: false })
+  @Min(1)
+  @Max(5)
   rate: number;
 
   @CreateDateColumn()
