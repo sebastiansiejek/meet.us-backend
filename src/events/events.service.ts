@@ -64,8 +64,12 @@ export class EventsService {
     event.andWhere('events.id = :eventId', {
       eventId: eventId,
     });
+    const searchedEvent = await event.getOne();
 
-    return await event.getOne();
+    this.userActivityService.saveEventView(user, searchedEvent);
+    this.saveVisit(searchedEvent);
+
+    return searchedEvent;
   }
 
   findOne(eventId: string) {
@@ -255,5 +259,16 @@ export class EventsService {
       ...event,
       ...updateEvent,
     });
+  }
+
+  saveVisit(searchedEvent: Event) {
+    this.eventsRepository
+      .createQueryBuilder()
+      .update(Event)
+      .set({
+        visitCount: () => 'visitCount + 1',
+      })
+      .where('id = :id', { id: searchedEvent.id })
+      .execute();
   }
 }

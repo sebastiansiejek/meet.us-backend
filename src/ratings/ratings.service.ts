@@ -8,6 +8,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { RatingResponse } from './dto/rating-response.input';
 import { Rating } from './entities/rating.entity';
+import { UserActivityService } from 'src/user-activity/user-activity.service';
 
 @Injectable()
 export class RatingsService {
@@ -17,6 +18,7 @@ export class RatingsService {
     private readonly eventsService: EventsService,
     private readonly participantsService: ParticipantsService,
     private readonly i18n: I18nService,
+    private readonly userActivityService: UserActivityService,
   ) {}
 
   async rateEvent(
@@ -89,6 +91,8 @@ export class RatingsService {
 
     this.updateRate(event);
 
+    this.userActivityService.saveRateActivity(rate, user, event);
+
     return rating;
   }
 
@@ -112,6 +116,8 @@ export class RatingsService {
       ...rating,
       ...update,
     });
+
+    this.userActivityService.saveRateActivity(rate, user, event);
 
     this.updateRate(event);
 

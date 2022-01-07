@@ -116,4 +116,8 @@ export class Event {
 
   @Field({ nullable: true })
   loggedInParticipants?: Participant;
+
+  @Field()
+  @Column({ default: 0 })
+  visitCount: number;
 }

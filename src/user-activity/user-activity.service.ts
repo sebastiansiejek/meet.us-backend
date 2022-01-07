@@ -4,6 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserActivity } from './entities/userActivity.entity';
 import UserActivitySave from './dto/user-activity-save.input';
+import { User } from 'src/users/entities/user.entity';
+import { Event } from 'src/events/entities/event.entity';
 
 @Injectable()
 export class UserActivityService {
@@ -65,20 +67,29 @@ export class UserActivityService {
       .andWhere(`user_activity.score = ${score}`)
       .andWhere(`user_activity.weight = ${weight}`)
       .getOne();
-    //ToDO TimeOfDay && Distance beetween user and event
 
     if (!userActivity) {
       this.userActivityRepository.save(activity);
     } else {
-      const updateActivity = userActivity;
-      updateActivity.count++;
-      this.userActivityRepository.save({
-        ...userActivity,
-        ...updateActivity,
-      });
+      await this.userActivityRepository
+        .createQueryBuilder()
+        .update(UserActivity)
+        .set({
+          count: () => 'count + 1',
+        })
+        .where(
+          ' user = :user  AND actionType = :actionType AND eventType = :eventType AND score = :score AND weight = :weight',
+          {
+            user: user.id,
+            actionType: userActivity.actionType,
+            type: userActivity.eventType,
+            score: userActivity.score,
+            weight: userActivity.weight,
+          },
+        )
+        .execute();
     }
   }
-  // TODOsaveViewActivity()
 
   async saveDistanceSerchedQuery(userId: string, distance: number) {
     const user = await this.usersService.findOne(userId);
@@ -86,6 +97,16 @@ export class UserActivityService {
     if (distance > 30 && distance < 70) score = 2;
     if (distance <= 70) score = 3;
 
-    this.createOrUpdate(user, 5, null, score, 0.03);
+    this.createOrUpdate(user, 4, null, score, 0.03);
+  }
+
+  async saveRateActivity(rate: number, user: User, event: any) {
+    if (rate < 3) rate *= -1;
+
+    this.createOrUpdate(user, 5, event.type, rate, 0.04);
+  }
+
+  saveEventView(user: User, event: Event) {
+    this.createOrUpdate(user, 6, event.type, 1, 0.01);
   }
 }
