@@ -8,6 +8,8 @@
         "EXPIRED_TOKEN": "Expired token",
         "PASSWORDS_NOT_MATCH": "Password do not match",
         "PASSWROD_RESET_SUCCESSFULY": "Password reset successfully",
-        "EVENT_NOT_FOUND": "Event not found"
+        "EVENT_NOT_FOUND": "Event not found",
+        "EVENT_IS_NOT_OVER": "Event is not over",
+        "USER_NOT_PARTICIPATE_IN_EVENT": "The user does not participate in the event"
     }
 }

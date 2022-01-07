@@ -12,6 +12,7 @@ import { UsersModule } from './users/users.module';
 import { join } from 'path';
 import { ParticipantsModule } from './participants/participants.module';
 import { CompaniesModule } from './companies/companies.module';
+import { RatingsModule } from './ratings/ratings.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { CompaniesModule } from './companies/companies.module';
     ScheduleModule.forRoot(),
     ParticipantsModule,
     CompaniesModule,
+    RatingsModule,
   ],
 })
 export class AppModule {}

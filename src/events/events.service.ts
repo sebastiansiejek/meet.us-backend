@@ -240,4 +240,15 @@ export class EventsService {
 
     return this.eventAddressRepository.save({ ...address, ...eventAddress });
   }
+
+  async updateRate(eventId: any, rate: number) {
+    const event = await this.findOne(eventId.id);
+    const updateEvent = event;
+    updateEvent.rate = rate;
+
+    await this.eventsRepository.save({
+      ...event,
+      ...updateEvent,
+    });
+  }
 }
