@@ -44,6 +44,10 @@ import { CompaniesModule } from './companies/companies.module';
     GraphQLModule.forRoot({
       autoSchemaFile: true,
       sortSchema: true,
+      cors: {
+        credentials: true,
+        origin: true,
+      },
     }),
     UsersModule,
     MailModule,
