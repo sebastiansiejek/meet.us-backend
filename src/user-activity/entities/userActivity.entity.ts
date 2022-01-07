@@ -21,6 +21,7 @@ export enum actionType {
   Duration,
   TakePart,
   Interested,
+  Distance,
 }
 
 registerEnumType(actionType, {

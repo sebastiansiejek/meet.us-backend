@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { IEventState } from './IEvents';
 import { CreateEventAddressInput } from './dto/create-event-address.input';
+import { UserActivityService } from 'src/user-activity/user-activity.service';
 
 @Injectable()
 export class EventsService {
@@ -17,6 +18,7 @@ export class EventsService {
     private readonly eventsRepository: Repository<Event>,
     @InjectRepository(EventAddress)
     private readonly eventAddressRepository: Repository<EventAddress>,
+    private readonly userActivityService: UserActivityService,
   ) {}
 
   async create(createEventInput: CreateEventInput, user: User) {
@@ -108,6 +110,9 @@ export class EventsService {
         `ROUND( 6371 * acos( cos( radians(${latitude}) ) * cos( radians( events.lat ) ) * cos( radians( events.lng ) - radians(${longitude}) ) + sin( radians(${latitude}) )* sin( radians( events.lat ) ) ) ,2) <= :userDistanceLimit`,
         { userDistanceLimit: distance },
       );
+      if (userId) {
+        this.userActivityService.saveDistanceSerchedQuery(userId, distance);
+      }
     }
 
     if (state === 'DURING') {

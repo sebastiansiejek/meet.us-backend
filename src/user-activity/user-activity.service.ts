@@ -1,3 +1,4 @@
+import { UsersService } from 'src/users/users.service';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -9,6 +10,7 @@ export class UserActivityService {
   constructor(
     @InjectRepository(UserActivity)
     private readonly userActivityRepository: Repository<UserActivity>,
+    private readonly usersService: UsersService,
   ) {}
 
   saveParticipantActivity(type, user, event) {
@@ -77,4 +79,13 @@ export class UserActivityService {
     }
   }
   // TODOsaveViewActivity()
+
+  async saveDistanceSerchedQuery(userId: string, distance: number) {
+    const user = await this.usersService.findOne(userId);
+    let score = 1;
+    if (distance > 30 && distance < 70) score = 2;
+    if (distance <= 70) score = 3;
+
+    this.createOrUpdate(user, 5, null, score, 0.03);
+  }
 }
