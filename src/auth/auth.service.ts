@@ -38,10 +38,16 @@ export class AuthService {
   async login(
     usersRepository: User,
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const token = this.jwtService.sign({
-      email: usersRepository.email,
-      id: usersRepository.id,
-    });
+    const token = this.jwtService.sign(
+      {
+        email: usersRepository.email,
+        id: usersRepository.id,
+      },
+      {
+        secret: process.env.JWT_SECRET,
+        expiresIn: '172800s',
+      },
+    );
     const decoded = await this.verify(token);
     return {
       accessToken: token,
@@ -82,7 +88,7 @@ export class AuthService {
     return await this.userService.saveRefreshToken(
       userId,
       await this.randomTokenString(),
-      new Date(new Date().getTime() + 2 * 24 * 60 * 60 * 1000),
+      new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000),
     );
   }
 
