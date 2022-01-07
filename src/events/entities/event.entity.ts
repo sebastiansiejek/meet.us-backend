@@ -109,4 +109,7 @@ export class Event {
 
   @Field({ nullable: true })
   goingCount: number;
+
+  @Field({ nullable: true })
+  loggedInParticipants?: Participant;
 }

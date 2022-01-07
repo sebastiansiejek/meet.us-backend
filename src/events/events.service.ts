@@ -54,6 +54,7 @@ export class EventsService {
     distance: number,
     latitude: number,
     longitude: number,
+    user: User,
   ) {
     const currentDate = new Date().toISOString().replace('T', ' ');
 
@@ -100,6 +101,21 @@ export class EventsService {
         '(events.title like  :title or events.description like :description)',
         { title: `%${query}%`, description: `%${query}%` },
       );
+    if (user) {
+      events
+        .leftJoinAndMapOne(
+          'events.loggedInParticipants',
+          Participant,
+          'loggedInParticipants',
+          `events.id = loggedInParticipants.event and loggedInParticipants.user = "${user.id}"`,
+        )
+        .leftJoinAndMapOne(
+          'loggedInParticipants.user',
+          User,
+          'u2',
+          'loggedInParticipants.user = u2.id',
+        );
+    }
 
     if (distance && latitude && longitude) {
       events.addSelect(
