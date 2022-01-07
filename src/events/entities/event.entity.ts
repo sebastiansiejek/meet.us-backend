@@ -69,11 +69,11 @@ export class Event {
 
   @Field()
   @Column({ type: 'decimal', precision: 10, scale: 6, nullable: true })
-  lat: number;
+  lat?: number;
 
   @Field()
   @Column({ type: 'decimal', precision: 10, scale: 6, nullable: true })
-  lng: number;
+  lng?: number;
 
   @Field()
   @Column({
