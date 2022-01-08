@@ -10,6 +10,7 @@
         "PASSWROD_RESET_SUCCESSFULY": "Password reset successfully",
         "EVENT_NOT_FOUND": "Event not found",
         "EVENT_IS_NOT_OVER": "Event is not over",
-        "USER_NOT_PARTICIPATE_IN_EVENT": "The user does not participate in the event"
+        "USER_NOT_PARTICIPATE_IN_EVENT": "The user does not participate in the event",
+        "USER_IS_NOT_OWNER_OF_EVENT": "User is not the owner of the event"
     }
 }
