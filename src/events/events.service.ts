@@ -212,10 +212,11 @@ export class EventsService {
   async update(eventId: string, updateEventInput: UpdateEventInput) {
     const event = await this.findOne(eventId);
 
-    const updatedEvent = await this.eventAddressRepository.save({
+    const updatedEvent = await this.eventsRepository.save({
       ...event,
       ...updateEventInput,
     });
+
     const address = await this.updateAddress(
       event,
       updateEventInput.eventAddress,
