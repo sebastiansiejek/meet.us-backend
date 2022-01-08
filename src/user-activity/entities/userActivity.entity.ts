@@ -48,11 +48,11 @@ export class UserActivity {
   user: User;
 
   @Field()
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   actionType: actionType;
 
   @Field()
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   eventType: eventType;
 
   @Field()
