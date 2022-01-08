@@ -24,6 +24,9 @@ export class AccessToken {
   refreshToken: string;
 
   @Field()
+  accessTokenExpires: number;
+
+  @Field()
   user: User;
 }
 @ObjectType()
