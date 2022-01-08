@@ -66,7 +66,9 @@ export class EventsService {
     });
     const searchedEvent = await event.getOne();
 
-    this.userActivityService.saveEventView(user, searchedEvent);
+    if (user) {
+      this.userActivityService.saveEventView(user, searchedEvent);
+    }
     this.saveVisit(searchedEvent);
 
     return searchedEvent;
@@ -92,11 +94,17 @@ export class EventsService {
     longitude: number,
     user: User,
   ) {
+    console.log('activity  1');
     if (user) {
       const activity = await this.userActivityService.getUserActivity(user);
+
+      console.log('activity  2');
+      const activityQuery = await this.generateQuery(activity);
+      console.log(activityQuery);
     }
     const currentDate = new Date().toISOString().replace('T', ' ');
 
+    console.log(currentDate);
     const events = this.eventsRepository
       .createQueryBuilder('events')
       .innerJoinAndMapOne(
@@ -213,6 +221,11 @@ export class EventsService {
     });
 
     return { events: eventsMapped, totalRecords };
+  }
+  async generateQuery(activities: any) {
+    for (const activity of activities) {
+      console.log(activity);
+    }
   }
 
   async update(eventId: string, updateEventInput: UpdateEventInput) {
