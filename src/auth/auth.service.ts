@@ -1,4 +1,7 @@
-import { getTokenExpiresTime } from './../utils/token';
+import {
+  getTokenExpiresTime,
+  getRefreshTokenExpiresTime,
+} from './../utils/token';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
 import { JwtService } from '@nestjs/jwt';
@@ -104,7 +107,7 @@ export class AuthService {
     return await this.userService.saveRefreshToken(
       userId,
       await this.randomTokenString(),
-      dayjs.unix(getTokenExpiresTime()).toDate(),
+      dayjs.unix(getRefreshTokenExpiresTime()).toDate(),
     );
   }
 
