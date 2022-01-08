@@ -44,6 +44,12 @@ export class EventsService {
         User,
         'users',
         'events.user = users.id',
+      )
+      .innerJoinAndMapOne(
+        'events.eventAddress',
+        EventAddress,
+        'event_address',
+        'events.id = event_address.event',
       );
 
     if (user) {
