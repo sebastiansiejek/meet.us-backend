@@ -71,42 +71,42 @@ export class UserActivityService {
     if (!userActivity) {
       this.userActivityRepository.save(activity);
     } else {
-      await this.userActivityRepository
-        .createQueryBuilder()
-        .update(UserActivity)
-        .set({
-          count: () => 'count + 1',
-        })
-        .where(
-          ' user = :user  AND actionType = :actionType AND eventType = :eventType AND score = :score AND weight = :weight',
-          {
-            user: user.id,
-            actionType: userActivity.actionType,
-            type: userActivity.eventType,
-            score: userActivity.score,
-            weight: userActivity.weight,
-          },
-        )
-        .execute();
+        await this.userActivityRepository
+            .createQueryBuilder()
+            .update(UserActivity)
+            .set({
+              count: () => 'count + 1',
+            })
+            .where(
+              ` user = "${user.id}"  AND actionType = ${userActivity.actionType} AND eventType = ${userActivity.eventType} AND score = ${userActivity.score} AND weight = ${userActivity.weight}`
+            )
+            .execute();
     }
-  }
+}  
+    async getUserActivity(user: User) {
+        return this.userActivityRepository.find({
+          relations: ['user'],
+          where: { user: user },
+        });
+    }
+    async saveDistanceSerchedQuery(userId: string, distance: number) {
+      const user = await this.usersService.findOne(userId);
+      let score = 1;
+      if (distance > 30 && distance < 70) score = 2;
+      if (distance <= 70) score = 3;
 
-  async saveDistanceSerchedQuery(userId: string, distance: number) {
-    const user = await this.usersService.findOne(userId);
-    let score = 1;
-    if (distance > 30 && distance < 70) score = 2;
-    if (distance <= 70) score = 3;
+      this.createOrUpdate(user, 4, null, score, 0.03);
+    }
 
-    this.createOrUpdate(user, 4, null, score, 0.03);
-  }
+    async saveRateActivity(rate: number, user: User, event: any) {
+      if (rate == 3) rate *= -1;
+      if (rate == 2) rate *= -2;
+      if (rate == 1) rate *= -3;
 
-  async saveRateActivity(rate: number, user: User, event: any) {
-    if (rate < 3) rate *= -1;
+      this.createOrUpdate(user, 5, event.type, rate, 0.04);
+    }
 
-    this.createOrUpdate(user, 5, event.type, rate, 0.04);
-  }
-
-  saveEventView(user: User, event: Event) {
-    this.createOrUpdate(user, 6, event.type, 1, 0.01);
-  }
+    saveEventView(user: User, event: Event) {
+      this.createOrUpdate(user, 6, event.type, 1, 0.01);
+    } 
 }

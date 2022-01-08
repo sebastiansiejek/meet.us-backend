@@ -92,6 +92,9 @@ export class EventsService {
     longitude: number,
     user: User,
   ) {
+    if (user) {
+      const activity = await this.userActivityService.getUserActivity(user);
+    }
     const currentDate = new Date().toISOString().replace('T', ' ');
 
     const events = this.eventsRepository
