@@ -38,21 +38,26 @@ export class AuthService {
   async login(
     usersRepository: User,
   ): Promise<{ accessToken: string; refreshToken: string; user: User }> {
+    const user = await this.userService.findByMail(usersRepository.email);
+    const { id, email } = user;
+
     const token = this.jwtService.sign(
       {
-        email: usersRepository.email,
-        id: usersRepository.id,
+        email,
+        id,
       },
       {
         secret: process.env.JWT_SECRET,
         expiresIn: '172800s',
       },
     );
+
     const decoded = await this.verify(token);
+
     return {
       accessToken: token,
       refreshToken: await this.createRefreshToken(decoded.id),
-      user: usersRepository,
+      user,
     };
   }
 
