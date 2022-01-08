@@ -37,7 +37,7 @@ export class AuthService {
 
   async login(
     usersRepository: User,
-  ): Promise<{ accessToken: string; refreshToken: string }> {
+  ): Promise<{ accessToken: string; refreshToken: string; user: User }> {
     const token = this.jwtService.sign(
       {
         email: usersRepository.email,
@@ -52,6 +52,7 @@ export class AuthService {
     return {
       accessToken: token,
       refreshToken: await this.createRefreshToken(decoded.id),
+      user: usersRepository,
     };
   }
 
