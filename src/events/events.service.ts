@@ -118,10 +118,8 @@ export class EventsService {
     longitude: number,
     loggedUser: string,
   ) {
-    console.log('activity  1');
     const currentDate = new Date().toISOString().replace('T', ' ');
 
-    console.log(currentDate);
     const events = this.eventsRepository
       .createQueryBuilder('events')
       .innerJoinAndMapOne(
