@@ -55,7 +55,7 @@ export class User {
 
   @Field({ nullable: true })
   @OneToOne(() => Company, (company) => company.user)
-  company: Company;
+  company?: Company;
 
   @CreateDateColumn()
   createdAt: Date;

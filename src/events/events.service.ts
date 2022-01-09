@@ -1,6 +1,6 @@
 import { EventAddress } from './entities/event-address.entity';
 import { Participant } from './../participants/entities/participant.entity';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateEventInput } from './dto/create-event.input';
 import { UpdateEventInput } from './dto/update-event.input';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,6 +9,8 @@ import { Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { IEventState } from './IEvents';
 import { CreateEventAddressInput } from './dto/create-event-address.input';
+import { UsersService } from 'src/users/users.service';
+import { I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class EventsService {
@@ -17,6 +19,8 @@ export class EventsService {
     private readonly eventsRepository: Repository<Event>,
     @InjectRepository(EventAddress)
     private readonly eventAddressRepository: Repository<EventAddress>,
+    private readonly userService: UsersService,
+    private readonly i18n: I18nService,
   ) {}
 
   async create(createEventInput: CreateEventInput, user: User) {
@@ -34,7 +38,21 @@ export class EventsService {
     return event;
   }
 
-  async find(eventId: string, user: User) {
+  async findForEdit(eventId: string, userId: string) {
+    const event = await this.findOne(eventId);
+
+    const user = await this.userService.findOne(userId);
+
+    if (event.user.id != user.id) {
+      throw new BadRequestException(
+        await this.i18n.translate('errors.ERROR.USER_IS_NOT_OWNER_OF_EVENT'),
+      );
+    }
+
+    return await event;
+  }
+
+  async find(eventId: string, userId: string) {
     const event = this.eventsRepository
       .createQueryBuilder('events')
       .innerJoinAndMapOne(
@@ -50,7 +68,8 @@ export class EventsService {
         'events.id = event_address.event',
       );
 
-    if (user) {
+    if (userId) {
+      const user = await this.userService.findOne(userId);
       event
         .leftJoinAndMapOne(
           'events.loggedInParticipants',
@@ -65,9 +84,7 @@ export class EventsService {
           'loggedInParticipants.user = u2.id',
         );
     }
-    event.andWhere('events.id = :eventId', {
-      eventId: eventId,
-    });
+    event.andWhere(`events.id = '${eventId}'`);
 
     return await event.getOne();
   }
@@ -90,7 +107,7 @@ export class EventsService {
     distance: number,
     latitude: number,
     longitude: number,
-    user: User,
+    loggedUser: string,
   ) {
     const currentDate = new Date().toISOString().replace('T', ' ');
 
@@ -137,7 +154,8 @@ export class EventsService {
         '(events.title like  :title or events.description like :description)',
         { title: `%${query}%`, description: `%${query}%` },
       );
-    if (user) {
+    if (loggedUser) {
+      const user = await this.userService.findOne(loggedUser);
       events
         .leftJoinAndMapOne(
           'events.loggedInParticipants',
@@ -209,8 +227,19 @@ export class EventsService {
     return { events: eventsMapped, totalRecords };
   }
 
-  async update(eventId: string, updateEventInput: UpdateEventInput) {
+  async update(
+    user: User,
+    eventId: string,
+    updateEventInput: UpdateEventInput,
+  ) {
     const event = await this.findOne(eventId);
+    const loggedUser = await this.userService.findOne(user.id);
+
+    if (event.user.id != loggedUser.id) {
+      throw new BadRequestException(
+        await this.i18n.translate('errors.ERROR.USER_IS_NOT_OWNER_OF_EVENT'),
+      );
+    }
 
     const updatedEvent = await this.eventsRepository.save({
       ...event,
