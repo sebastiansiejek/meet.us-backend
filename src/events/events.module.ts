@@ -1,3 +1,4 @@
+import { UsersModule } from 'src/users/users.module';
 import { Module } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { EventsResolver } from './events.resolver';
@@ -10,6 +11,7 @@ import { UserActivityModule } from 'src/user-activity/user-activity.module';
   imports: [
     TypeOrmModule.forFeature([Event, EventAddress]),
     UserActivityModule,
+    UsersModule,
   ],
   providers: [EventsResolver, EventsService],
   exports: [EventsService],

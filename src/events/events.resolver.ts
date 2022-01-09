@@ -26,19 +26,15 @@ export class EventsResolver {
   }
 
   @Query(() => Event, { name: 'event' })
-  async findOne(@Args('id') eventId: string) {
-    return this.eventsService.find(eventId, null);
-  }
-
-  @Query(() => Event, { name: 'loggedFindOne' })
-  @UseGuards(GqlAuthGuard)
-  async loggedFindOne(@CurrentUser() user: User, @Args('id') eventId: string) {
-    return this.eventsService.find(eventId, user);
+  async findOne(
+    @Args('id') eventId: string,
+    @Args({ name: 'userId', nullable: true }) userId: string,
+  ) {
+    return this.eventsService.find(eventId, userId);
   }
 
   @Query(() => EventResponse)
   async events(
-    @CurrentUser() user: User,
     @Args() args: ConnectionArgs,
     @Args({ name: 'query', defaultValue: '' }) query: string,
     @Args({ name: 'state', nullable: true }) state: IEventState,
@@ -54,11 +50,11 @@ export class EventsResolver {
       sort,
       query,
       state,
-      userId,
+      null,
       distance,
       latitude,
       longitude,
-      user,
+      userId,
     );
     const events = records.events;
     const count = records.totalRecords.length;
@@ -71,13 +67,11 @@ export class EventsResolver {
   }
 
   @Query(() => EventResponse)
-  @UseGuards(GqlAuthGuard)
-  async userLoggedEvents(
-    @CurrentUser() user: User,
+  async userEvents(
     @Args() args: ConnectionArgs,
     @Args({ name: 'query', defaultValue: '' }) query: string,
     @Args({ name: 'state', nullable: true }) state: IEventState,
-    @Args({ name: 'userId', nullable: true }) userId: string,
+    @Args({ name: 'userId', nullable: false }) userId: string,
   ): Promise<EventResponse> {
     const { limit, offset } = args.pagingParams();
     const { field, sort } = args.orderParams();
@@ -93,7 +87,7 @@ export class EventsResolver {
       distance,
       latitude,
       longitude,
-      user,
+      null,
     );
     const events = records.events;
     const count = records.totalRecords.length;
@@ -105,10 +99,23 @@ export class EventsResolver {
     return { page, pageData: { count, limit, offset } };
   }
 
+  @Query(() => Event)
+  @UseGuards(GqlAuthGuard)
+  findForEdit(@CurrentUser() user: User, @Args('id') eventId: string) {
+    return this.eventsService.findForEdit(eventId, user.id);
+  }
+
   @Mutation(() => Event)
   @UseGuards(GqlAuthGuard)
-  updateEvent(@Args('updateEventInput') updateEventInput: UpdateEventInput) {
-    return this.eventsService.update(updateEventInput.id, updateEventInput);
+  updateEvent(
+    @CurrentUser() user: User,
+    @Args('updateEventInput') updateEventInput: UpdateEventInput,
+  ) {
+    return this.eventsService.update(
+      user,
+      updateEventInput.id,
+      updateEventInput,
+    );
   }
 
   @Mutation(() => Event)

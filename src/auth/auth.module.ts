@@ -9,6 +9,7 @@ import { User } from 'src/users/entities/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthResolver } from './auth.resolver';
 import { LocalStrategy } from './strategies/local.strategy';
+import dayjs from 'dayjs';
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { LocalStrategy } from './strategies/local.strategy';
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '3600s' },
+      signOptions: { expiresIn: dayjs().add(2, 'd').unix() },
     }),
     TypeOrmModule.forFeature([User]),
   ],
