@@ -63,7 +63,7 @@ export class EventsService {
         'users',
         'events.user = users.id',
       )
-      .innerJoinAndMapOne(
+      .leftJoinAndMapOne(
         'events.eventAddress',
         EventAddress,
         'event_address',
