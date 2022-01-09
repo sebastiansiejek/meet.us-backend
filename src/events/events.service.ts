@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { IEventState } from './IEvents';
 import { CreateEventAddressInput } from './dto/create-event-address.input';
+import { UserActivityService } from 'src/user-activity/user-activity.service';
 import { UsersService } from 'src/users/users.service';
 import { I18nService } from 'nestjs-i18n';
 
@@ -19,6 +20,7 @@ export class EventsService {
     private readonly eventsRepository: Repository<Event>,
     @InjectRepository(EventAddress)
     private readonly eventAddressRepository: Repository<EventAddress>,
+    private readonly userActivityService: UserActivityService,
     private readonly userService: UsersService,
     private readonly i18n: I18nService,
   ) {}
@@ -67,9 +69,9 @@ export class EventsService {
         'event_address',
         'events.id = event_address.event',
       );
-
+    let user;
     if (userId) {
-      const user = await this.userService.findOne(userId);
+      user = await this.userService.findOne(userId);
       event
         .leftJoinAndMapOne(
           'events.loggedInParticipants',
@@ -84,9 +86,16 @@ export class EventsService {
           'loggedInParticipants.user = u2.id',
         );
     }
-    event.andWhere(`events.id = '${eventId}'`);
 
-    return await event.getOne();
+    event.andWhere(`events.id = '${eventId}'`);
+    const searchedEvent = await event.getOne();
+
+    if (userId) {
+      this.userActivityService.saveEventView(user, searchedEvent);
+    }
+    this.saveVisit(searchedEvent);
+
+    return searchedEvent;
   }
 
   findOne(eventId: string) {
@@ -170,16 +179,31 @@ export class EventsService {
           'loggedInParticipants.user = u2.id',
         );
     }
-
+    let distanceQuery = '0';
     if (distance && latitude && longitude) {
       events.addSelect(
         `ROUND( 6371 * acos( cos( radians(${latitude}) ) * cos( radians( events.lat ) ) * cos( radians( events.lng ) - radians(${longitude}) ) + sin( radians(${latitude}) )* sin( radians( events.lat ) ) ) ,2)`,
         'events_distance',
       );
+
       events.andWhere(
         `ROUND( 6371 * acos( cos( radians(${latitude}) ) * cos( radians( events.lat ) ) * cos( radians( events.lng ) - radians(${longitude}) ) + sin( radians(${latitude}) )* sin( radians( events.lat ) ) ) ,2) <= :userDistanceLimit`,
         { userDistanceLimit: distance },
       );
+
+      distanceQuery = `ROUND( 6371 * acos( cos( radians(${latitude}) ) * cos( radians( events.lat ) ) * cos( radians( events.lng ) - radians(${longitude}) ) + sin( radians(${latitude}) )* sin( radians( events.lat ) ) ) ,2) <= ${distance}`;
+      if (userId) {
+        this.userActivityService.saveDistanceSerchedQuery(userId, distance);
+      }
+    }
+    if (loggedUser) {
+      const user = await this.userService.findOne(loggedUser);
+      const activity = await this.userActivityService.generateQuery(
+        user,
+        distanceQuery,
+      );
+
+      events.addSelect(`${activity}`, 'events_score');
     }
 
     if (state === 'DURING') {
@@ -214,6 +238,12 @@ export class EventsService {
 
     if (distance && latitude && longitude && field == 'distance') {
       events.orderBy(`events_distance`, 'ASC' == sort ? 'ASC' : 'DESC');
+    } else if (field == 'score') {
+      if (loggedUser) {
+        events.orderBy(`events_score`, 'ASC' == sort ? 'ASC' : 'DESC');
+      } else {
+        events.orderBy(`events.startDate`, 'ASC');
+      }
     } else {
       events.orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC');
     }
@@ -291,5 +321,16 @@ export class EventsService {
       ...event,
       ...updateEvent,
     });
+  }
+
+  saveVisit(searchedEvent: Event) {
+    this.eventsRepository
+      .createQueryBuilder()
+      .update(Event)
+      .set({
+        visitCount: () => 'visitCount + 1',
+      })
+      .where('id = :id', { id: searchedEvent.id })
+      .execute();
   }
 }
