@@ -119,15 +119,6 @@ export class EventsService {
     loggedUser: string,
   ) {
     console.log('activity  1');
-    if (loggedUser) {
-      const user = await this.userService.findOne(loggedUser);
-
-      const activity = await this.userActivityService.getUserActivity(user);
-
-      console.log('activity  2');
-      const activityQuery = await this.generateQuery(activity);
-      console.log(activityQuery);
-    }
     const currentDate = new Date().toISOString().replace('T', ' ');
 
     console.log(currentDate);
@@ -190,19 +181,31 @@ export class EventsService {
           'loggedInParticipants.user = u2.id',
         );
     }
-
+    let distanceQuery = '0';
     if (distance && latitude && longitude) {
       events.addSelect(
         `ROUND( 6371 * acos( cos( radians(${latitude}) ) * cos( radians( events.lat ) ) * cos( radians( events.lng ) - radians(${longitude}) ) + sin( radians(${latitude}) )* sin( radians( events.lat ) ) ) ,2)`,
         'events_distance',
       );
+
       events.andWhere(
         `ROUND( 6371 * acos( cos( radians(${latitude}) ) * cos( radians( events.lat ) ) * cos( radians( events.lng ) - radians(${longitude}) ) + sin( radians(${latitude}) )* sin( radians( events.lat ) ) ) ,2) <= :userDistanceLimit`,
         { userDistanceLimit: distance },
       );
+
+      distanceQuery = `ROUND( 6371 * acos( cos( radians(${latitude}) ) * cos( radians( events.lat ) ) * cos( radians( events.lng ) - radians(${longitude}) ) + sin( radians(${latitude}) )* sin( radians( events.lat ) ) ) ,2) <= ${distance}`;
       if (userId) {
         this.userActivityService.saveDistanceSerchedQuery(userId, distance);
       }
+    }
+    if (loggedUser) {
+      const user = await this.userService.findOne(loggedUser);
+      const activity = await this.userActivityService.generateQuery(
+        user,
+        distanceQuery,
+      );
+
+      events.addSelect(`${activity}`, 'events_score');
     }
 
     if (state === 'DURING') {
@@ -237,6 +240,12 @@ export class EventsService {
 
     if (distance && latitude && longitude && field == 'distance') {
       events.orderBy(`events_distance`, 'ASC' == sort ? 'ASC' : 'DESC');
+    } else if (field == 'score') {
+      if (loggedUser) {
+        events.orderBy(`events_score`, 'ASC' == sort ? 'ASC' : 'DESC');
+      } else {
+        events.orderBy(`events.startDate`, 'ASC');
+      }
     } else {
       events.orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC');
     }
@@ -248,11 +257,6 @@ export class EventsService {
     });
 
     return { events: eventsMapped, totalRecords };
-  }
-  async generateQuery(activities: any) {
-    for (const activity of activities) {
-      console.log(activity);
-    }
   }
 
   async update(

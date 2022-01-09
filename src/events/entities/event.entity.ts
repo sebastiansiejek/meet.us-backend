@@ -86,6 +86,16 @@ export class Event {
   distance: number;
 
   @Field()
+  @Column({
+    select: false,
+    insert: false,
+    readonly: true,
+    update: false,
+    default: 0,
+  })
+  score: number;
+
+  @Field()
   @Column({ default: false })
   isArchive: boolean;
 

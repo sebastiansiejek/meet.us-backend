@@ -2,11 +2,10 @@ import { UsersService } from 'src/users/users.service';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { UserActivity } from './entities/userActivity.entity';
+import { actionType, UserActivity } from './entities/userActivity.entity';
 import UserActivitySave from './dto/user-activity-save.input';
 import { User } from 'src/users/entities/user.entity';
 import { Event } from 'src/events/entities/event.entity';
-
 @Injectable()
 export class UserActivityService {
   constructor(
@@ -17,20 +16,26 @@ export class UserActivityService {
 
   saveParticipantActivity(type, user, event) {
     //Interested
-    let actionType = 3;
+    let action = actionType.Interested;
     let score = 2;
     let weight = 0.03;
     if (type == 2) {
       //Take part
-      actionType = 2;
+      action = actionType.TakePart;
       score = 3;
       weight = 0.05;
     }
-    this.createOrUpdate(user, actionType, event.type, score, weight);
+    this.createOrUpdate(user, action, event.type, score, weight);
 
-    this.createOrUpdate(user, 0, event.type, 1, 0.03);
+    this.createOrUpdate(user, actionType.Category, event.type, 1, 0.03);
 
-    this.createOrUpdate(user, 1, event.type, this.checkDateScore(event), 0.02);
+    this.createOrUpdate(
+      user,
+      actionType.Duration,
+      event.type,
+      this.checkDateScore(event),
+      0.02,
+    );
   }
 
   checkDateScore(event: any): number {
@@ -95,7 +100,7 @@ export class UserActivityService {
     if (distance > 30 && distance < 70) score = 2;
     if (distance <= 70) score = 3;
 
-    this.createOrUpdate(user, 4, null, score, 0.03);
+    this.createOrUpdate(user, actionType.Distance, null, score, 0.03);
   }
 
   async saveRateActivity(rate: number, user: User, event: any) {
@@ -103,10 +108,50 @@ export class UserActivityService {
     if (rate == 2) rate *= -2;
     if (rate == 1) rate *= -3;
 
-    this.createOrUpdate(user, 5, event.type, rate, 0.04);
+    this.createOrUpdate(user, actionType.Rate, event.type, rate, 0.04);
   }
 
   saveEventView(user: User, event: Event) {
-    this.createOrUpdate(user, 6, event.type, 1, 0.01);
+    this.createOrUpdate(user, actionType.Visit, event.type, 1, 0.01);
+  }
+
+  async generateQuery(user: User, distanceQuery: string) {
+    const activities = await this.userActivityRepository
+      .createQueryBuilder('user_activity')
+      .where(`user_activity.user = "${user.id}"`)
+      .getMany();
+
+    const lastElement = activities[activities.length - 1];
+
+    let query = '(';
+    for (const activity of activities) {
+      if (activity.actionType == actionType.Category) {
+        query += ` IF(events.type = ${activity.eventType}, ${activity.count} * ${activity.score} * ${activity.weight}, 0) `;
+      }
+      if (activity.actionType == actionType.Duration) {
+        query += ` IF( time_to_sec(timediff(endDate , startDate )) / 3600 < 3, ${activity.count} * ${activity.score} * ${activity.weight} , IF(time_to_sec(timediff(endDate , startDate )) / 3600 > 7, ${activity.count} * ${activity.score} * ${activity.weight}, ${activity.count} * ${activity.score} * ${activity.weight}))`;
+      }
+      if (activity.actionType == actionType.TakePart) {
+        query += ` IF(events.type = ${activity.eventType}, ${activity.count} * ${activity.score} * ${activity.weight}, 0) `;
+      }
+      if (activity.actionType == actionType.Interested) {
+        query += ` IF(events.type = ${activity.eventType}, ${activity.count} * ${activity.score} * ${activity.weight}, 0) `;
+      }
+      if (activity.actionType == actionType.Distance) {
+        query += `IF( ${distanceQuery} > 0, (IF(${distanceQuery} < 30, ${activity.count} * ${activity.score} * ${activity.weight}, IF( ${distanceQuery} > 30 AND ${distanceQuery} < 70, ${activity.count} * ${activity.score} * ${activity.weight}, IF( ${distanceQuery} > 70, ${activity.count} * ${activity.score} * ${activity.weight}, 0)))), 0)`;
+      }
+      if (activity.actionType == actionType.Rate) {
+        query += ` IF(events.type = ${activity.eventType}, ${activity.count} * ${activity.score} * ${activity.weight}, 0) `;
+      }
+      if (activity.actionType == actionType.Visit) {
+        query += ` IF(events.type = ${activity.eventType}, ${activity.count} * ${activity.score} * ${activity.weight}, 0) `;
+      }
+      if (lastElement != activity) {
+        query += ' + ';
+      }
+    }
+    query += `)`;
+
+    return query;
   }
 }
