@@ -22,6 +22,12 @@ export class AccessToken {
 
   @Field()
   refreshToken: string;
+
+  @Field()
+  accessTokenExpires: number;
+
+  @Field()
+  user: User;
 }
 @ObjectType()
 export class isValid {
