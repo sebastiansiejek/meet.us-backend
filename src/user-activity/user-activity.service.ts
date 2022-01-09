@@ -19,7 +19,7 @@ export class UserActivityService {
     let action = actionType.Interested;
     let score = 2;
     let weight = 0.03;
-    if (type == 2) {
+    if (type === 2) {
       //Take part
       action = actionType.TakePart;
       score = 3;
@@ -104,9 +104,9 @@ export class UserActivityService {
   }
 
   async saveRateActivity(rate: number, user: User, event: any) {
-    if (rate == 3) rate *= -1;
-    if (rate == 2) rate *= -2;
-    if (rate == 1) rate *= -3;
+    if (rate === 3) rate *= -1;
+    if (rate === 2) rate *= -2;
+    if (rate === 1) rate *= -3;
 
     this.createOrUpdate(user, actionType.Rate, event.type, rate, 0.04);
   }
@@ -125,25 +125,25 @@ export class UserActivityService {
 
     let query = '(';
     for (const activity of activities) {
-      if (activity.actionType == actionType.Category) {
+      if (activity.actionType === actionType.Category) {
         query += ` IF(events.type = ${activity.eventType}, ${activity.count} * ${activity.score} * ${activity.weight}, 0) `;
       }
-      if (activity.actionType == actionType.Duration) {
+      if (activity.actionType === actionType.Duration) {
         query += ` IF( time_to_sec(timediff(endDate , startDate )) / 3600 < 3, ${activity.count} * ${activity.score} * ${activity.weight} , IF(time_to_sec(timediff(endDate , startDate )) / 3600 > 7, ${activity.count} * ${activity.score} * ${activity.weight}, ${activity.count} * ${activity.score} * ${activity.weight}))`;
       }
-      if (activity.actionType == actionType.TakePart) {
+      if (activity.actionType === actionType.TakePart) {
         query += ` IF(events.type = ${activity.eventType}, ${activity.count} * ${activity.score} * ${activity.weight}, 0) `;
       }
-      if (activity.actionType == actionType.Interested) {
+      if (activity.actionType === actionType.Interested) {
         query += ` IF(events.type = ${activity.eventType}, ${activity.count} * ${activity.score} * ${activity.weight}, 0) `;
       }
-      if (activity.actionType == actionType.Distance) {
+      if (activity.actionType === actionType.Distance) {
         query += `IF( ${distanceQuery} > 0, (IF(${distanceQuery} < 30, ${activity.count} * ${activity.score} * ${activity.weight}, IF( ${distanceQuery} > 30 AND ${distanceQuery} < 70, ${activity.count} * ${activity.score} * ${activity.weight}, IF( ${distanceQuery} > 70, ${activity.count} * ${activity.score} * ${activity.weight}, 0)))), 0)`;
       }
-      if (activity.actionType == actionType.Rate) {
+      if (activity.actionType === actionType.Rate) {
         query += ` IF(events.type = ${activity.eventType}, ${activity.count} * ${activity.score} * ${activity.weight}, 0) `;
       }
-      if (activity.actionType == actionType.Visit) {
+      if (activity.actionType === actionType.Visit) {
         query += ` IF(events.type = ${activity.eventType}, ${activity.count} * ${activity.score} * ${activity.weight}, 0) `;
       }
       if (lastElement != activity) {
