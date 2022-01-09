@@ -257,9 +257,14 @@ export class EventsService {
   }
 
   async remove(eventId: string) {
-    const event = await this.findOne(eventId);
-    this.eventsRepository.remove(event);
-    return event;
+    try {
+      const event = await this.findOne(eventId);
+      await this.eventsRepository.remove(event);
+
+      return event;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async saveAddress(event: Event, eventAddress: CreateEventAddressInput) {
