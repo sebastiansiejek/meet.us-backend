@@ -19,7 +19,9 @@ export class EventAddress {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToOne(() => Event, (event) => event.id)
+  @OneToOne(() => Event, (event) => event.id, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'event', referencedColumnName: 'id' })
   event: Event;
 
