@@ -9,6 +9,7 @@ import {
 } from 'utils/getRandoms';
 
 define(Event, (faker: typeof Faker) => {
+  faker.locale = 'pl';
   const event = new Event();
 
   event.title = faker.name.title();
@@ -27,18 +28,11 @@ define(Event, (faker: typeof Faker) => {
 
   event.startDate = startDate;
   event.endDate = endDate;
-  event.lat = faker.random.number({
-    min: 52.2,
-    max: 52.26,
-    precision: 0.000001,
-  });
-  event.lng = faker.random.number({
-    min: 18.35,
-    max: 19.58,
-    precision: 0.000001,
-  });
+  event.lat = parseFloat(faker.address.latitude(52.26, 52.2, 0.000001));
+  event.lng = parseFloat(faker.address.longitude(19.58, 18.35, 0.000001));
 
   event.maxParticipants = faker.random.number(100);
+
   event.user = factory(User)() as any;
 
   return event;
