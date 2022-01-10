@@ -91,10 +91,10 @@ export class ParticipantsResolver {
     return { page, pageData: { count, limit, offset } };
   }
 
-  @Query(() => ParticipantByDateResponse, { name: 'participantsByDate' })
+  @Query(() => [ParticipantByDateResponse], { name: 'participantsByDate' })
   async participantsByDate(
     @Args('eventId', { nullable: false }) eventId: string,
   ) {
-    console.log(await this.participantService.findByDate(eventId));
+    return await this.participantService.findByDate(eventId);
   }
 }
