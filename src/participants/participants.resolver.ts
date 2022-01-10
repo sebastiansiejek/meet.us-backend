@@ -5,6 +5,7 @@ import { CurrentUser } from 'src/auth/current-user.decorator';
 import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
 import ConnectionArgs from 'src/pagination/types/connection.args';
 import { User } from 'src/users/entities/user.entity';
+import ParticipantByDateResponse from './dto/participant-by-date.response';
 import ParticipantListResponse from './dto/participant-list.response';
 import { ParticipantResponse } from './dto/participant-response.input';
 import { ParticipantUpdate } from './dto/participant-update.input';
@@ -88,5 +89,12 @@ export class ParticipantsResolver {
     });
 
     return { page, pageData: { count, limit, offset } };
+  }
+
+  @Query(() => ParticipantByDateResponse, { name: 'participantsByDate' })
+  async participantsByDate(
+    @Args('eventId', { nullable: false }) eventId: string,
+  ) {
+    console.log(await this.participantService.findByDate(eventId));
   }
 }

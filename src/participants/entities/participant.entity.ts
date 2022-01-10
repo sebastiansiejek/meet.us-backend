@@ -44,6 +44,12 @@ export class Participant {
   @Column({ nullable: false })
   type: participationType;
 
+  @Field()
+  count: number;
+
+  @Field()
+  date: Date;
+
   @CreateDateColumn()
   createdAt: Date;
 
