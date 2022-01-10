@@ -1,7 +1,7 @@
 import Faker from 'faker';
 import { define } from 'typeorm-seeding';
 import { User } from 'src/users/entities/user.entity';
-import { getRandomBoolean } from 'utils/getRandoms';
+import { getRandomBoolean, getRandomNumberBetween } from 'utils/getRandoms';
 
 define(User, (faker: typeof Faker) => {
   faker.locale = 'pl';
@@ -13,6 +13,8 @@ define(User, (faker: typeof Faker) => {
   user.lastname = faker.name.lastName();
   user.nickname = faker.internet.userName();
   user.password = faker.internet.password();
+  user.description = faker.lorem.word(25);
+  user.sex = getRandomNumberBetween(0, 1);
 
   return user;
 });
