@@ -19,6 +19,7 @@ define(EventAddress, (faker: typeof Faker) => {
   eventAddress.city = faker.address.city();
   eventAddress.postalCode = faker.address.zipCode();
   eventAddress.event = factory(Event)() as any;
+  eventAddress.district = faker.address.city();
 
   return eventAddress;
 });
