@@ -1,5 +1,10 @@
 import { Participant } from './entities/participant.entity';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EventsService } from 'src/events/events.service';
@@ -14,6 +19,7 @@ export class ParticipantsService {
   constructor(
     @InjectRepository(Participant)
     private readonly participantRepository: Repository<Participant>,
+    @Inject(forwardRef(() => EventsService))
     private readonly eventsService: EventsService,
     private readonly i18n: I18nService,
     private readonly userActivityService: UserActivityService,
@@ -73,6 +79,12 @@ export class ParticipantsService {
       where: { event: event, user: user },
     });
     return participate;
+  }
+  findMany(event: any, type: number) {
+    return this.participantRepository.find({
+      relations: ['user', 'event'],
+      where: { event: event, type: type },
+    });
   }
 
   async update(user: User, event: any, type: number) {
