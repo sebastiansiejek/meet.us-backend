@@ -45,7 +45,7 @@ export class Event {
   title: string;
 
   @Field()
-  @Column('longtext', { nullable: false })
+  @Column('mediumtext', { nullable: false })
   description: string;
 
   @Field()
