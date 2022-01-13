@@ -63,6 +63,18 @@ export class EventsService {
         'users',
         'events.user = users.id',
       )
+      .loadRelationCountAndMap(
+        'events.interestedCount',
+        'events.participants',
+        'p',
+        (qb) => qb.andWhere('p.type = 1'),
+      )
+      .loadRelationCountAndMap(
+        'events.goingCount',
+        'events.participants',
+        'p',
+        (qb) => qb.andWhere('p.type = 2'),
+      )
       .leftJoinAndMapOne(
         'events.eventAddress',
         EventAddress,
