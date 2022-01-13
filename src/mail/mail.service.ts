@@ -20,6 +20,8 @@ export class MailService {
         token: token,
         email: email,
         hostDomain: process.env.HOST_DOMAIN,
+        title: await this.i18n.translate('emails.BODY.EMAIL_VERIFY_TITLE'),
+        emailVerify: await this.i18n.translate('emails.BODY.EMAIL_VERIFY'),
       },
     });
   }
@@ -32,6 +34,7 @@ export class MailService {
         token: token,
         email: email,
         hostDomain: process.env.HOST_DOMAIN,
+        title: await this.i18n.translate('emails.BODY.PASSWORD_RESET'),
       },
     });
   }

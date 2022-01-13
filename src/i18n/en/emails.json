@@ -5,5 +5,10 @@
     "RESET_PASSWORD": {
         "SUBJECT": "Reset your password",
         "RESET_PASSWORD_MAIL": "Password reset mail has been sent successfully"
+    },
+    "BODY": {
+        "PASSWORD_RESET": "To reset your password, click the link below:",
+        "EMAIL_VERIFY_TITLE": "We just need to verify your email address before you can access.",
+        "EMAIL_VERIFY": "Verify your email address:"
     }
 }
