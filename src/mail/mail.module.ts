@@ -12,6 +12,7 @@ import { join } from 'path';
         transport: {
           host: config.get('MAIL_HOST'),
           secure: false,
+          port: 25,
           auth: {
             user: config.get('MAIL_USER'),
             pass: config.get('MAIL_PASSWORD'),
@@ -35,6 +36,7 @@ import { join } from 'path';
             },
           },
         },
+        tls: { rejectUnauthorized: false },
       }),
       inject: [ConfigService],
     }),

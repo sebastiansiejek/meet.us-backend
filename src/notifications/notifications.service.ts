@@ -2,47 +2,48 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ParticipantsService } from 'src/participants/participants.service';
 import { Event } from '../events/entities/event.entity';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { CronJob } from 'cron';
 import { MailService } from 'src/mail/mail.service';
 import dayjs from 'dayjs';
+import { CronJob } from 'cron';
 
 @Injectable()
 export class NotificationsService {
   constructor(
-    private readonly schedulerRegistry: SchedulerRegistry,
+    private schedulerRegistry: SchedulerRegistry,
     @Inject(forwardRef(() => ParticipantsService))
     private readonly participantService: ParticipantsService,
     private readonly mailService: MailService,
   ) {}
 
-  addNewJob(event: Event) {
-    console.log(dayjs(event.startDate).format('DD/MM/YYYY'));
+  async addNewJob(event: Event) {
     const sendInterestedUserMail = new CronJob(
-      dayjs(event.startDate).subtract(2, 'hours').format('mm HH MM DD *'),
+      dayjs(event.startDate).subtract(10, 'minutes').format('mm HH DD MM *'),
       () => {
-        console.log('executing interval job');
         this.sendInterestedUserMail(event);
       },
     );
-
+    console.log(
+      dayjs(event.startDate).subtract(5, 'minutes').format('mm HH DD MM *'),
+    );
     const sendTakePartUserMail = new CronJob(
-      dayjs(event.startDate).subtract(15, 'minutes').format('mm HH MM DD *'),
+      dayjs(event.startDate).subtract(1, 'minutes').format('mm HH DD MM *'),
       () => {
-        console.log('executing interval job');
         this.sendTakePartUserMail(event);
       },
     );
+    console.log(
+      dayjs(event.endDate).add(10, 'minutes').format('mm HH DD MM *'),
+    );
     const sendUserRateEventMail = new CronJob(
-      dayjs(event.endDate).add(15, 'minutes').format('mm HH MM DD *'),
+      dayjs(event.endDate).add(2, 'minutes').format('mm HH DD MM *'),
       () => {
-        console.log('executing interval job');
         this.sendUserRateEventMail(event);
       },
     );
+    console.log(dayjs(event.endDate).add(4, 'minutes').format('mm HH DD MM *'));
     const deleteAllEventJobs = new CronJob(
-      dayjs(event.endDate).add(20, 'minutes').format('mm HH MM DD *'),
+      dayjs(event.endDate).add(15, 'minutes').format('mm HH DD MM *'),
       () => {
-        console.log('executing interval job');
         this.deleteAllEventJobs(event);
       },
     );
@@ -65,15 +66,15 @@ export class NotificationsService {
     );
 
     sendInterestedUserMail.start();
-    console.log('sendInterestedUserMail');
+    sendTakePartUserMail.start();
+    sendUserRateEventMail.start();
+    deleteAllEventJobs.start();
   }
   deleteJob(jobName: string) {
     this.schedulerRegistry.deleteCronJob(jobName);
   }
 
   async sendInterestedUserMail(event: Event) {
-    console.log('send mail for interested users');
-    console.log('event', event);
     const eventOwner = event.user.id;
     const participants = await this.participantService.findMany(event, 1);
     for (const participant of participants) {
@@ -84,8 +85,6 @@ export class NotificationsService {
         );
       }
     }
-    console.log('participants', participants);
-    console.log('eventOwner', eventOwner);
   }
 
   async sendTakePartUserMail(event: Event) {
@@ -98,15 +97,9 @@ export class NotificationsService {
         this.mailService.sendTakePartUserMail(participant.user.email, event.id);
       }
     }
-
-    console.log('participants', participants);
-
-    console.log('eventOwner', eventOwner);
   }
 
   async sendUserRateEventMail(event: Event) {
-    console.log('send mail for interested users');
-    console.log('event', event);
     const eventOwner = event.user.id;
     const participants = await this.participantService.findMany(event, 2);
 
@@ -115,10 +108,6 @@ export class NotificationsService {
         this.mailService.sendRateUserMail(participant.user.email, event.id);
       }
     }
-
-    console.log('participants', participants);
-
-    console.log('eventOwner', eventOwner);
   }
 
   deleteAllEventJobs(event) {
