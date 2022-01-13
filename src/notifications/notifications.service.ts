@@ -17,30 +17,26 @@ export class NotificationsService {
 
   async addNewJob(event: Event) {
     const sendInterestedUserMail = new CronJob(
-      dayjs(event.startDate).subtract(10, 'minutes').format('mm HH DD MM *'),
+      dayjs(event.startDate).subtract(50, 'minutes').format('mm HH DD MM *'),
       () => {
         this.sendInterestedUserMail(event);
       },
     );
-    console.log(
-      dayjs(event.startDate).subtract(5, 'minutes').format('mm HH DD MM *'),
-    );
+
     const sendTakePartUserMail = new CronJob(
-      dayjs(event.startDate).subtract(1, 'minutes').format('mm HH DD MM *'),
+      dayjs(event.startDate).subtract(15, 'minutes').format('mm HH DD MM *'),
       () => {
         this.sendTakePartUserMail(event);
       },
     );
-    console.log(
-      dayjs(event.endDate).add(10, 'minutes').format('mm HH DD MM *'),
-    );
+
     const sendUserRateEventMail = new CronJob(
-      dayjs(event.endDate).add(2, 'minutes').format('mm HH DD MM *'),
+      dayjs(event.endDate).add(10, 'minutes').format('mm HH DD MM *'),
       () => {
         this.sendUserRateEventMail(event);
       },
     );
-    console.log(dayjs(event.endDate).add(4, 'minutes').format('mm HH DD MM *'));
+
     const deleteAllEventJobs = new CronJob(
       dayjs(event.endDate).add(15, 'minutes').format('mm HH DD MM *'),
       () => {
@@ -88,8 +84,6 @@ export class NotificationsService {
   }
 
   async sendTakePartUserMail(event: Event) {
-    console.log('send mail for interested users');
-    console.log('event', event);
     const eventOwner = event.user.id;
     const participants = await this.participantService.findMany(event, 2);
     for (const participant of participants) {
