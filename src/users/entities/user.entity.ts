@@ -1,4 +1,4 @@
-import { ObjectType, Field } from '@nestjs/graphql';
+import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
 import { Company } from 'src/companies/entities/company.entity';
 import {
   Column,
@@ -8,6 +8,15 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+
+export enum Sex {
+  Female,
+  Male,
+}
+
+registerEnumType(Sex, {
+  name: 'sex',
+});
 
 @ObjectType()
 @Entity({
@@ -37,6 +46,14 @@ export class User {
   @Field({ nullable: true })
   @Column({ unique: true, nullable: true })
   nickname: string;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  sex: Sex;
+
+  @Field({ nullable: true })
+  @Column('mediumtext', { nullable: true })
+  description: string;
 
   @Column({ nullable: false })
   password: string;
