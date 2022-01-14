@@ -5,6 +5,7 @@ import { Participant } from './entities/participant.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EventsModule } from 'src/events/events.module';
 import { UsersModule } from 'src/users/users.module';
+import { ParticipantsResolver } from './participants.resolver';
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { UsersModule } from 'src/users/users.module';
     UsersModule,
     UserActivityModule,
   ],
-  providers: [ParticipantsService],
+  providers: [ParticipantsService, ParticipantsResolver],
   exports: [ParticipantsService],
 })
 export class ParticipantsModule {}
