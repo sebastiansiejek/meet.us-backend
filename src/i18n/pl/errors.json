@@ -1,0 +1,16 @@
+{
+    "ERROR": {
+      "INVALID_EMAIL": "Nieprawidłowy adres e-mail",
+      "INVALID_PASSWORD": "Nieprawidłowe hasło",
+      "USER_NOT_ACTIVE": "Nie aktywowano użytkownika",
+      "USER_NOT_FOUND": "Nie znaleziono użytkownika",
+      "TOKEN_NOT_FOUND": "Nie znaleziono tokena",
+      "EXPIRED_TOKEN": "Token wygasł",
+      "PASSWORDS_NOT_MATCH": "Błedne hasło",
+      "PASSWROD_RESET_SUCCESSFULY": "Pomyślnie zresetowano hasło",
+      "EVENT_NOT_FOUND": "Nie znaleziono zdarzenia",
+      "EVENT_IS_NOT_OVER": "Wydarzenie nie zostało zakończone",
+      "USER_NOT_PARTICIPATE_IN_EVENT": "Użytkownik nie uczestniczy w wydarzeniu",
+      "USER_IS_NOT_OWNER_OF_EVENT": "Użytkownik nie jest właścicielem wydarzenia"
+    }
+}

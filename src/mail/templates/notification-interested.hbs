@@ -2,10 +2,8 @@
 
   Hi {{ email }},
   <br><br>
- {{ title }}
+  {{ body }}
 
-  <br>
- {{ emailVerify }}
   <br>
   <br>
   <table width="100%" cellspacing="0" cellpadding="0">
@@ -14,7 +12,7 @@
             <table cellspacing="0" cellpadding="0">
                 <tr>
                     <td>
-                        <a href="{{hostDomain}}/join-to-us?token={{token}}" target="_blank">
+                        <a href="{{hostDomain}}/events/{{eventId}}" target="_blank">
                             Click
                         </a>
                     </td>

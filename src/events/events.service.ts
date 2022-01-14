@@ -1,6 +1,11 @@
 import { EventAddress } from './entities/event-address.entity';
 import { Participant } from './../participants/entities/participant.entity';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { CreateEventInput } from './dto/create-event.input';
 import { UpdateEventInput } from './dto/update-event.input';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,8 +14,10 @@ import { Repository } from 'typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { IEventState } from './IEvents';
 import { CreateEventAddressInput } from './dto/create-event-address.input';
+import { UserActivityService } from 'src/user-activity/user-activity.service';
 import { UsersService } from 'src/users/users.service';
 import { I18nService } from 'nestjs-i18n';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class EventsService {
@@ -19,8 +26,11 @@ export class EventsService {
     private readonly eventsRepository: Repository<Event>,
     @InjectRepository(EventAddress)
     private readonly eventAddressRepository: Repository<EventAddress>,
+    private readonly userActivityService: UserActivityService,
     private readonly userService: UsersService,
     private readonly i18n: I18nService,
+    @Inject(forwardRef(() => NotificationsService))
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async create(createEventInput: CreateEventInput, user: User) {
@@ -35,6 +45,7 @@ export class EventsService {
     );
     event.eventAddress = address;
 
+    this.notificationsService.addNewJob(event);
     return event;
   }
 
@@ -61,15 +72,27 @@ export class EventsService {
         'users',
         'events.user = users.id',
       )
-      .innerJoinAndMapOne(
+      .loadRelationCountAndMap(
+        'events.interestedCount',
+        'events.participants',
+        'p',
+        (qb) => qb.andWhere('p.type = 1'),
+      )
+      .loadRelationCountAndMap(
+        'events.goingCount',
+        'events.participants',
+        'p',
+        (qb) => qb.andWhere('p.type = 2'),
+      )
+      .leftJoinAndMapOne(
         'events.eventAddress',
         EventAddress,
         'event_address',
         'events.id = event_address.event',
       );
-
+    let user;
     if (userId) {
-      const user = await this.userService.findOne(userId);
+      user = await this.userService.findOne(userId);
       event
         .leftJoinAndMapOne(
           'events.loggedInParticipants',
@@ -84,9 +107,16 @@ export class EventsService {
           'loggedInParticipants.user = u2.id',
         );
     }
-    event.andWhere(`events.id = '${eventId}'`);
 
-    return await event.getOne();
+    event.andWhere(`events.id = '${eventId}'`);
+    const searchedEvent = await event.getOne();
+
+    if (userId) {
+      this.userActivityService.saveEventView(user, searchedEvent);
+    }
+    this.saveVisit(searchedEvent);
+
+    return searchedEvent;
   }
 
   findOne(eventId: string) {
@@ -170,16 +200,31 @@ export class EventsService {
           'loggedInParticipants.user = u2.id',
         );
     }
-
+    let distanceQuery = '0';
     if (distance && latitude && longitude) {
       events.addSelect(
         `ROUND( 6371 * acos( cos( radians(${latitude}) ) * cos( radians( events.lat ) ) * cos( radians( events.lng ) - radians(${longitude}) ) + sin( radians(${latitude}) )* sin( radians( events.lat ) ) ) ,2)`,
         'events_distance',
       );
+
       events.andWhere(
         `ROUND( 6371 * acos( cos( radians(${latitude}) ) * cos( radians( events.lat ) ) * cos( radians( events.lng ) - radians(${longitude}) ) + sin( radians(${latitude}) )* sin( radians( events.lat ) ) ) ,2) <= :userDistanceLimit`,
         { userDistanceLimit: distance },
       );
+
+      distanceQuery = `ROUND( 6371 * acos( cos( radians(${latitude}) ) * cos( radians( events.lat ) ) * cos( radians( events.lng ) - radians(${longitude}) ) + sin( radians(${latitude}) )* sin( radians( events.lat ) ) ) ,2) <= ${distance}`;
+      if (userId) {
+        this.userActivityService.saveDistanceSerchedQuery(userId, distance);
+      }
+    }
+    if (loggedUser) {
+      const user = await this.userService.findOne(loggedUser);
+      const activity = await this.userActivityService.generateQuery(
+        user,
+        distanceQuery,
+      );
+
+      events.addSelect(`${activity}`, 'events_score');
     }
 
     if (state === 'DURING') {
@@ -214,6 +259,12 @@ export class EventsService {
 
     if (distance && latitude && longitude && field == 'distance') {
       events.orderBy(`events_distance`, 'ASC' == sort ? 'ASC' : 'DESC');
+    } else if (field == 'score') {
+      if (loggedUser) {
+        events.orderBy(`events_score`, 'ASC' == sort ? 'ASC' : 'DESC');
+      } else {
+        events.orderBy(`events.startDate`, 'ASC');
+      }
     } else {
       events.orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC');
     }
@@ -241,6 +292,8 @@ export class EventsService {
       );
     }
 
+    this.notificationsService.deleteAllEventJobs(event);
+
     const updatedEvent = await this.eventsRepository.save({
       ...event,
       ...updateEventInput,
@@ -253,13 +306,19 @@ export class EventsService {
 
     updatedEvent.eventAddress = address;
 
+    this.notificationsService.addNewJob(updatedEvent);
     return updatedEvent;
   }
 
   async remove(eventId: string) {
-    const event = await this.findOne(eventId);
-    this.eventsRepository.remove(event);
-    return event;
+    try {
+      const event = await this.findOne(eventId);
+      await this.eventsRepository.remove(event);
+
+      return event;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async saveAddress(event: Event, eventAddress: CreateEventAddressInput) {
@@ -286,5 +345,16 @@ export class EventsService {
       ...event,
       ...updateEvent,
     });
+  }
+
+  saveVisit(searchedEvent: Event) {
+    this.eventsRepository
+      .createQueryBuilder()
+      .update(Event)
+      .set({
+        visitCount: () => 'visitCount + 1',
+      })
+      .where('id = :id', { id: searchedEvent.id })
+      .execute();
   }
 }

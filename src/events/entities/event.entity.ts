@@ -45,7 +45,7 @@ export class Event {
   title: string;
 
   @Field()
-  @Column({ nullable: false })
+  @Column('mediumtext', { nullable: false })
   description: string;
 
   @Field()
@@ -69,11 +69,11 @@ export class Event {
 
   @Field()
   @Column({ type: 'decimal', precision: 10, scale: 6, nullable: true })
-  lat: number;
+  lat?: number;
 
   @Field()
   @Column({ type: 'decimal', precision: 10, scale: 6, nullable: true })
-  lng: number;
+  lng?: number;
 
   @Field()
   @Column({
@@ -84,6 +84,16 @@ export class Event {
     default: 0,
   })
   distance: number;
+
+  @Field()
+  @Column({
+    select: false,
+    insert: false,
+    readonly: true,
+    update: false,
+    default: 0,
+  })
+  score: number;
 
   @Field()
   @Column({ default: false })
@@ -116,4 +126,8 @@ export class Event {
 
   @Field({ nullable: true })
   loggedInParticipants?: Participant;
+
+  @Field()
+  @Column({ default: 0 })
+  visitCount: number;
 }

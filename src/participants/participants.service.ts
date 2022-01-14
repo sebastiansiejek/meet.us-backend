@@ -1,5 +1,10 @@
 import { Participant } from './entities/participant.entity';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EventsService } from 'src/events/events.service';
@@ -9,14 +14,17 @@ import { Event } from 'src/events/entities/event.entity';
 import { I18nService } from 'nestjs-i18n';
 import ParticipantByDateResponse from './dto/participant-by-date.response';
 import dayjs from 'dayjs';
+import { UserActivityService } from 'src/user-activity/user-activity.service';
 
 @Injectable()
 export class ParticipantsService {
   constructor(
     @InjectRepository(Participant)
     private readonly participantRepository: Repository<Participant>,
+    @Inject(forwardRef(() => EventsService))
     private readonly eventsService: EventsService,
     private readonly i18n: I18nService,
+    private readonly userActivityService: UserActivityService,
   ) {}
 
   async participateInEvent(
@@ -62,6 +70,8 @@ export class ParticipantsService {
       event: event,
     });
 
+    this.userActivityService.saveParticipantActivity(type, user, event);
+
     return participate;
   }
 
@@ -71,6 +81,12 @@ export class ParticipantsService {
       where: { event: event, user: user },
     });
     return participate;
+  }
+  findMany(event: any, type: number) {
+    return this.participantRepository.find({
+      relations: ['user', 'event'],
+      where: { event: event, type: type },
+    });
   }
 
   async update(user: User, event: any, type: number) {
@@ -85,6 +101,8 @@ export class ParticipantsService {
       ...participate,
       ...update,
     });
+
+    this.userActivityService.saveParticipantActivity(type, user, event);
 
     return result;
   }

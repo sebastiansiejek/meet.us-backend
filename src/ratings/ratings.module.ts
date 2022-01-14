@@ -6,6 +6,7 @@ import { RatingsService } from './ratings.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EventsModule } from 'src/events/events.module';
 import { UsersModule } from 'src/users/users.module';
+import { UserActivityModule } from 'src/user-activity/user-activity.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { UsersModule } from 'src/users/users.module';
     EventsModule,
     UsersModule,
     ParticipantsModule,
+    UserActivityModule,
   ],
   providers: [RatingsService, RatingsResolver],
 })
