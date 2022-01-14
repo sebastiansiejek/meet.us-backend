@@ -201,6 +201,7 @@ export class EventsService {
       const activity = await this.userActivityService.generateQuery(
         user,
         distanceQuery,
+        field,
       );
 
       events.addSelect(`${activity}`, 'events_score');
@@ -238,7 +239,7 @@ export class EventsService {
 
     if (distance && latitude && longitude && field == 'distance') {
       events.orderBy(`events_distance`, 'ASC' == sort ? 'ASC' : 'DESC');
-    } else if (field == 'score') {
+    } else if (field == 'score' || field == 'popular') {
       if (loggedUser) {
         events.orderBy(`events_score`, 'ASC' == sort ? 'ASC' : 'DESC');
       } else {
@@ -250,6 +251,7 @@ export class EventsService {
 
     const eventsMapped = await events.take(limit).skip(offset).getMany();
 
+    console.log(events.getQuery());
     eventsMapped.map((event) => {
       event.state = state;
     });
