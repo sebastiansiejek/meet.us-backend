@@ -12,6 +12,8 @@ import { ParticipantResponse } from './dto/participant-response.input';
 import { User } from 'src/users/entities/user.entity';
 import { Event } from 'src/events/entities/event.entity';
 import { I18nService } from 'nestjs-i18n';
+import ParticipantByDateResponse from './dto/participant-by-date.response';
+import dayjs from 'dayjs';
 import { UserActivityService } from 'src/user-activity/user-activity.service';
 
 @Injectable()
@@ -167,5 +169,24 @@ export class ParticipantsService {
       .getMany();
 
     return { participants: participantsMapped, totalRecords };
+  }
+
+  async findByDate(eventId: string) {
+    const participants = await this.participantRepository
+      .query(`select  count(user) as count, CAST(updatedAt AS DATE) AS date FROM participants
+          where event = "${eventId}"
+          group by  CAST(updatedAt AS DATE)
+          order by CAST(updatedAt AS DATE) DESC LIMIT 5`);
+
+    const participantByDateResponse = participants.map(
+      (participants: ParticipantByDateResponse) => {
+        return {
+          count: participants.count,
+          date: dayjs(participants.date).format('DD/MM/YYYY'),
+        };
+      },
+    );
+
+    return participantByDateResponse;
   }
 }
