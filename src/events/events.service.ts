@@ -1,6 +1,11 @@
 import { EventAddress } from './entities/event-address.entity';
 import { Participant } from './../participants/entities/participant.entity';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { CreateEventInput } from './dto/create-event.input';
 import { UpdateEventInput } from './dto/update-event.input';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,6 +17,7 @@ import { CreateEventAddressInput } from './dto/create-event-address.input';
 import { UserActivityService } from 'src/user-activity/user-activity.service';
 import { UsersService } from 'src/users/users.service';
 import { I18nService } from 'nestjs-i18n';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class EventsService {
@@ -23,6 +29,8 @@ export class EventsService {
     private readonly userActivityService: UserActivityService,
     private readonly userService: UsersService,
     private readonly i18n: I18nService,
+    @Inject(forwardRef(() => NotificationsService))
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async create(createEventInput: CreateEventInput, user: User) {
@@ -37,6 +45,7 @@ export class EventsService {
     );
     event.eventAddress = address;
 
+    this.notificationsService.addNewJob(event);
     return event;
   }
 
@@ -283,6 +292,8 @@ export class EventsService {
       );
     }
 
+    this.notificationsService.deleteAllEventJobs(event);
+
     const updatedEvent = await this.eventsRepository.save({
       ...event,
       ...updateEventInput,
@@ -295,6 +306,7 @@ export class EventsService {
 
     updatedEvent.eventAddress = address;
 
+    this.notificationsService.addNewJob(updatedEvent);
     return updatedEvent;
   }
 
