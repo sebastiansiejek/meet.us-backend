@@ -256,7 +256,8 @@ export class EventsService {
         userId,
       });
     }
-    if (type) {
+
+    if (type >= 0) {
       events.andWhere('events.type = :type', {
         type,
       });
