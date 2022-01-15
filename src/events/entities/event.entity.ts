@@ -85,7 +85,7 @@ export class Event {
   })
   distance: number;
 
-  @Field()
+  @Field({ nullable: true })
   @Column({
     select: false,
     insert: false,
@@ -93,7 +93,7 @@ export class Event {
     update: false,
     default: 0,
   })
-  score: number;
+  score?: number;
 
   @Field()
   @Column({ default: false })

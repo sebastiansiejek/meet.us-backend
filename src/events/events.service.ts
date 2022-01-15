@@ -1,3 +1,4 @@
+import { eventType } from 'src/events/entities/event.entity';
 import { EventAddress } from './entities/event-address.entity';
 import { Participant } from './../participants/entities/participant.entity';
 import {
@@ -138,6 +139,7 @@ export class EventsService {
     latitude: number,
     longitude: number,
     loggedUser: string,
+    type: eventType,
   ) {
     const currentDate = new Date().toISOString().replace('T', ' ');
 
@@ -252,6 +254,11 @@ export class EventsService {
     if (userId) {
       events.andWhere('events.user = :userId', {
         userId,
+      });
+    }
+    if (type) {
+      events.andWhere('events.type = :type', {
+        type,
       });
     }
 
