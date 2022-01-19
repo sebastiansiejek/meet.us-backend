@@ -140,8 +140,10 @@ export class EventsService {
     longitude: number,
     loggedUser: string,
     type: eventType,
+    clientDate?: number,
   ) {
-    const currentDate = new Date().toISOString().replace('T', ' ');
+    const date = clientDate ? new Date(clientDate * 1000) : new Date();
+    const clientDateFormatted = date.toISOString().replace('T', ' ');
 
     const events = this.eventsRepository
       .createQueryBuilder('events')
@@ -232,22 +234,22 @@ export class EventsService {
     if (state === 'DURING') {
       events
         .andWhere('events.startDate <= :startDate', {
-          startDate: currentDate,
+          startDate: clientDateFormatted,
         })
         .andWhere('events.endDate >= :endDate', {
-          endDate: currentDate,
+          endDate: clientDateFormatted,
         });
     }
 
     if (state === 'FUTURE') {
       events.andWhere('events.startDate > :startDate', {
-        startDate: currentDate,
+        startDate: clientDateFormatted,
       });
     }
 
     if (state === 'PAST') {
       events.andWhere('events.startDate < :startDate', {
-        startDate: currentDate,
+        startDate: clientDateFormatted,
       });
     }
 

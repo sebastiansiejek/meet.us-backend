@@ -41,6 +41,8 @@ export class EventsResolver {
     @Args({ name: 'state', nullable: true }) state: IEventState,
     @Args({ name: 'type', nullable: true }) type: eventType,
     @Args({ name: 'userId', nullable: true }) userId: string,
+    @Args({ name: 'clientDate', nullable: true, description: 'UNIX' })
+    clientDate: number,
   ): Promise<EventResponse> {
     const { limit, offset } = args.pagingParams();
     const { field, sort } = args.orderParams();
@@ -58,6 +60,7 @@ export class EventsResolver {
       longitude,
       userId,
       type,
+      clientDate,
     );
     const events = records.events;
     const count = records.totalRecords.length;
