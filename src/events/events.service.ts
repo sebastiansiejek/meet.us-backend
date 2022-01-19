@@ -248,8 +248,8 @@ export class EventsService {
     }
 
     if (state === 'PAST') {
-      events.andWhere('events.startDate < :startDate', {
-        startDate: clientDateFormatted,
+      events.andWhere('events.endDate < :endDate', {
+        endDate: clientDateFormatted,
       });
     }
 
