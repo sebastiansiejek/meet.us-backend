@@ -6,8 +6,10 @@ import { TagsService } from './tags.service';
 export class TagsResolver {
   constructor(private readonly tagsService: TagsService) {}
 
-  @Query(() => Tag, { name: 'tags' })
-  async tags(@Args('type', { nullable: true }) type: eventType) {
+  @Query(() => [Tag], { name: 'tags' })
+  async tags(
+    @Args('type', { nullable: true }) type: eventType,
+  ): Promise<Tag[]> {
     return await this.tagsService.getTypes(type);
   }
 }

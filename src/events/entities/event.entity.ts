@@ -1,6 +1,5 @@
 import { EventAddress } from './event-address.entity';
 import { Participant } from './../../participants/entities/participant.entity';
-
 import { ObjectType, Field, registerEnumType, Int } from '@nestjs/graphql';
 import { User } from 'src/users/entities/user.entity';
 import {
@@ -120,6 +119,10 @@ export class Event {
   @Field({ nullable: true })
   @Column({ type: 'decimal', precision: 6, scale: 2, nullable: true })
   rate: number;
+
+  @Field({ nullable: true })
+  @Column('json', { nullable: true })
+  tags: string;
 
   @Field({ nullable: true })
   goingCount: number;
