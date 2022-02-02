@@ -1,3 +1,4 @@
+import { Rating } from './../../ratings/entities/rating.entity';
 import { EventAddress } from './event-address.entity';
 import { Participant } from './../../participants/entities/participant.entity';
 
@@ -126,6 +127,9 @@ export class Event {
 
   @Field({ nullable: true })
   loggedInParticipants?: Participant;
+
+  @Field({ nullable: true })
+  participantRate?: Rating;
 
   @Field()
   @Column({ default: 0 })
