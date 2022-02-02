@@ -3,6 +3,34 @@ import { Tag } from './../../tags/entities/tag.entity';
 import { Factory, Seeder } from 'typeorm-seeding';
 import { Connection } from 'typeorm';
 
+const tags = [
+  'sport',
+  'fitness',
+  'gym',
+  'workout',
+  'motivation',
+  'training',
+  'fit',
+  'bodybuilding',
+  'lifestyle',
+  'fitnessmotivation',
+  'healthy',
+  'travel',
+  'photography',
+  'health',
+  'follow',
+  'gymlife',
+  'football',
+  'boxing',
+  'basketball',
+  'fun',
+  'muscle',
+  'sportscenetr',
+  'forest',
+  'runing',
+  'football',
+];
+
 export default class CreateTags implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<any> {
     this.seedSportTags(connection);
@@ -10,34 +38,6 @@ export default class CreateTags implements Seeder {
     this.seedPartyTags(connection);
   }
   private async seedSportTags(connection: Connection) {
-    const tags = [
-      'sport',
-      'fitness',
-      'gym',
-      'workout',
-      'motivation',
-      'training',
-      'fit',
-      'bodybuilding',
-      'lifestyle',
-      'fitnessmotivation',
-      'healthy',
-      'travel',
-      'photography',
-      'health',
-      'follow',
-      'gymlife',
-      'football',
-      'boxing',
-      'basketball',
-      'fun',
-      'muscle',
-      'sportscenetr',
-      'forest',
-      'runing',
-      'football',
-    ];
-
     const values = [];
     for (const tag of tags) {
       values.push({ type: eventType.Sport, name: tag });
@@ -50,34 +50,6 @@ export default class CreateTags implements Seeder {
       .execute();
   }
   private async seedPartyTags(connection: Connection) {
-    const tags = [
-      'sport',
-      'fitness',
-      'gym',
-      'workout',
-      'motivation',
-      'training',
-      'fit',
-      'bodybuilding',
-      'lifestyle',
-      'fitnessmotivation',
-      'healthy',
-      'travel',
-      'photography',
-      'health',
-      'follow',
-      'gymlife',
-      'football',
-      'boxing',
-      'basketball',
-      'fun',
-      'muscle',
-      'sportscenetr',
-      'forest',
-      'runing',
-      'football',
-    ];
-
     const values = [];
     for (const tag of tags) {
       values.push({ type: eventType.Social, name: tag });
@@ -90,34 +62,6 @@ export default class CreateTags implements Seeder {
       .execute();
   }
   private async seedSocialTags(connection: Connection) {
-    const tags = [
-      'sport',
-      'fitness',
-      'gym',
-      'workout',
-      'motivation',
-      'training',
-      'fit',
-      'bodybuilding',
-      'lifestyle',
-      'fitnessmotivation',
-      'healthy',
-      'travel',
-      'photography',
-      'health',
-      'follow',
-      'gymlife',
-      'football',
-      'boxing',
-      'basketball',
-      'fun',
-      'muscle',
-      'sportscenetr',
-      'forest',
-      'runing',
-      'football',
-    ];
-
     const values = [];
     for (const tag of tags) {
       values.push({ type: eventType.Party, name: tag });
