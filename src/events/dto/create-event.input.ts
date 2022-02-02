@@ -28,6 +28,9 @@ export class CreateEventInput {
   lng: number;
 
   @Field()
+  tags: string;
+
+  @Field()
   eventAddress: CreateEventAddressInput;
 
   @Field(() => Int, { nullable: true })
