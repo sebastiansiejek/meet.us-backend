@@ -6,8 +6,8 @@ import { Connection } from 'typeorm';
 export default class CreateTags implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<any> {
     this.seedSportTags(connection);
-    this.seedEventTags(connection);
     this.seedSocialTags(connection);
+    this.seedPartyTags(connection);
   }
   private async seedSportTags(connection: Connection) {
     const tags = [
@@ -49,7 +49,7 @@ export default class CreateTags implements Seeder {
       .values(values)
       .execute();
   }
-  private async seedSocialTags(connection: Connection) {
+  private async seedPartyTags(connection: Connection) {
     const tags = [
       'sport',
       'fitness',
@@ -89,7 +89,7 @@ export default class CreateTags implements Seeder {
       .values(values)
       .execute();
   }
-  private async seedEventTags(connection: Connection) {
+  private async seedSocialTags(connection: Connection) {
     const tags = [
       'sport',
       'fitness',
