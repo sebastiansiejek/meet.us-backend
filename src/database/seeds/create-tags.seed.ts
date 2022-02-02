@@ -33,39 +33,14 @@ const tags = [
 
 export default class CreateTags implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<any> {
-    this.seedSportTags(connection);
-    this.seedSocialTags(connection);
-    this.seedPartyTags(connection);
-  }
-  private async seedSportTags(connection: Connection) {
     const values = [];
+
     for (const tag of tags) {
       values.push({ type: eventType.Sport, name: tag });
-    }
-    await connection
-      .createQueryBuilder()
-      .insert()
-      .into(Tag)
-      .values(values)
-      .execute();
-  }
-  private async seedPartyTags(connection: Connection) {
-    const values = [];
-    for (const tag of tags) {
+      values.push({ type: eventType.Party, name: tag });
       values.push({ type: eventType.Social, name: tag });
     }
-    await connection
-      .createQueryBuilder()
-      .insert()
-      .into(Tag)
-      .values(values)
-      .execute();
-  }
-  private async seedSocialTags(connection: Connection) {
-    const values = [];
-    for (const tag of tags) {
-      values.push({ type: eventType.Party, name: tag });
-    }
+
     await connection
       .createQueryBuilder()
       .insert()
