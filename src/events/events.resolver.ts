@@ -107,6 +107,38 @@ export class EventsResolver {
     return { page, pageData: { count, limit, offset } };
   }
 
+  @Query(() => EventResponse)
+  async userEventsCalendar(
+    @Args() args: ConnectionArgs,
+    @Args({ name: 'query', defaultValue: '' }) query: string,
+    @Args({ name: 'type', nullable: true }) type: eventType,
+    @Args({ name: 'userId', nullable: false }) userId: string,
+    @Args({ name: 'startDate', nullable: false }) startDate: Date,
+    @Args({ name: 'endDate', nullable: false }) endDate: Date,
+  ): Promise<EventResponse> {
+    const { limit, offset } = args.pagingParams();
+    const { field, sort } = args.orderParams();
+    const records = await this.eventsService.findAllForCalendar(
+      limit,
+      offset,
+      field,
+      sort,
+      query,
+      userId,
+      type,
+      startDate,
+      endDate,
+    );
+    const events = records.events;
+    const count = records.totalRecords.length;
+    const page = connectionFromArraySlice(events, args, {
+      arrayLength: count,
+      sliceStart: offset || 0,
+    });
+
+    return { page, pageData: { count, limit, offset } };
+  }
+
   @Query(() => Event)
   @UseGuards(GqlAuthGuard)
   findForEdit(@CurrentUser() user: User, @Args('id') eventId: string) {
