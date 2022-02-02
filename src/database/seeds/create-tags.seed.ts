@@ -1,5 +1,5 @@
+import { eventType } from 'src/events/entities/event.entity';
 import { Tag } from './../../tags/entities/tag.entity';
-import { eventType } from './../../user-activity/entities/userActivity.entity';
 import { Factory, Seeder } from 'typeorm-seeding';
 import { Connection } from 'typeorm';
 

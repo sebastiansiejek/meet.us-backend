@@ -1,7 +1,8 @@
+import { eventType } from 'src/events/entities/event.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { eventType, Tag } from './entities/tag.entity';
+import { Tag } from './entities/tag.entity';
 
 @Injectable()
 export class TagsService {
