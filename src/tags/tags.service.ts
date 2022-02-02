@@ -8,10 +8,10 @@ import { Tag } from './entities/tag.entity';
 export class TagsService {
   constructor(
     @InjectRepository(Tag)
-    private readonly tagsRespository: Repository<Tag>,
+    private readonly tagsRepository: Repository<Tag>,
   ) {}
 
   async getTypes(type: eventType) {
-    return await this.tagsRespository.find({ where: { type: type } });
+    return await this.tagsRepository.find({ where: { type: type } });
   }
 }
