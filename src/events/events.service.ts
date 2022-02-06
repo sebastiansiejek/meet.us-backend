@@ -19,6 +19,7 @@ import { UserActivityService } from 'src/user-activity/user-activity.service';
 import { UsersService } from 'src/users/users.service';
 import { I18nService } from 'nestjs-i18n';
 import { NotificationsService } from 'src/notifications/notifications.service';
+import { Rating } from 'src/ratings/entities/rating.entity';
 
 @Injectable()
 export class EventsService {
@@ -106,6 +107,18 @@ export class EventsService {
           User,
           'u2',
           'loggedInParticipants.user = u2.id',
+        )
+        .leftJoinAndMapOne(
+          'events.participantRate',
+          Rating,
+          'participantRate',
+          `events.id = participantRate.event and participantRate.user = "${user.id}"`,
+        )
+        .leftJoinAndMapOne(
+          'participantRate.user',
+          User,
+          'u3',
+          'participantRate.user = u3.id',
         );
     }
 

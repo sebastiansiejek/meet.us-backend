@@ -1,6 +1,7 @@
+import { Tag } from './../../tags/entities/tag.entity';
+import { Rating } from './../../ratings/entities/rating.entity';
 import { EventAddress } from './event-address.entity';
 import { Participant } from './../../participants/entities/participant.entity';
-
 import { ObjectType, Field, registerEnumType, Int } from '@nestjs/graphql';
 import { User } from 'src/users/entities/user.entity';
 import {
@@ -15,6 +16,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { IEventState } from '../IEvents';
+import { GraphQLJSON } from 'graphql-type-json';
 
 export enum eventType {
   Sport,
@@ -121,11 +123,18 @@ export class Event {
   @Column({ type: 'decimal', precision: 6, scale: 2, nullable: true })
   rate: number;
 
+  @Field(() => GraphQLJSON, { nullable: true })
+  @Column('json', { nullable: true })
+  tags: Tag[];
+
   @Field({ nullable: true })
   goingCount: number;
 
   @Field({ nullable: true })
   loggedInParticipants?: Participant;
+
+  @Field({ nullable: true })
+  participantRate?: Rating;
 
   @Field()
   @Column({ default: 0 })
