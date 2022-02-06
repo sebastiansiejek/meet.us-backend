@@ -1,6 +1,8 @@
+import { Tag } from './../../tags/entities/tag.entity';
 import { CreateEventAddressInput } from './create-event-address.input';
 import { InputType, Field, Int } from '@nestjs/graphql';
 import { eventType } from '../entities/event.entity';
+import GraphQLJSON from 'graphql-type-json';
 
 @InputType()
 export class CreateEventInput {
@@ -27,8 +29,10 @@ export class CreateEventInput {
   @Field()
   lng: number;
 
-  @Field()
-  tags: string;
+  @Field(() => GraphQLJSON, {
+    nullable: true,
+  })
+  tags: Tag[];
 
   @Field()
   eventAddress: CreateEventAddressInput;
