@@ -380,4 +380,72 @@ export class EventsService {
       .where('id = :id', { id: searchedEvent.id })
       .execute();
   }
+
+  async findAllForCalendar(
+    limit: number,
+    offset: number,
+    field: string,
+    sort: string,
+    query: string,
+    userId: string,
+    type: eventType,
+    startDate: Date,
+    endDate: Date,
+  ) {
+    const startDateFormated = startDate.toISOString().replace('T', ' ');
+    endDate.setHours(23, 59, 59, 999);
+    const endDateFormated = endDate.toISOString().replace('T', ' ');
+
+    const events = this.eventsRepository
+      .createQueryBuilder('events')
+      .innerJoinAndMapOne(
+        'events.user',
+        User,
+        'users',
+        'events.user = users.id',
+      )
+      .leftJoinAndMapOne(
+        'events.eventAddress',
+        EventAddress,
+        'event_address',
+        'events.id = event_address.event',
+      )
+      .leftJoinAndMapOne(
+        'events.loggedInParticipants',
+        Participant,
+        'loggedInParticipants',
+        `events.id = loggedInParticipants.event and loggedInParticipants.user = "${userId}"`,
+      )
+      .leftJoinAndMapOne(
+        'loggedInParticipants.user',
+        User,
+        'u2',
+        'loggedInParticipants.user = u2.id',
+      )
+      .where(
+        '(events.title like  :title or events.description like :description)',
+        { title: `%${query}%`, description: `%${query}%` },
+      )
+      .where(
+        `( events.startDate > :startDate and events.startDate < :endDate or 
+        events.endDate < :startDate and events.endDate > :endDate or
+        events.startDate < :startDate and events.endDate > :startDate ) and ( events.user = :userId or loggedInParticipants.user = :userId)`,
+        {
+          startDate: `${startDateFormated}`,
+          endDate: `${endDateFormated}`,
+          userId: `${userId}`,
+        },
+      );
+
+    if (type === 0 || type === 1 || type === 2) {
+      events.andWhere('( events.type = :type )', { type: `${type}` });
+    }
+    const totalRecords = await events.getMany();
+
+    events.orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC');
+
+    const eventsMapped = await events.take(limit).skip(offset).getMany();
+
+    return { events: eventsMapped, totalRecords };
+  }
 }
