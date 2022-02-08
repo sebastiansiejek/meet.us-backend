@@ -19,6 +19,7 @@ export enum actionType {
   Distance,
   Rate,
   Visit,
+  Tag
 }
 
 registerEnumType(actionType, {
@@ -49,6 +50,10 @@ export class UserActivity {
   @Field()
   @Column({ nullable: true })
   eventType: eventType;
+
+  @Field()
+  @Column('mediumtext', { nullable: true })
+  tag: string;
 
   @Field()
   @Column({ nullable: false })

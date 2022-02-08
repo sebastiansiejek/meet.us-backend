@@ -15,6 +15,9 @@ export default class UserActivitySave {
   eventType: eventType;
 
   @Field()
+  tag: string;
+
+  @Field()
   count: number;
 
   @Field()
