@@ -1,5 +1,10 @@
 import { Participant } from './entities/participant.entity';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EventsService } from 'src/events/events.service';
@@ -7,6 +12,8 @@ import { ParticipantResponse } from './dto/participant-response.input';
 import { User } from 'src/users/entities/user.entity';
 import { Event } from 'src/events/entities/event.entity';
 import { I18nService } from 'nestjs-i18n';
+import ParticipantByDateResponse from './dto/participant-by-date.response';
+import dayjs from 'dayjs';
 import { UserActivityService } from 'src/user-activity/user-activity.service';
 
 @Injectable()
@@ -14,6 +21,7 @@ export class ParticipantsService {
   constructor(
     @InjectRepository(Participant)
     private readonly participantRepository: Repository<Participant>,
+    @Inject(forwardRef(() => EventsService))
     private readonly eventsService: EventsService,
     private readonly i18n: I18nService,
     private readonly userActivityService: UserActivityService,
@@ -73,6 +81,12 @@ export class ParticipantsService {
       where: { event: event, user: user },
     });
     return participate;
+  }
+  findMany(event: any, type: number) {
+    return this.participantRepository.find({
+      relations: ['user', 'event'],
+      where: { event: event, type: type },
+    });
   }
 
   async update(user: User, event: any, type: number) {
@@ -155,5 +169,24 @@ export class ParticipantsService {
       .getMany();
 
     return { participants: participantsMapped, totalRecords };
+  }
+
+  async findByDate(eventId: string) {
+    const participants = await this.participantRepository
+      .query(`select  count(user) as count, CAST(updatedAt AS DATE) AS date FROM participants
+          where event = "${eventId}"
+          group by  CAST(updatedAt AS DATE)
+          order by CAST(updatedAt AS DATE) DESC LIMIT 5`);
+
+    const participantByDateResponse = participants.map(
+      (participants: ParticipantByDateResponse) => {
+        return {
+          count: participants.count,
+          date: dayjs(participants.date).format('DD/MM/YYYY'),
+        };
+      },
+    );
+
+    return participantByDateResponse;
   }
 }

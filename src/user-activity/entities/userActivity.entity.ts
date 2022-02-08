@@ -1,3 +1,4 @@
+import { eventType } from 'src/events/entities/event.entity';
 import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
 import { User } from 'src/users/entities/user.entity';
 import {
@@ -9,12 +10,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-
-export enum eventType {
-  Sport,
-  Party,
-  Social,
-}
 
 export enum actionType {
   Category,

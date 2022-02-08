@@ -50,6 +50,7 @@
     "graphql": "15.5.0",
     "graphql-relay": "0.8.0",
     "graphql-tools": "8.2.0",
+    "graphql-type-json": "^0.3.2",
     "handlebars": "^4.7.7",
     "mysql2": "^2.2.5",
     "nestjs-i18n": "^8.1.0",

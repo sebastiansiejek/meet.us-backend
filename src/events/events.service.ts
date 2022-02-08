@@ -1,6 +1,12 @@
+import { eventType } from 'src/events/entities/event.entity';
 import { EventAddress } from './entities/event-address.entity';
 import { Participant } from './../participants/entities/participant.entity';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { CreateEventInput } from './dto/create-event.input';
 import { UpdateEventInput } from './dto/update-event.input';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,6 +18,8 @@ import { CreateEventAddressInput } from './dto/create-event-address.input';
 import { UserActivityService } from 'src/user-activity/user-activity.service';
 import { UsersService } from 'src/users/users.service';
 import { I18nService } from 'nestjs-i18n';
+import { NotificationsService } from 'src/notifications/notifications.service';
+import { Rating } from 'src/ratings/entities/rating.entity';
 
 @Injectable()
 export class EventsService {
@@ -23,6 +31,8 @@ export class EventsService {
     private readonly userActivityService: UserActivityService,
     private readonly userService: UsersService,
     private readonly i18n: I18nService,
+    @Inject(forwardRef(() => NotificationsService))
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async create(createEventInput: CreateEventInput, user: User) {
@@ -37,6 +47,7 @@ export class EventsService {
     );
     event.eventAddress = address;
 
+    this.notificationsService.addNewJob(event);
     return event;
   }
 
@@ -63,6 +74,18 @@ export class EventsService {
         'users',
         'events.user = users.id',
       )
+      .loadRelationCountAndMap(
+        'events.interestedCount',
+        'events.participants',
+        'p',
+        (qb) => qb.andWhere('p.type = 1'),
+      )
+      .loadRelationCountAndMap(
+        'events.goingCount',
+        'events.participants',
+        'p',
+        (qb) => qb.andWhere('p.type = 2'),
+      )
       .leftJoinAndMapOne(
         'events.eventAddress',
         EventAddress,
@@ -84,6 +107,18 @@ export class EventsService {
           User,
           'u2',
           'loggedInParticipants.user = u2.id',
+        )
+        .leftJoinAndMapOne(
+          'events.participantRate',
+          Rating,
+          'participantRate',
+          `events.id = participantRate.event and participantRate.user = "${user.id}"`,
+        )
+        .leftJoinAndMapOne(
+          'participantRate.user',
+          User,
+          'u3',
+          'participantRate.user = u3.id',
         );
     }
 
@@ -117,8 +152,11 @@ export class EventsService {
     latitude: number,
     longitude: number,
     loggedUser: string,
+    type: eventType,
+    clientDate?: number,
   ) {
-    const currentDate = new Date().toISOString().replace('T', ' ');
+    const date = clientDate ? new Date(clientDate * 1000) : new Date();
+    const clientDateFormatted = date.toISOString().replace('T', ' ');
 
     const events = this.eventsRepository
       .createQueryBuilder('events')
@@ -210,28 +248,34 @@ export class EventsService {
     if (state === 'DURING') {
       events
         .andWhere('events.startDate <= :startDate', {
-          startDate: currentDate,
+          startDate: clientDateFormatted,
         })
         .andWhere('events.endDate >= :endDate', {
-          endDate: currentDate,
+          endDate: clientDateFormatted,
         });
     }
 
     if (state === 'FUTURE') {
       events.andWhere('events.startDate > :startDate', {
-        startDate: currentDate,
+        startDate: clientDateFormatted,
       });
     }
 
     if (state === 'PAST') {
-      events.andWhere('events.startDate < :startDate', {
-        startDate: currentDate,
+      events.andWhere('events.endDate < :endDate', {
+        endDate: clientDateFormatted,
       });
     }
 
     if (userId) {
       events.andWhere('events.user = :userId', {
         userId,
+      });
+    }
+
+    if (type >= 0) {
+      events.andWhere('events.type = :type', {
+        type,
       });
     }
 
@@ -273,6 +317,8 @@ export class EventsService {
       );
     }
 
+    this.notificationsService.deleteAllEventJobs(event);
+
     const updatedEvent = await this.eventsRepository.save({
       ...event,
       ...updateEventInput,
@@ -285,6 +331,7 @@ export class EventsService {
 
     updatedEvent.eventAddress = address;
 
+    this.notificationsService.addNewJob(updatedEvent);
     return updatedEvent;
   }
 
@@ -334,5 +381,73 @@ export class EventsService {
       })
       .where('id = :id', { id: searchedEvent.id })
       .execute();
+  }
+
+  async findAllForCalendar(
+    limit: number,
+    offset: number,
+    field: string,
+    sort: string,
+    query: string,
+    userId: string,
+    type: eventType,
+    startDate: Date,
+    endDate: Date,
+  ) {
+    const startDateFormated = startDate.toISOString().replace('T', ' ');
+    endDate.setHours(23, 59, 59, 999);
+    const endDateFormated = endDate.toISOString().replace('T', ' ');
+
+    const events = this.eventsRepository
+      .createQueryBuilder('events')
+      .innerJoinAndMapOne(
+        'events.user',
+        User,
+        'users',
+        'events.user = users.id',
+      )
+      .leftJoinAndMapOne(
+        'events.eventAddress',
+        EventAddress,
+        'event_address',
+        'events.id = event_address.event',
+      )
+      .leftJoinAndMapOne(
+        'events.loggedInParticipants',
+        Participant,
+        'loggedInParticipants',
+        `events.id = loggedInParticipants.event and loggedInParticipants.user = "${userId}"`,
+      )
+      .leftJoinAndMapOne(
+        'loggedInParticipants.user',
+        User,
+        'u2',
+        'loggedInParticipants.user = u2.id',
+      )
+      .where(
+        '(events.title like  :title or events.description like :description)',
+        { title: `%${query}%`, description: `%${query}%` },
+      )
+      .where(
+        `( events.startDate > :startDate and events.startDate < :endDate or 
+        events.endDate < :startDate and events.endDate > :endDate or
+        events.startDate < :startDate and events.endDate > :startDate ) and ( events.user = :userId or loggedInParticipants.user = :userId)`,
+        {
+          startDate: `${startDateFormated}`,
+          endDate: `${endDateFormated}`,
+          userId: `${userId}`,
+        },
+      );
+
+    if (type === 0 || type === 1 || type === 2) {
+      events.andWhere('( events.type = :type )', { type: `${type}` });
+    }
+    const totalRecords = await events.getMany();
+
+    events.orderBy(`events.${field}`, 'ASC' == sort ? 'ASC' : 'DESC');
+
+    const eventsMapped = await events.take(limit).skip(offset).getMany();
+
+    return { events: eventsMapped, totalRecords };
   }
 }

@@ -1,3 +1,4 @@
+import { eventType } from 'src/events/entities/event.entity';
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { EventsService } from './events.service';
 import { Event } from './entities/event.entity';
@@ -38,7 +39,10 @@ export class EventsResolver {
     @Args() args: ConnectionArgs,
     @Args({ name: 'query', defaultValue: '' }) query: string,
     @Args({ name: 'state', nullable: true }) state: IEventState,
+    @Args({ name: 'type', nullable: true }) type: eventType,
     @Args({ name: 'userId', nullable: true }) userId: string,
+    @Args({ name: 'clientDate', nullable: true, description: 'UNIX' })
+    clientDate: number,
   ): Promise<EventResponse> {
     const { limit, offset } = args.pagingParams();
     const { field, sort } = args.orderParams();
@@ -55,6 +59,8 @@ export class EventsResolver {
       latitude,
       longitude,
       userId,
+      type,
+      clientDate,
     );
     const events = records.events;
     const count = records.totalRecords.length;
@@ -71,6 +77,7 @@ export class EventsResolver {
     @Args() args: ConnectionArgs,
     @Args({ name: 'query', defaultValue: '' }) query: string,
     @Args({ name: 'state', nullable: true }) state: IEventState,
+    @Args({ name: 'type', nullable: true }) type: eventType,
     @Args({ name: 'userId', nullable: false }) userId: string,
   ): Promise<EventResponse> {
     const { limit, offset } = args.pagingParams();
@@ -88,6 +95,39 @@ export class EventsResolver {
       latitude,
       longitude,
       null,
+      type,
+    );
+    const events = records.events;
+    const count = records.totalRecords.length;
+    const page = connectionFromArraySlice(events, args, {
+      arrayLength: count,
+      sliceStart: offset || 0,
+    });
+
+    return { page, pageData: { count, limit, offset } };
+  }
+
+  @Query(() => EventResponse)
+  async userEventsCalendar(
+    @Args() args: ConnectionArgs,
+    @Args({ name: 'query', defaultValue: '' }) query: string,
+    @Args({ name: 'type', nullable: true }) type: eventType,
+    @Args({ name: 'userId', nullable: false }) userId: string,
+    @Args({ name: 'startDate', nullable: false }) startDate: Date,
+    @Args({ name: 'endDate', nullable: false }) endDate: Date,
+  ): Promise<EventResponse> {
+    const { limit, offset } = args.pagingParams();
+    const { field, sort } = args.orderParams();
+    const records = await this.eventsService.findAllForCalendar(
+      limit,
+      offset,
+      field,
+      sort,
+      query,
+      userId,
+      type,
+      startDate,
+      endDate,
     );
     const events = records.events;
     const count = records.totalRecords.length;

@@ -20,6 +20,8 @@ export class MailService {
         token: token,
         email: email,
         hostDomain: process.env.HOST_DOMAIN,
+        title: await this.i18n.translate('emails.BODY.EMAIL_VERIFY_TITLE'),
+        emailVerify: await this.i18n.translate('emails.BODY.EMAIL_VERIFY'),
       },
     });
   }
@@ -32,6 +34,46 @@ export class MailService {
         token: token,
         email: email,
         hostDomain: process.env.HOST_DOMAIN,
+        title: await this.i18n.translate('emails.BODY.PASSWORD_RESET'),
+      },
+    });
+  }
+  async sendInterestedUserMail(email: string, eventId: string) {
+    await this.mailerService.sendMail({
+      to: email,
+      subject: await this.i18n.translate('emails.INTERESTED.SUBJECT'),
+      template: './notification-interested',
+      context: {
+        eventId: eventId,
+        email: email,
+        hostDomain: process.env.HOST_DOMAIN,
+        body: await this.i18n.translate('emails.INTERESTED.BODY'),
+      },
+    });
+  }
+  async sendTakePartUserMail(email: string, eventId: string) {
+    await this.mailerService.sendMail({
+      to: email,
+      subject: await this.i18n.translate('emails.TAKE_PART.SUBJECT'),
+      template: './notification-takepart',
+      context: {
+        eventId: eventId,
+        email: email,
+        hostDomain: process.env.HOST_DOMAIN,
+        body: await this.i18n.translate('emails.TAKE_PART.BODY'),
+      },
+    });
+  }
+  async sendRateUserMail(email: string, eventId: string) {
+    await this.mailerService.sendMail({
+      to: email,
+      subject: await this.i18n.translate('emails.RATE.SUBJECT'),
+      template: './notification-rate',
+      context: {
+        eventId: eventId,
+        email: email,
+        hostDomain: process.env.HOST_DOMAIN,
+        body: await this.i18n.translate('emails.RATE.BODY'),
       },
     });
   }
