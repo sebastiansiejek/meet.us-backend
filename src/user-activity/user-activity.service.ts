@@ -157,17 +157,19 @@ export class UserActivityService {
   }
   async saveDistanceSerchedQuery(userId: string, distance: number) {
     const user = await this.usersService.findOne(userId);
-    let score = 1;
+    let score = 3;
     if (distance > 30 && distance < 70) score = 2;
-    if (distance <= 70) score = 3;
+    if (distance <= 70) score = 1;
 
     this.createOrUpdate(user, actionType.Distance, null, score, 0.03);
   }
 
   async saveRateActivity(rate: number, user: User, event: any) {
-    if (rate === 3) rate *= -1;
-    if (rate === 2) rate *= -2;
-    if (rate === 1) rate *= -3;
+    if (rate === 5) rate = 3;
+    if (rate === 4) rate = 2;
+    if (rate === 3) rate = 1;
+    if (rate === 2) rate = -1;
+    if (rate === 1) rate = -2;
 
     this.createOrUpdate(user, actionType.Rate, event.type, rate, 0.04);
     this.saveTagsActivity(user, actionType.Rate, event.tags, rate, 0.02);
@@ -245,7 +247,9 @@ export class UserActivityService {
         }
       }
       if (activity.actionType === actionType.Distance) {
-        query += `IF( ${distanceQuery} > 0, (IF(${distanceQuery} < 30, ${activity.count} * ${activity.score} * ${activity.weight}, IF( ${distanceQuery} > 30 AND ${distanceQuery} < 70, ${activity.count} * ${activity.score} * ${activity.weight}, IF( ${distanceQuery} > 70, ${activity.count} * ${activity.score} * ${activity.weight}, 0)))), 0)`;
+        query += `IF( ${distanceQuery} > 0, (IF(${distanceQuery} < 30 AND ${activity.score} = 3 , 
+          10, IF( ${distanceQuery} > 30 AND ${distanceQuery} < 70 AND ${activity.score} = 2 , 7, 
+            IF( ${distanceQuery} > 70  AND ${activity.score} = 2, 4, 0)))), 0)`;
       }
       if (activity.actionType === actionType.Rate) {
         query += ` IF(events.type = ${activity.eventType}, ${activity.count} * ${activity.score} * ${activity.weight}, 0) `;
