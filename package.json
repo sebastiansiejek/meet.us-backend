@@ -27,6 +27,10 @@
     "schema:drop": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js schema:drop",
     "schema:sync": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js schema:sync"
   },
+  "engines": {
+    "node": "14.x.x",
+    "npm": "8.x.x"
+  },
   "dependencies": {
     "@apollo/gateway": "^0.44.1",
     "@nestjs-modules/mailer": "^1.6.0",
