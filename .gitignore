@@ -35,4 +35,3 @@ lerna-debug.log*
 
 .env
 .devcontainer
-/public/*
