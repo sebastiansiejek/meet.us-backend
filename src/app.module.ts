@@ -16,9 +16,13 @@ import { UserActivityModule } from './user-activity/user-activity.module';
 import { RatingsModule } from './ratings/ratings.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { TagsModule } from './tags/tags.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'public'),
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
