@@ -1,1 +1,2 @@
-web: yarn doc:generate && yarn start:prod
+web: yarn start:prod
+docs: yarn doc:generate
