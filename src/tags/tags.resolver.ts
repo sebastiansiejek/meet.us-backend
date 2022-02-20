@@ -1,4 +1,4 @@
-import { eventType } from 'src/events/entities/event.entity';
+import { eventType } from '../events/entities/event.entity';
 import { Args, Query, Resolver } from '@nestjs/graphql';
 import { Tag } from './entities/tag.entity';
 import { TagsService } from './tags.service';

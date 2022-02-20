@@ -1,5 +1,5 @@
 import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
-import { Company } from 'src/companies/entities/company.entity';
+import { Company } from '../../companies/entities/company.entity';
 import {
   Column,
   CreateDateColumn,

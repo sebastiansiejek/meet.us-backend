@@ -1,15 +1,15 @@
-import { eventType } from 'src/events/entities/event.entity';
+import { eventType } from '../events/entities/event.entity';
 import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
 import { EventsService } from './events.service';
 import { Event } from './entities/event.entity';
 import { CreateEventInput } from './dto/create-event.input';
 import { UpdateEventInput } from './dto/update-event.input';
-import { CurrentUser } from 'src/auth/current-user.decorator';
-import { User } from 'src/users/entities/user.entity';
-import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
+import { CurrentUser } from '../auth/current-user.decorator';
+import { User } from '../users/entities/user.entity';
+import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { UseGuards } from '@nestjs/common';
 import EventResponse from './dto/event.response';
-import ConnectionArgs from 'src/pagination/types/connection.args';
+import ConnectionArgs from '../pagination/types/connection.args';
 import { connectionFromArraySlice } from 'graphql-relay';
 import { IEventState } from './IEvents';
 

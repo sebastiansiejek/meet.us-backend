@@ -1,4 +1,4 @@
-import { eventType } from 'src/events/entities/event.entity';
+import { eventType } from '../events/entities/event.entity';
 import { EventAddress } from './entities/event-address.entity';
 import { Participant } from './../participants/entities/participant.entity';
 import {
@@ -12,14 +12,14 @@ import { UpdateEventInput } from './dto/update-event.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Event } from './entities/event.entity';
 import { Repository } from 'typeorm';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 import { IEventState } from './IEvents';
 import { CreateEventAddressInput } from './dto/create-event-address.input';
-import { UserActivityService } from 'src/user-activity/user-activity.service';
-import { UsersService } from 'src/users/users.service';
+import { UserActivityService } from '../user-activity/user-activity.service';
+import { UsersService } from '../users/users.service';
 import { I18nService } from 'nestjs-i18n';
-import { NotificationsService } from 'src/notifications/notifications.service';
-import { Rating } from 'src/ratings/entities/rating.entity';
+import { NotificationsService } from '../notifications/notifications.service';
+import { Rating } from '../ratings/entities/rating.entity';
 
 @Injectable()
 export class EventsService {

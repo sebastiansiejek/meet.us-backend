@@ -1,8 +1,8 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { ParticipantsService } from 'src/participants/participants.service';
+import { ParticipantsService } from '../participants/participants.service';
 import { Event } from '../events/entities/event.entity';
 import { SchedulerRegistry } from '@nestjs/schedule';
-import { MailService } from 'src/mail/mail.service';
+import { MailService } from '../mail/mail.service';
 import dayjs from 'dayjs';
 import { CronJob } from 'cron';
 

@@ -7,14 +7,14 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { EventsService } from 'src/events/events.service';
+import { EventsService } from '../events/events.service';
 import { ParticipantResponse } from './dto/participant-response.input';
-import { User } from 'src/users/entities/user.entity';
-import { Event } from 'src/events/entities/event.entity';
+import { User } from '../users/entities/user.entity';
+import { Event } from '../events/entities/event.entity';
 import { I18nService } from 'nestjs-i18n';
 import ParticipantByDateResponse from './dto/participant-by-date.response';
 import dayjs from 'dayjs';
-import { UserActivityService } from 'src/user-activity/user-activity.service';
+import { UserActivityService } from '../user-activity/user-activity.service';
 
 @Injectable()
 export class ParticipantsService {

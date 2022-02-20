@@ -3,7 +3,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserInput } from './dto/create-user.input';
 import { I18nService } from 'nestjs-i18n';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MailService } from 'src/mail/mail.service';
+import { MailService } from '../mail/mail.service';
 import { Repository } from 'typeorm';
 import { ResetPasswordTokenInput } from './dto/reset-password-token.input';
 import { TokenService } from './token/token.service';
@@ -28,7 +28,11 @@ export class UsersService {
     const user = await this.usersRepository.save(createUserInput);
     const token = this.tokenService.encrypt(user.id);
 
-    this.mailService.sendUserRegisterConfirmation(user.email, token);
+    try {
+      this.mailService.sendUserRegisterConfirmation(user.email, token);
+    } catch (err) {
+      console.log(err);
+    }
 
     return user;
   }

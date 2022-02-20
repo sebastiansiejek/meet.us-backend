@@ -1,4 +1,4 @@
-import { eventType } from 'src/events/entities/event.entity';
+import { eventType } from '../events/entities/event.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';

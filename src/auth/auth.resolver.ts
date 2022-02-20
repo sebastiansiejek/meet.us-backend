@@ -7,7 +7,7 @@ import {
   Resolver,
   Query,
 } from '@nestjs/graphql';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './current-user.decorator';
 import { LoginUserInput } from './dto/login-user.input';

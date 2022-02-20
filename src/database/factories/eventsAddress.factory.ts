@@ -2,7 +2,7 @@ import Faker from 'faker';
 import { EventAddress } from './../../events/entities/event-address.entity';
 
 import { define, factory } from 'typeorm-seeding';
-import { Event } from 'src/events/entities/event.entity';
+import { Event } from '../../events/entities/event.entity';
 
 define(EventAddress, (faker: typeof Faker) => {
   const eventAddress = new EventAddress();

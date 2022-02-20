@@ -1,4 +1,4 @@
-import { Event } from 'src/events/entities/event.entity';
+import { Event } from '../../events/entities/event.entity';
 import { Factory, Seeder } from 'typeorm-seeding';
 
 export default class CreateEvents implements Seeder {

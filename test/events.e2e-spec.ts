@@ -1,17 +1,13 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const faker = require('faker');
-import * as request from 'supertest';
+import request = require('supertest');
 import { AppModule } from '../src/app.module';
-import { CreateEventInput } from 'src/events/dto/create-event.input';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createInputObject } from './helpers/testHelpers';
-import { eventType, state } from 'src/events/entities/event.entity';
 
 describe('Events (e2e)', () => {
   let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -20,46 +16,40 @@ describe('Events (e2e)', () => {
     await app.init();
   });
 
-  it('Find all', () => {
-    const findEventsQuery = `query {
-      events {
-        title,
-        eventId
-      }
-    }`;
+  afterAll(async () => {
+    await app.close();
+  });
 
-    return request(app.getHttpServer())
+  it('Create', () => {
+    // return request(app.getHttpServer())
+    //     .post('/graphql')
+    //     .send({
+    //         query: createEventsMutation,
+    //     })
+    //     .expect(200);
+  });
+
+  it('Find all', async () => {
+    const findEventsQuery = `query{
+            events(first:1){
+              page{
+                edges{
+                  node{
+                    id,
+                    title,
+                  }
+                }
+              }
+            }
+          }`;
+    const response = await request('http://localhost:3000')
       .post('/graphql')
       .send({
         query: findEventsQuery,
       })
-      .expect(({ body }) => {
-        const { data } = body;
-        const { events } = data;
-        expect(events.length).toBeGreaterThan(0);
-      })
       .expect(200);
-  });
 
-  it('Create', () => {
-    const sampleEvent: CreateEventInput = {
-      title: faker.firstName.firstName(),
-      description: faker.productDescription.productDescription(),
-      eventType: eventType.Party,
-      state: state.Draft,
-    };
-
-    const createEventsMutation = `mutation {
-      createEvent(createEventInput: ${createInputObject(sampleEvent)}) {
-        eventId,
-      }
-    }`;
-
-    return request(app.getHttpServer())
-      .post('/graphql')
-      .send({
-        query: createEventsMutation,
-      })
-      .expect(200);
+    expect(response.body.errors).toBeUndefined();
+    expect(response.body.data?.events.page.edges.length).toBeGreaterThan(0);
   });
 });

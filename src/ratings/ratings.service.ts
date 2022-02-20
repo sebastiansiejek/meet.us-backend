@@ -2,13 +2,13 @@ import { ParticipantsService } from './../participants/participants.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { I18nService } from 'nestjs-i18n';
-import { Event } from 'src/events/entities/event.entity';
-import { EventsService } from 'src/events/events.service';
-import { User } from 'src/users/entities/user.entity';
+import { Event } from '../events/entities/event.entity';
+import { EventsService } from '../events/events.service';
+import { User } from '../users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { RatingResponse } from './dto/rating-response.input';
 import { Rating } from './entities/rating.entity';
-import { UserActivityService } from 'src/user-activity/user-activity.service';
+import { UserActivityService } from '../user-activity/user-activity.service';
 
 @Injectable()
 export class RatingsService {

@@ -1,11 +1,11 @@
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { actionType, UserActivity } from './entities/userActivity.entity';
 import UserActivitySave from './dto/user-activity-save.input';
-import { User } from 'src/users/entities/user.entity';
-import { Event } from 'src/events/entities/event.entity';
+import { User } from '../users/entities/user.entity';
+import { Event } from '../events/entities/event.entity';
 @Injectable()
 export class UserActivityService {
   constructor(
