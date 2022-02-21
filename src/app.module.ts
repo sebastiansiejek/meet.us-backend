@@ -22,6 +22,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'public'),
+      exclude: ['/graphql/*'],
     }),
     ConfigModule.forRoot({
       isGlobal: true,
