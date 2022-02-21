@@ -19,7 +19,7 @@ export enum actionType {
   Distance,
   Rate,
   Visit,
-  Tag
+  Tag,
 }
 
 registerEnumType(actionType, {
@@ -56,16 +56,20 @@ export class UserActivity {
   tag: string;
 
   @Field()
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   count: number;
 
   @Field()
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   score: number;
 
   @Field()
   @Column({ type: 'decimal', precision: 6, scale: 2, nullable: true })
   weight: number;
+
+  @Field()
+  @Column({ nullable: true })
+  identifier: number;
 
   @CreateDateColumn()
   createdAt: Date;

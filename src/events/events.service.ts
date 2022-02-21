@@ -230,8 +230,9 @@ export class EventsService {
       );
 
       distanceQuery = `ROUND( 6371 * acos( cos( radians(${latitude}) ) * cos( radians( events.lat ) ) * cos( radians( events.lng ) - radians(${longitude}) ) + sin( radians(${latitude}) )* sin( radians( events.lat ) ) ) ,2) <= ${distance}`;
-      if (userId) {
-        this.userActivityService.saveDistanceSerchedQuery(userId, distance);
+
+      if (loggedUser) {
+        this.userActivityService.saveDistanceSerchedQuery(loggedUser, distance);
       }
     }
     if (loggedUser) {
@@ -295,7 +296,6 @@ export class EventsService {
 
     const eventsMapped = await events.take(limit).skip(offset).getMany();
 
-    console.log(events.getQuery());
     eventsMapped.map((event) => {
       event.state = state;
     });
