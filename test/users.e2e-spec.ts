@@ -1,4 +1,3 @@
-import { UsersService } from './../src/users/users.service';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const faker = require('faker');
 import request = require('supertest');
@@ -11,7 +10,7 @@ import { Connection } from 'typeorm';
 
 describe('Users (e2e)', () => {
   let app: INestApplication;
-  let usersService: UsersService;
+  const createdUsers = [];
   let connection: Connection;
 
   beforeAll(async () => {
@@ -19,10 +18,12 @@ describe('Users (e2e)', () => {
       imports: [AppModule],
     }).compile();
 
-    usersService = moduleFixture.get<UsersService>(UsersService);
     connection = moduleFixture.get<Connection>(Connection);
     app = moduleFixture.createNestApplication();
     await app.init();
+  });
+  beforeEach(() => {
+    jest.useFakeTimers();
   });
 
   afterAll(async () => {
@@ -50,11 +51,11 @@ describe('Users (e2e)', () => {
       })
       .expect(200);
 
+    createdUsers.push(response.body.data?.createUser.id);
+
     expect(response.body.errors).toBeUndefined();
     expect(response.body.data?.createUser.email).toBe(createUser.email);
     expect(response.body.data?.createUser.isActive).toBe(false);
-
-    await usersService.remove(response.body.data?.createUser.id);
   });
 
   it('Find all', async () => {
@@ -86,16 +87,16 @@ describe('Users (e2e)', () => {
       email: faker.internet.email(),
       password: 'p@ssword1D',
     };
-    let response = await actvateUser(createUser);
+    const newActiveUser = await createNewAndActivateUser(createUser);
 
     const loginUsersMutation = `mutation{
-            login(loginUserInput: {email: "${response.body.data?.createUser.email}", password: "p@ssword1D"}){
+            login(loginUserInput: {email: "${createUser.email}", password: "p@ssword1D"}){
               accessToken,
               refreshToken
             }
           }`;
 
-    response = await request('http://localhost:3000')
+    const response = await request('http://localhost:3000')
       .post('/graphql')
       .send({
         query: loginUsersMutation,
@@ -105,11 +106,40 @@ describe('Users (e2e)', () => {
     const accessTokenLength = response.body.data?.login.accessToken.length;
     const refreshTokenLength = response.body.data?.login.refreshToken.length;
 
+    createdUsers.push(newActiveUser.body.data?.createUser.id);
+
     expect(response.body.errors).toBeUndefined();
     expect(accessTokenLength).toBeGreaterThan(1);
     expect(refreshTokenLength).toBeGreaterThan(1);
   });
-  async function actvateUser(createUser: CreateUserInput) {
+
+  it('Login if not activated', async () => {
+    const createUser: CreateUserInput = {
+      email: faker.internet.email(),
+      password: 'p@ssword1D',
+    };
+    const newUserResponse = await createNewUser(createUser);
+
+    const loginUsersMutation = `mutation{
+            login(loginUserInput: {email: "${createUser.email}", password: "p@ssword1D"}){
+              accessToken,
+              refreshToken
+            }
+          }`;
+
+    const response = await request('http://localhost:3000')
+      .post('/graphql')
+      .send({
+        query: loginUsersMutation,
+      })
+      .expect(200);
+
+    createdUsers.push(newUserResponse.body.data?.createUser.id);
+
+    expect(response.body.errors).toBeDefined();
+  });
+
+  async function createNewUser(createUser: CreateUserInput) {
     const createUsersMutation = ` mutation {
            createUser(createUserInput: ${createInputObject(createUser)}){
              id
@@ -117,6 +147,24 @@ describe('Users (e2e)', () => {
              isActive
            }
         }`;
+
+    const response = await request('http://localhost:3000')
+      .post('/graphql')
+      .send({
+        query: createUsersMutation,
+      })
+      .expect(200);
+
+    return response;
+  }
+  async function createNewAndActivateUser(createUser: CreateUserInput) {
+    const createUsersMutation = ` mutation {
+            createUser(createUserInput: ${createInputObject(createUser)}){
+              id
+              email,
+              isActive
+            }
+         }`;
 
     const response = await request('http://localhost:3000')
       .post('/graphql')

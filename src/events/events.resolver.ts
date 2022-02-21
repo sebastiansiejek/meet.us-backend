@@ -17,8 +17,8 @@ import { IEventState } from './IEvents';
 export class EventsResolver {
   constructor(private readonly eventsService: EventsService) {}
 
-  @Mutation(() => Event)
   @UseGuards(GqlAuthGuard)
+  @Mutation(() => Event)
   createEvent(
     @CurrentUser() user: User,
     @Args('createEventInput') createEventInput: CreateEventInput,

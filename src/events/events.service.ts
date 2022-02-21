@@ -336,11 +336,11 @@ export class EventsService {
   async remove(eventId: string) {
     try {
       const event = await this.findOne(eventId);
-      await this.eventsRepository.remove(event);
+      await this.eventsRepository.delete({ id: eventId });
 
       return event;
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   }
 
