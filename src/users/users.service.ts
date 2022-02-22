@@ -1,7 +1,7 @@
 import { ActivateUserInput } from './dto/activate-user.input';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserInput } from './dto/create-user.input';
-import { I18nService } from 'nestjs-i18n';
+import { I18nService, I18nLang } from 'nestjs-i18n';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MailService } from 'src/mail/mail.service';
 import { Repository } from 'typeorm';
@@ -95,11 +95,16 @@ export class UsersService {
     return await this.usersRepository.save(user);
   }
 
-  async resetPassword(email: string): Promise<{ message: string }> {
+  async resetPassword(
+    email: string,
+    @I18nLang() lang: string,
+  ): Promise<{ message: string }> {
     const user = await this.findByMail(email);
     if (!user) {
       throw new BadRequestException(
-        await this.i18n.translate('errors.ERROR.INVALID_EMAIL'),
+        await this.i18n.translate('errors.ERROR.INVALID_EMAIL', {
+          lang,
+        }),
       );
     }
     const token = this.tokenService.createToken(user);
