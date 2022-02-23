@@ -1,7 +1,7 @@
 import { ActivateUserInput } from './dto/activate-user.input';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserInput } from './dto/create-user.input';
-import { I18nService, I18nLang } from 'nestjs-i18n';
+import { I18nLang, I18nService } from 'nestjs-i18n';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MailService } from 'src/mail/mail.service';
 import { Repository } from 'typeorm';
@@ -21,14 +21,14 @@ export class UsersService {
     private readonly i18n: I18nService,
   ) {}
 
-  async create(createUserInput: CreateUserInput) {
+  async create(createUserInput: CreateUserInput, @I18nLang() lang: string) {
     const salt = await genSalt(10);
     createUserInput.password = await hash(createUserInput.password, salt);
 
     const user = await this.usersRepository.save(createUserInput);
     const token = this.tokenService.encrypt(user.id);
 
-    this.mailService.sendUserRegisterConfirmation(user.email, token);
+    this.mailService.sendUserRegisterConfirmation(user.email, token, lang);
 
     return user;
   }
@@ -102,9 +102,7 @@ export class UsersService {
     const user = await this.findByMail(email);
     if (!user) {
       throw new BadRequestException(
-        await this.i18n.translate('errors.ERROR.INVALID_EMAIL', {
-          lang,
-        }),
+        await this.i18n.translate('errors.ERROR.INVALID_EMAIL', { lang }),
       );
     }
     const token = this.tokenService.createToken(user);
@@ -113,17 +111,23 @@ export class UsersService {
     user.resetPasswordExpires = new Date(new Date().getTime() + 20 * 60 * 1000);
     this.usersRepository.save(user);
 
-    this.mailService.sendUserResetPassword(user.email, user.resetPasswordToken);
+    this.mailService.sendUserResetPassword(
+      user.email,
+      user.resetPasswordToken,
+      lang,
+    );
 
     return {
       message: await this.i18n.translate(
         'emails.RESET_PASSWORD.RESET_PASSWORD_MAIL',
+        { lang },
       ),
     };
   }
 
   async resetPasswordToken(
     resetPasswordToken: ResetPasswordTokenInput,
+    @I18nLang() lang: string,
   ): Promise<{ message: string }> {
     const user = await this.usersRepository.findOne({
       where: { resetPasswordToken: resetPasswordToken.token },
@@ -131,12 +135,12 @@ export class UsersService {
 
     if (!user) {
       throw new BadRequestException(
-        await this.i18n.translate('errors.ERROR.TOKEN_NOT_FOUND'),
+        await this.i18n.translate('errors.ERROR.TOKEN_NOT_FOUND', { lang }),
       );
     }
     if (user.resetPasswordExpires < new Date()) {
       throw new BadRequestException(
-        await this.i18n.translate('errors.ERROR.EXPIRED_TOKEN'),
+        await this.i18n.translate('errors.ERROR.EXPIRED_TOKEN', { lang }),
       );
     }
 
@@ -148,7 +152,7 @@ export class UsersService {
 
     if (!(await compare(resetPasswordToken.newPassword, confirmPassword))) {
       throw new BadRequestException(
-        await this.i18n.translate('errors.ERROR.PASSWORDS_NOT_MATCH'),
+        await this.i18n.translate('errors.ERROR.PASSWORDS_NOT_MATCH', { lang }),
       );
     }
 

@@ -12,6 +12,7 @@ import EventResponse from './dto/event.response';
 import ConnectionArgs from 'src/pagination/types/connection.args';
 import { connectionFromArraySlice } from 'graphql-relay';
 import { IEventState } from './IEvents';
+import { I18nLang } from 'nestjs-i18n';
 
 @Resolver(() => Event)
 export class EventsResolver {
@@ -141,8 +142,12 @@ export class EventsResolver {
 
   @Query(() => Event)
   @UseGuards(GqlAuthGuard)
-  findForEdit(@CurrentUser() user: User, @Args('id') eventId: string) {
-    return this.eventsService.findForEdit(eventId, user.id);
+  findForEdit(
+    @CurrentUser() user: User,
+    @Args('id') eventId: string,
+    @I18nLang() lang: string,
+  ) {
+    return this.eventsService.findForEdit(eventId, user.id, lang);
   }
 
   @Mutation(() => Event)
@@ -150,11 +155,13 @@ export class EventsResolver {
   updateEvent(
     @CurrentUser() user: User,
     @Args('updateEventInput') updateEventInput: UpdateEventInput,
+    @I18nLang() lang: string,
   ) {
     return this.eventsService.update(
       user,
       updateEventInput.id,
       updateEventInput,
+      lang,
     );
   }
 

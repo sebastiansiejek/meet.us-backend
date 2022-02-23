@@ -32,8 +32,11 @@ export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
   @Mutation(() => User)
-  createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
-    return this.usersService.create(createUserInput);
+  createUser(
+    @Args('createUserInput') createUserInput: CreateUserInput,
+    @I18nLang() lang: string,
+  ) {
+    return this.usersService.create(createUserInput, lang);
   }
 
   @Mutation(() => User)
@@ -103,7 +106,8 @@ export class UsersResolver {
   confirmResetPassword(
     @Args('confirmResetPassword')
     resetPasswordTokenInput: ResetPasswordTokenInput,
+    @I18nLang() lang: string,
   ) {
-    return this.usersService.resetPasswordToken(resetPasswordTokenInput);
+    return this.usersService.resetPasswordToken(resetPasswordTokenInput, lang);
   }
 }
