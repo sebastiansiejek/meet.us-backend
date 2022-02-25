@@ -7,6 +7,7 @@ import {
   Resolver,
   Query,
 } from '@nestjs/graphql';
+import { I18nLang } from 'nestjs-i18n';
 import { User } from 'src/users/entities/user.entity';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './current-user.decorator';
@@ -54,8 +55,13 @@ export class AuthResolver {
   async refresh(
     @CurrentUser() user: User,
     @Args('refreshToken') refreshToken: RefreshUserToken,
+    @I18nLang() lang: string,
   ) {
-    return await this.authService.refreshLoginToken(user, refreshToken.token);
+    return await this.authService.refreshLoginToken(
+      user,
+      refreshToken.token,
+      lang,
+    );
   }
 
   @Query(() => isValid)

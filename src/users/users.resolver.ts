@@ -19,6 +19,7 @@ import ConnectionArgs from 'src/pagination/types/connection.args';
 import UserResponse from './dto/user.response';
 import { ResetPasswordInput } from './dto/reset-password.input';
 import { ResetPasswordTokenInput } from './dto/reset-password-token.input';
+import { I18nLang } from 'nestjs-i18n';
 
 @ObjectType()
 export class ResetResponse {
@@ -31,8 +32,11 @@ export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
   @Mutation(() => User)
-  createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
-    return this.usersService.create(createUserInput);
+  createUser(
+    @Args('createUserInput') createUserInput: CreateUserInput,
+    @I18nLang() lang: string,
+  ) {
+    return this.usersService.create(createUserInput, lang);
   }
 
   @Mutation(() => User)
@@ -93,15 +97,17 @@ export class UsersResolver {
   @Mutation(() => ResetResponse)
   resetPassword(
     @Args('resetPasswordInput') resetPasswordInput: ResetPasswordInput,
+    @I18nLang() lang: string,
   ) {
-    return this.usersService.resetPassword(resetPasswordInput.email);
+    return this.usersService.resetPassword(resetPasswordInput.email, lang);
   }
 
   @Mutation(() => ResetResponse)
   confirmResetPassword(
     @Args('confirmResetPassword')
     resetPasswordTokenInput: ResetPasswordTokenInput,
+    @I18nLang() lang: string,
   ) {
-    return this.usersService.resetPasswordToken(resetPasswordTokenInput);
+    return this.usersService.resetPasswordToken(resetPasswordTokenInput, lang);
   }
 }

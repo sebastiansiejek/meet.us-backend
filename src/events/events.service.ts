@@ -12,7 +12,7 @@ import { IEventState } from './IEvents';
 import { CreateEventAddressInput } from './dto/create-event-address.input';
 import { UserActivityService } from 'src/user-activity/user-activity.service';
 import { UsersService } from 'src/users/users.service';
-import { I18nService } from 'nestjs-i18n';
+import { I18nLang, I18nService } from 'nestjs-i18n';
 import { Rating } from 'src/ratings/entities/rating.entity';
 
 @Injectable()
@@ -42,14 +42,16 @@ export class EventsService {
     return event;
   }
 
-  async findForEdit(eventId: string, userId: string) {
+  async findForEdit(eventId: string, userId: string, @I18nLang() lang: string) {
     const event = await this.findOne(eventId);
 
     const user = await this.userService.findOne(userId);
 
     if (event.user.id != user.id) {
       throw new BadRequestException(
-        await this.i18n.translate('errors.ERROR.USER_IS_NOT_OWNER_OF_EVENT'),
+        await this.i18n.translate('errors.ERROR.USER_IS_NOT_OWNER_OF_EVENT', {
+          lang,
+        }),
       );
     }
 
@@ -296,13 +298,16 @@ export class EventsService {
     user: User,
     eventId: string,
     updateEventInput: UpdateEventInput,
+    @I18nLang() lang: string,
   ) {
     const event = await this.findOne(eventId);
     const loggedUser = await this.userService.findOne(user.id);
 
     if (event.user.id != loggedUser.id) {
       throw new BadRequestException(
-        await this.i18n.translate('errors.ERROR.USER_IS_NOT_OWNER_OF_EVENT'),
+        await this.i18n.translate('errors.ERROR.USER_IS_NOT_OWNER_OF_EVENT', {
+          lang,
+        }),
       );
     }
 
@@ -415,7 +420,7 @@ export class EventsService {
         { title: `%${query}%`, description: `%${query}%` },
       )
       .where(
-        `( events.startDate > :startDate and events.startDate < :endDate or 
+        `( events.startDate > :startDate and events.startDate < :endDate or
         		events.endDate < :startDate and events.endDate > :endDate or
         		events.startDate < :startDate and events.endDate > :startDate ) and ( events.user = :userId or loggedInParticipants.user = :userId)`,
         {

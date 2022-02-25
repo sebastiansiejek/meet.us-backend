@@ -1,6 +1,7 @@
 import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { connectionFromArraySlice } from 'graphql-relay';
+import { I18nLang } from 'nestjs-i18n';
 import { CurrentUser } from 'src/auth/current-user.decorator';
 import { GqlAuthGuard } from 'src/auth/guards/gql-auth.guard';
 import ConnectionArgs from 'src/pagination/types/connection.args';
@@ -21,11 +22,13 @@ export class ParticipantsResolver {
   participateInEvent(
     @CurrentUser() user: User,
     @Args('participateInEvent') participantUpdate: ParticipantUpdate,
+    @I18nLang() lang: string,
   ): Promise<ParticipantResponse> {
     return this.participantService.participateInEvent(
       participantUpdate.eventId,
       user,
       participantUpdate.type,
+      lang,
     );
   }
 
