@@ -1,12 +1,7 @@
 import { eventType } from 'src/events/entities/event.entity';
 import { EventAddress } from './entities/event-address.entity';
 import { Participant } from './../participants/entities/participant.entity';
-import {
-  BadRequestException,
-  forwardRef,
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateEventInput } from './dto/create-event.input';
 import { UpdateEventInput } from './dto/update-event.input';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -18,7 +13,6 @@ import { CreateEventAddressInput } from './dto/create-event-address.input';
 import { UserActivityService } from 'src/user-activity/user-activity.service';
 import { UsersService } from 'src/users/users.service';
 import { I18nLang, I18nService } from 'nestjs-i18n';
-import { NotificationsService } from 'src/notifications/notifications.service';
 import { Rating } from 'src/ratings/entities/rating.entity';
 
 @Injectable()
@@ -31,8 +25,6 @@ export class EventsService {
     private readonly userActivityService: UserActivityService,
     private readonly userService: UsersService,
     private readonly i18n: I18nService,
-    @Inject(forwardRef(() => NotificationsService))
-    private readonly notificationsService: NotificationsService,
   ) {}
 
   async create(createEventInput: CreateEventInput, user: User) {
@@ -47,7 +39,6 @@ export class EventsService {
     );
     event.eventAddress = address;
 
-    this.notificationsService.addNewJob(event);
     return event;
   }
 
@@ -320,8 +311,6 @@ export class EventsService {
       );
     }
 
-    this.notificationsService.deleteAllEventJobs(event);
-
     const updatedEvent = await this.eventsRepository.save({
       ...event,
       ...updateEventInput,
@@ -334,7 +323,6 @@ export class EventsService {
 
     updatedEvent.eventAddress = address;
 
-    this.notificationsService.addNewJob(updatedEvent);
     return updatedEvent;
   }
 
@@ -432,9 +420,9 @@ export class EventsService {
         { title: `%${query}%`, description: `%${query}%` },
       )
       .where(
-        `( events.startDate > :startDate and events.startDate < :endDate or 
-        events.endDate < :startDate and events.endDate > :endDate or
-        events.startDate < :startDate and events.endDate > :startDate ) and ( events.user = :userId or loggedInParticipants.user = :userId)`,
+        `( events.startDate > :startDate and events.startDate < :endDate or
+        		events.endDate < :startDate and events.endDate > :endDate or
+        		events.startDate < :startDate and events.endDate > :startDate ) and ( events.user = :userId or loggedInParticipants.user = :userId)`,
         {
           startDate: `${startDateFormated}`,
           endDate: `${endDateFormated}`,
@@ -452,5 +440,19 @@ export class EventsService {
     const eventsMapped = await events.take(limit).skip(offset).getMany();
 
     return { events: eventsMapped, totalRecords };
+  }
+
+  async searchStartDate(start: string, end: string) {
+    return await this.eventsRepository
+      .createQueryBuilder('events')
+      .where(`(events.startDate > '${start}' AND events.startDate <= '${end}')`)
+      .getMany();
+  }
+
+  async searchEndDate(start: string, end: string) {
+    return await this.eventsRepository
+      .createQueryBuilder('events')
+      .where(`(events.endDate > '${start}' AND events.endDate <= '${end}')`)
+      .getMany();
   }
 }
