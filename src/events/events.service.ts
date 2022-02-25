@@ -223,8 +223,9 @@ export class EventsService {
       );
 
       distanceQuery = `ROUND( 6371 * acos( cos( radians(${latitude}) ) * cos( radians( events.lat ) ) * cos( radians( events.lng ) - radians(${longitude}) ) + sin( radians(${latitude}) )* sin( radians( events.lat ) ) ) ,2) <= ${distance}`;
-      if (userId) {
-        this.userActivityService.saveDistanceSerchedQuery(userId, distance);
+
+      if (loggedUser) {
+        this.userActivityService.saveDistanceSerchedQuery(loggedUser, distance);
       }
     }
     if (loggedUser) {
@@ -232,6 +233,7 @@ export class EventsService {
       const activity = await this.userActivityService.generateQuery(
         user,
         distanceQuery,
+        field,
       );
 
       events.addSelect(`${activity}`, 'events_score');
@@ -275,7 +277,7 @@ export class EventsService {
 
     if (distance && latitude && longitude && field == 'distance') {
       events.orderBy(`events_distance`, 'ASC' == sort ? 'ASC' : 'DESC');
-    } else if (field == 'score') {
+    } else if (field == 'score' || field == 'popular') {
       if (loggedUser) {
         events.orderBy(`events_score`, 'ASC' == sort ? 'ASC' : 'DESC');
       } else {
