@@ -1,6 +1,6 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
-import { I18nService } from 'nestjs-i18n';
+import { I18nLang, I18nService } from 'nestjs-i18n';
 
 @Injectable()
 export class MailService {
@@ -9,7 +9,11 @@ export class MailService {
     private readonly i18n: I18nService,
   ) {}
 
-  async sendUserRegisterConfirmation(email: string, token: string) {
+  async sendUserRegisterConfirmation(
+    email: string,
+    token: string,
+    @I18nLang() lang: string,
+  ) {
     await this.mailerService.sendMail({
       to: email,
       subject: await this.i18n.translate(
@@ -20,21 +24,33 @@ export class MailService {
         token: token,
         email: email,
         hostDomain: process.env.HOST_DOMAIN,
-        title: await this.i18n.translate('emails.BODY.EMAIL_VERIFY_TITLE'),
-        emailVerify: await this.i18n.translate('emails.BODY.EMAIL_VERIFY'),
+        title: await this.i18n.translate('emails.BODY.EMAIL_VERIFY_TITLE', {
+          lang,
+        }),
+        emailVerify: await this.i18n.translate('emails.BODY.EMAIL_VERIFY', {
+          lang,
+        }),
       },
     });
   }
-  async sendUserResetPassword(email: string, token: string) {
+  async sendUserResetPassword(
+    email: string,
+    token: string,
+    @I18nLang() lang: string,
+  ) {
     await this.mailerService.sendMail({
       to: email,
-      subject: await this.i18n.translate('emails.RESET_PASSWORD.SUBJECT'),
+      subject: await this.i18n.translate('emails.RESET_PASSWORD.SUBJECT', {
+        lang,
+      }),
       template: './reset-password',
       context: {
         token: token,
         email: email,
         hostDomain: process.env.HOST_DOMAIN,
-        title: await this.i18n.translate('emails.BODY.PASSWORD_RESET'),
+        title: await this.i18n.translate('emails.BODY.PASSWORD_RESET', {
+          lang,
+        }),
       },
     });
   }
