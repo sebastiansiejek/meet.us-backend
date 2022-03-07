@@ -194,7 +194,7 @@ export class UserActivityService {
     const user = await this.usersService.findOne(userId);
     let identifier = 3;
     if (distance > 30 && distance < 70) identifier = 2;
-    if (distance <= 70) identifier = 1;
+    if (distance >= 70) identifier = 1;
     this.createOrUpdateIdentifier(user, actionType.Distance, identifier);
   }
 
