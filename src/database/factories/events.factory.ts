@@ -1,7 +1,7 @@
 import Faker from 'faker';
 import { define, factory } from 'typeorm-seeding';
-import { Event } from 'src/events/entities/event.entity';
-import { User } from 'src/users/entities/user.entity';
+import { Event } from '../../events/entities/event.entity';
+import { User } from '../../users/entities/user.entity';
 import {
   getRandomDateFromDate,
   getRandomNumberBetween,
@@ -9,11 +9,12 @@ import {
 } from 'utils/getRandoms';
 
 define(Event, (faker: typeof Faker) => {
+  faker.locale = 'pl';
   const event = new Event();
 
   event.title = faker.name.title();
   event.description = faker.lorem.sentence();
-  event.type = getRandomNumberBetween(0, 1);
+  event.type = getRandomNumberBetween(0, 2);
 
   const today = new Date();
   const dates = [
@@ -27,8 +28,11 @@ define(Event, (faker: typeof Faker) => {
 
   event.startDate = startDate;
   event.endDate = endDate;
+  event.lat = parseFloat(faker.address.latitude(52.26, 52.2, 0.000001));
+  event.lng = parseFloat(faker.address.longitude(19.58, 18.35, 0.000001));
 
   event.maxParticipants = faker.random.number(100);
+
   event.user = factory(User)() as any;
 
   return event;

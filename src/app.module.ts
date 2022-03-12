@@ -1,18 +1,29 @@
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
-import { GraphQLModule } from '@nestjs/graphql';
-import { UsersModule } from './users/users.module';
-import { MailModule } from './mail/mail.module';
-import { I18nModule, I18nJsonParser } from 'nestjs-i18n';
 import { AuthModule } from './auth/auth.module';
+import { ConfigModule } from '@nestjs/config';
 import { EventsModule } from './events/events.module';
-import * as path from 'path';
+import { GraphQLModule } from '@nestjs/graphql';
+import { I18nModule, I18nJsonParser } from 'nestjs-i18n';
+import { MailModule } from './mail/mail.module';
+import { Module } from '@nestjs/common';
 import { QueryResolver } from './i18n/QueryResolver';
 import { ScheduleModule } from '@nestjs/schedule';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersModule } from './users/users.module';
+import { join } from 'path';
+import { ParticipantsModule } from './participants/participants.module';
+import { CompaniesModule } from './companies/companies.module';
+import { UserActivityModule } from './user-activity/user-activity.module';
+import { RatingsModule } from './ratings/ratings.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { TagsModule } from './tags/tags.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'public'),
+      exclude: ['/graphql/*'],
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
     }),
@@ -23,7 +34,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       },
       parser: I18nJsonParser,
       parserOptions: {
-        path: path.join(__dirname, 'i18n'),
+        path: join(__dirname, 'i18n'),
         watch: true,
       },
       resolvers: [{ use: QueryResolver, options: [] }],
@@ -42,12 +53,22 @@ import { ScheduleModule } from '@nestjs/schedule';
     GraphQLModule.forRoot({
       autoSchemaFile: true,
       sortSchema: true,
+      cors: {
+        credentials: true,
+        origin: true,
+      },
     }),
     UsersModule,
     MailModule,
     AuthModule,
     EventsModule,
     ScheduleModule.forRoot(),
+    ParticipantsModule,
+    CompaniesModule,
+    UserActivityModule,
+    RatingsModule,
+    NotificationsModule,
+    TagsModule,
   ],
 })
 export class AppModule {}

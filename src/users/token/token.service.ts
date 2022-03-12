@@ -1,5 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import * as crypto from 'crypto';
+import { User } from '../entities/user.entity';
+import { createDecipheriv, createCipheriv } from 'crypto';
+import { sign } from 'jsonwebtoken';
 
 @Injectable()
 export class TokenService {
@@ -8,7 +10,7 @@ export class TokenService {
 
   encrypt(userId: string) {
     const dataToEncrypt = this.prepareData(userId);
-    const cipher = crypto.createCipheriv(
+    const cipher = createCipheriv(
       'aes-256-cbc',
       this.encryptionKey,
       this.encryptionIV,
@@ -25,7 +27,7 @@ export class TokenService {
   }
 
   decrypt(token) {
-    const decipher = crypto.createDecipheriv(
+    const decipher = createDecipheriv(
       'aes-256-cbc',
       this.encryptionKey,
       this.encryptionIV,
@@ -57,5 +59,16 @@ export class TokenService {
     } else {
       return true;
     }
+  }
+
+  createToken(user: User) {
+    return sign(
+      {
+        id: user.id,
+        email: user.email,
+      },
+      process.env.JWT_RESET_PASSWORD_SECRET,
+      { expiresIn: '20m' },
+    );
   }
 }

@@ -1,23 +1,42 @@
-import { Resolver, Query, Mutation, Args } from '@nestjs/graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Args,
+  ObjectType,
+  Field,
+} from '@nestjs/graphql';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
 import { GqlAuthGuard } from '../auth/guards/gql-auth.guard';
 import { UseGuards } from '@nestjs/common';
-import { CurrentUser } from 'src/auth/current-user.decorator';
+import { CurrentUser } from '../auth/current-user.decorator';
 import { ActivateUserInput } from './dto/activate-user.input';
 import { connectionFromArraySlice } from 'graphql-relay';
-import ConnectionArgs from 'src/pagination/types/connection.args';
+import ConnectionArgs from '../pagination/types/connection.args';
 import UserResponse from './dto/user.response';
+import { ResetPasswordInput } from './dto/reset-password.input';
+import { ResetPasswordTokenInput } from './dto/reset-password-token.input';
+import { I18nLang } from 'nestjs-i18n';
+
+@ObjectType()
+export class ResetResponse {
+  @Field()
+  message: string;
+}
 
 @Resolver(() => User)
 export class UsersResolver {
   constructor(private readonly usersService: UsersService) {}
 
   @Mutation(() => User)
-  createUser(@Args('createUserInput') createUserInput: CreateUserInput) {
-    return this.usersService.create(createUserInput);
+  createUser(
+    @Args('createUserInput') createUserInput: CreateUserInput,
+    @I18nLang() lang: string,
+  ) {
+    return this.usersService.create(createUserInput, lang);
   }
 
   @Mutation(() => User)
@@ -73,5 +92,22 @@ export class UsersResolver {
   @UseGuards(GqlAuthGuard)
   removeUser(@Args('id') id: string) {
     return this.usersService.remove(id);
+  }
+
+  @Mutation(() => ResetResponse)
+  resetPassword(
+    @Args('resetPasswordInput') resetPasswordInput: ResetPasswordInput,
+    @I18nLang() lang: string,
+  ) {
+    return this.usersService.resetPassword(resetPasswordInput.email, lang);
+  }
+
+  @Mutation(() => ResetResponse)
+  confirmResetPassword(
+    @Args('confirmResetPassword')
+    resetPasswordTokenInput: ResetPasswordTokenInput,
+    @I18nLang() lang: string,
+  ) {
+    return this.usersService.resetPasswordToken(resetPasswordTokenInput, lang);
   }
 }

@@ -1,0 +1,26 @@
+{
+    "REGISTER_CONFIRMATION": {
+      "SUBJECT": "Dziękujemy za dołączenie do meet.us!"
+    },
+    "RESET_PASSWORD": {
+      "SUBJECT": "Zresetuj hasło",
+      "RESET_PASSWORD_MAIL": "Mail do zresetowania hasła został pomyślnie wysłany"
+    },
+    "BODY": {
+      "PASSWORD_RESET": "Aby zresetować hasło, kliknij poniższy link:",
+      "EMAIL_VERIFY_TITLE": "Musimy tylko zweryfikować Twój adres e-mail, zanim uzyskasz dostęp .",
+      "EMAIL_VERIFY": "Zweryfikuj swój adres email:"
+    },
+    "TAKE_PART": {
+      "SUBJECT": "Wydarzenie",
+      "BODY": "Wydarzenie, w którym bierzesz udział ma się rozpocząć"
+    },
+    "INTERESTED": {
+      "SUBJECT": "Wydarzenie",
+      "BODY": "Wydarzenie, w którym bierzesz udział ma się rozpocząć"
+    },
+    "RATE": {
+      "SUBJECT": "Oceń wydarzenie",
+      "BODY": "Oceń wydarzenie, w którym uczestniczyłeś"
+    }
+}

@@ -1,15 +1,22 @@
+import { Tag } from './../../tags/entities/tag.entity';
+import { Rating } from './../../ratings/entities/rating.entity';
+import { EventAddress } from './event-address.entity';
+import { Participant } from './../../participants/entities/participant.entity';
 import { ObjectType, Field, registerEnumType, Int } from '@nestjs/graphql';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { IEventState } from '../IEvents';
+import { GraphQLJSON } from 'graphql-type-json';
 
 export enum eventType {
   Sport,
@@ -40,7 +47,7 @@ export class Event {
   title: string;
 
   @Field()
-  @Column({ nullable: false })
+  @Column('mediumtext', { nullable: false })
   description: string;
 
   @Field()
@@ -63,6 +70,34 @@ export class Event {
   maxParticipants: number;
 
   @Field()
+  @Column({ type: 'decimal', precision: 10, scale: 6, nullable: true })
+  lat?: number;
+
+  @Field()
+  @Column({ type: 'decimal', precision: 10, scale: 6, nullable: true })
+  lng?: number;
+
+  @Field()
+  @Column({
+    select: false,
+    insert: false,
+    readonly: true,
+    update: false,
+    default: 0,
+  })
+  distance: number;
+
+  @Field({ nullable: true })
+  @Column({
+    select: false,
+    insert: false,
+    readonly: true,
+    update: false,
+    default: 0,
+  })
+  score?: number;
+
+  @Field()
   @Column({ default: false })
   isArchive: boolean;
 
@@ -71,4 +106,37 @@ export class Event {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Field(() => [Participant], { nullable: true })
+  @OneToMany(() => Participant, (participant) => participant.event)
+  @JoinColumn({ name: 'event' })
+  participants?: Participant[];
+
+  @Field(() => EventAddress, { nullable: true })
+  @OneToOne(() => EventAddress, (eventAddress) => eventAddress.event)
+  eventAddress?: EventAddress;
+
+  @Field({ nullable: true })
+  interestedCount: number;
+
+  @Field({ nullable: true })
+  @Column({ type: 'decimal', precision: 6, scale: 2, nullable: true })
+  rate: number;
+
+  @Field(() => GraphQLJSON, { nullable: true })
+  @Column('json', { nullable: true })
+  tags: Tag[];
+
+  @Field({ nullable: true })
+  goingCount: number;
+
+  @Field({ nullable: true })
+  loggedInParticipants?: Participant;
+
+  @Field({ nullable: true })
+  participantRate?: Rating;
+
+  @Field()
+  @Column({ default: 0 })
+  visitCount: number;
 }

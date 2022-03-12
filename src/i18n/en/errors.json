@@ -1,6 +1,16 @@
 {
     "ERROR": {
         "INVALID_EMAIL": "Invalid email",
-        "INVALID_PASSWORD": "Invalid password"
+        "INVALID_PASSWORD": "Invalid password",
+        "USER_NOT_ACTIVE": "User not activated",
+        "USER_NOT_FOUND": "User not found",
+        "TOKEN_NOT_FOUND": "Token not found",
+        "EXPIRED_TOKEN": "Expired token",
+        "PASSWORDS_NOT_MATCH": "Password do not match",
+        "PASSWROD_RESET_SUCCESSFULY": "Password reset successfully",
+        "EVENT_NOT_FOUND": "Event not found",
+        "EVENT_IS_NOT_OVER": "Event is not over",
+        "USER_NOT_PARTICIPATE_IN_EVENT": "The user does not participate in the event",
+        "USER_IS_NOT_OWNER_OF_EVENT": "User is not the owner of the event"
     }
 }
