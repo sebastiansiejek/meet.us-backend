@@ -1,11 +1,11 @@
-import { UsersModule } from 'src/users/users.module';
+import { UsersModule } from '../users/users.module';
 import { Module } from '@nestjs/common';
 import { EventsService } from './events.service';
 import { EventsResolver } from './events.resolver';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Event } from './entities/event.entity';
 import { EventAddress } from './entities/event-address.entity';
-import { UserActivityModule } from 'src/user-activity/user-activity.module';
+import { UserActivityModule } from '../user-activity/user-activity.module';
 
 @Module({
   imports: [

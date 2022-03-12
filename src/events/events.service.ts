@@ -10,10 +10,10 @@ import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { IEventState } from './IEvents';
 import { CreateEventAddressInput } from './dto/create-event-address.input';
-import { UserActivityService } from 'src/user-activity/user-activity.service';
-import { UsersService } from 'src/users/users.service';
+import { UserActivityService } from '../user-activity/user-activity.service';
+import { UsersService } from '../users/users.service';
 import { I18nLang, I18nService } from 'nestjs-i18n';
-import { Rating } from 'src/ratings/entities/rating.entity';
+import { Rating } from '../ratings/entities/rating.entity';
 
 @Injectable()
 export class EventsService {
