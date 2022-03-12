@@ -1,4 +1,4 @@
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { actionType, UserActivity } from './entities/userActivity.entity';
@@ -282,8 +282,8 @@ export class UserActivityService {
           }
         }
         if (activity.actionType === actionType.Distance) {
-          query += `IF( ${distanceQuery} > 0, (IF(${distanceQuery} < 30 AND ${activity.identifier} = 3 , 
-            10, IF( ${distanceQuery} > 30 AND ${distanceQuery} < 70 AND ${activity.identifier} = 2 , 7, 
+          query += `IF( ${distanceQuery} > 0, (IF(${distanceQuery} < 30 AND ${activity.identifier} = 3 ,
+            10, IF( ${distanceQuery} > 30 AND ${distanceQuery} < 70 AND ${activity.identifier} = 2 , 7,
               IF( ${distanceQuery} > 70  AND ${activity.identifier} = 2, 4, 0)))), 0)`;
         }
         if (activity.actionType === actionType.Rate) {
@@ -310,11 +310,11 @@ export class UserActivityService {
         const maxVisitCount = await this.getMaxVisitCount();
 
         if (maxVisitCount > 0) {
-          query += `+ if(events.visitCount/${maxVisitCount} >= 1, 20, 
-                        if(events.visitCount/${maxVisitCount} >= 0.7, 15, 	
-                            if (events.visitCount/${maxVisitCount} >= 0.4, 10, 
+          query += `+ if(events.visitCount/${maxVisitCount} >= 1, 20,
+                        if(events.visitCount/${maxVisitCount} >= 0.7, 15,
+                            if (events.visitCount/${maxVisitCount} >= 0.4, 10,
                                 if (events.visitCount/${maxVisitCount} < 0.4 and events.visitCount/${maxVisitCount} > 0.1, 5, 0)
-                            ) 
+                            )
                         )
                     )`;
         }

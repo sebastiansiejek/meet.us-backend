@@ -4,9 +4,9 @@ import { Rating } from './entities/rating.entity';
 import { Module } from '@nestjs/common';
 import { RatingsService } from './ratings.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EventsModule } from 'src/events/events.module';
-import { UsersModule } from 'src/users/users.module';
-import { UserActivityModule } from 'src/user-activity/user-activity.module';
+import { EventsModule } from '../events/events.module';
+import { UsersModule } from '../users/users.module';
+import { UserActivityModule } from '../user-activity/user-activity.module';
 
 @Module({
   imports: [

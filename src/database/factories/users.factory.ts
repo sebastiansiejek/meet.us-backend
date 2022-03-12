@@ -1,6 +1,6 @@
 import Faker from 'faker';
 import { define } from 'typeorm-seeding';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 import { getRandomBoolean, getRandomNumberBetween } from 'utils/getRandoms';
 
 define(User, (faker: typeof Faker) => {

@@ -1,6 +1,6 @@
-import { eventType } from 'src/events/entities/event.entity';
+import { eventType } from '../../events/entities/event.entity';
 import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,

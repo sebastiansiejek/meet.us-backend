@@ -1,4 +1,4 @@
-import { eventType } from 'src/events/entities/event.entity';
+import { eventType } from '../events/entities/event.entity';
 import { EventAddress } from './entities/event-address.entity';
 import { Participant } from './../participants/entities/participant.entity';
 import { BadRequestException, Injectable } from '@nestjs/common';
@@ -7,7 +7,7 @@ import { UpdateEventInput } from './dto/update-event.input';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Event } from './entities/event.entity';
 import { Repository } from 'typeorm';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 import { IEventState } from './IEvents';
 import { CreateEventAddressInput } from './dto/create-event-address.input';
 import { UserActivityService } from 'src/user-activity/user-activity.service';
@@ -331,11 +331,11 @@ export class EventsService {
   async remove(eventId: string) {
     try {
       const event = await this.findOne(eventId);
-      await this.eventsRepository.remove(event);
+      await this.eventsRepository.delete({ id: eventId });
 
       return event;
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   }
 

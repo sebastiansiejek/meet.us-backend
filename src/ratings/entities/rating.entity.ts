@@ -1,7 +1,7 @@
 import { ObjectType, Field } from '@nestjs/graphql';
 import { Max, Min } from 'class-validator';
-import { Event } from 'src/events/entities/event.entity';
-import { User } from 'src/users/entities/user.entity';
+import { Event } from '../../events/entities/event.entity';
+import { User } from '../../users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,

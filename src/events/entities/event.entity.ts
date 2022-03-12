@@ -3,7 +3,7 @@ import { Rating } from './../../ratings/entities/rating.entity';
 import { EventAddress } from './event-address.entity';
 import { Participant } from './../../participants/entities/participant.entity';
 import { ObjectType, Field, registerEnumType, Int } from '@nestjs/graphql';
-import { User } from 'src/users/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,

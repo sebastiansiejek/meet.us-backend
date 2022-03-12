@@ -1,6 +1,6 @@
 import { EventsService } from 'src/events/events.service';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { ParticipantsService } from 'src/participants/participants.service';
+import { ParticipantsService } from '../participants/participants.service';
 import { Event } from '../events/entities/event.entity';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { MailService } from 'src/mail/mail.service';

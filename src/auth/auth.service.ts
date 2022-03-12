@@ -1,3 +1,4 @@
+import { UsersService } from '../users/users.service';
 import {
   getTokenExpiresTime,
   getRefreshTokenExpiresTime,
@@ -6,7 +7,6 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { I18nLang, I18nService } from 'nestjs-i18n';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/entities/user.entity';
-import { UsersService } from 'src/users/users.service';
 import { compare, genSalt, hash } from 'bcrypt';
 import { randomBytes } from 'crypto';
 import dayjs from 'dayjs';

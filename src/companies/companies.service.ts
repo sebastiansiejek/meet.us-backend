@@ -1,8 +1,8 @@
 import { UpdateCompanyInput } from './dto/update-company.input';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/users/entities/user.entity';
-import { UsersService } from 'src/users/users.service';
+import { User } from '../users/entities/user.entity';
+import { UsersService } from '../users/users.service';
 import { Repository } from 'typeorm';
 import { CreateCompanyInput } from './dto/create-company.input';
 import { Company } from './entities/company.entity';

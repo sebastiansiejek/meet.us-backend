@@ -8,7 +8,7 @@ import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { RatingResponse } from './dto/rating-response.input';
 import { Rating } from './entities/rating.entity';
-import { UserActivityService } from 'src/user-activity/user-activity.service';
+import { UserActivityService } from '../user-activity/user-activity.service';
 
 @Injectable()
 export class RatingsService {

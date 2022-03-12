@@ -1,4 +1,4 @@
-import { eventType } from 'src/events/entities/event.entity';
+import { eventType } from '../../events/entities/event.entity';
 import { Tag } from './../../tags/entities/tag.entity';
 import { Factory, Seeder } from 'typeorm-seeding';
 import { Connection } from 'typeorm';
