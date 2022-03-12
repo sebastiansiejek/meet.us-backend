@@ -1,84 +1,33 @@
+import { EventsService } from 'src/events/events.service';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { ParticipantsService } from '../participants/participants.service';
 import { Event } from '../events/entities/event.entity';
-import { SchedulerRegistry } from '@nestjs/schedule';
-import { MailService } from '../mail/mail.service';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { MailService } from 'src/mail/mail.service';
 import dayjs from 'dayjs';
-import { CronJob } from 'cron';
 
 @Injectable()
 export class NotificationsService {
   constructor(
-    private schedulerRegistry: SchedulerRegistry,
     @Inject(forwardRef(() => ParticipantsService))
     private readonly participantService: ParticipantsService,
     private readonly mailService: MailService,
+    private readonly eventService: EventsService,
   ) {}
-
-  async addNewJob(event: Event) {
-    const sendInterestedUserMail = new CronJob(
-      dayjs(event.startDate).subtract(50, 'minutes').format('mm HH DD MM *'),
-      () => {
-        this.sendInterestedUserMail(event);
-      },
-    );
-
-    const sendTakePartUserMail = new CronJob(
-      dayjs(event.startDate).subtract(15, 'minutes').format('mm HH DD MM *'),
-      () => {
-        this.sendTakePartUserMail(event);
-      },
-    );
-
-    const sendUserRateEventMail = new CronJob(
-      dayjs(event.endDate).add(10, 'minutes').format('mm HH DD MM *'),
-      () => {
-        this.sendUserRateEventMail(event);
-      },
-    );
-
-    const deleteAllEventJobs = new CronJob(
-      dayjs(event.endDate).add(15, 'minutes').format('mm HH DD MM *'),
-      () => {
-        this.deleteAllEventJobs(event);
-      },
-    );
-
-    this.schedulerRegistry.addCronJob(
-      `${event.id}-sendInterestedUserMail`,
-      sendInterestedUserMail,
-    );
-    this.schedulerRegistry.addCronJob(
-      `${event.id}-sendTakePartUserMail`,
-      sendTakePartUserMail,
-    );
-    this.schedulerRegistry.addCronJob(
-      `${event.id}-sendUserRateEventMail`,
-      sendUserRateEventMail,
-    );
-    this.schedulerRegistry.addCronJob(
-      `${event.id}-deleteAllEventJobs`,
-      deleteAllEventJobs,
-    );
-
-    sendInterestedUserMail.start();
-    sendTakePartUserMail.start();
-    sendUserRateEventMail.start();
-    deleteAllEventJobs.start();
-  }
-  deleteJob(jobName: string) {
-    this.schedulerRegistry.deleteCronJob(jobName);
-  }
 
   async sendInterestedUserMail(event: Event) {
     const eventOwner = event.user.id;
     const participants = await this.participantService.findMany(event, 1);
     for (const participant of participants) {
       if (participant.user.id !== eventOwner) {
-        this.mailService.sendInterestedUserMail(
-          participant.user.email,
-          event.id,
-        );
+        try {
+          this.mailService.sendInterestedUserMail(
+            participant.user.email,
+            event.id,
+          );
+        } catch (err) {
+          console.log(err);
+        }
       }
     }
   }
@@ -88,7 +37,14 @@ export class NotificationsService {
     const participants = await this.participantService.findMany(event, 2);
     for (const participant of participants) {
       if (participant.user.id !== eventOwner) {
-        this.mailService.sendTakePartUserMail(participant.user.email, event.id);
+        try {
+          this.mailService.sendTakePartUserMail(
+            participant.user.email,
+            event.id,
+          );
+        } catch (err) {
+          console.log(err);
+        }
       }
     }
   }
@@ -99,15 +55,48 @@ export class NotificationsService {
 
     for (const participant of participants) {
       if (participant.user.id !== eventOwner) {
-        this.mailService.sendRateUserMail(participant.user.email, event.id);
+        try {
+          this.mailService.sendRateUserMail(participant.user.email, event.id);
+        } catch (err) {
+          console.log(err);
+        }
       }
     }
   }
 
-  deleteAllEventJobs(event) {
-    this.schedulerRegistry.deleteCronJob(`${event.id}-sendInterestedUserMail`);
-    this.schedulerRegistry.deleteCronJob(`${event.id}-sendTakePartUserMail`);
-    this.schedulerRegistry.deleteCronJob(`${event.id}-sendUserRateEventMail`);
-    this.schedulerRegistry.deleteCronJob(`${event.id}-deleteAllEventJobs`);
+  @Cron(CronExpression.EVERY_MINUTE)
+  async interested() {
+    const start = dayjs().add(120, 'minutes').format('YYYY-MM-DD HH:mm:ss');
+    const end = dayjs().add(121, 'minutes').format('YYYY-MM-DD HH:mm:ss');
+
+    const events = await this.eventService.searchStartDate(start, end);
+
+    for (const event of events) {
+      this.sendInterestedUserMail(event);
+    }
+  }
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  async takePart() {
+    const start = dayjs().add(30, 'minutes').format('YYYY-MM-DD HH:mm:ss');
+    const end = dayjs().add(31, 'minutes').format('YYYY-MM-DD HH:mm:ss');
+
+    const events = await this.eventService.searchStartDate(start, end);
+
+    for (const event of events) {
+      this.sendTakePartUserMail(event);
+    }
+  }
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  async userRate() {
+    const start = dayjs().subtract(16, 'minutes').format('YYYY-MM-DD HH:mm:ss');
+    const end = dayjs().subtract(15, 'minutes').format('YYYY-MM-DD HH:mm:ss');
+
+    const events = await this.eventService.searchEndDate(start, end);
+
+    for (const event of events) {
+      this.sendUserRateEventMail(event);
+    }
   }
 }

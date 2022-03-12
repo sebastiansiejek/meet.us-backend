@@ -4,7 +4,7 @@ import {
   getRefreshTokenExpiresTime,
 } from './../utils/token';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { I18nService } from 'nestjs-i18n';
+import { I18nLang, I18nService } from 'nestjs-i18n';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../users/entities/user.entity';
 import { compare, genSalt, hash } from 'bcrypt';
@@ -73,23 +73,23 @@ export class AuthService {
     };
   }
 
-  async refreshLoginToken(user: User, token: string) {
+  async refreshLoginToken(user: User, token: string, @I18nLang() lang: string) {
     const searchedUser = await this.userService.findOne(user.id);
 
     if (searchedUser === undefined) {
       throw new BadRequestException(
-        await this.i18n.translate('errors.ERROR.USER_NOT_FOUND'),
+        await this.i18n.translate('errors.ERROR.USER_NOT_FOUND', { lang }),
       );
     }
 
     if (searchedUser.refreshTokenExpires < new Date()) {
       throw new BadRequestException(
-        await this.i18n.translate('errors.ERROR.EXPIRED_TOKEN'),
+        await this.i18n.translate('errors.ERROR.EXPIRED_TOKEN', { lang }),
       );
     }
     if (await compare(token, searchedUser.refreshToken)) {
       throw new BadRequestException(
-        await this.i18n.translate('errors.ERROR.TOKEN_NOT_FOUND'),
+        await this.i18n.translate('errors.ERROR.TOKEN_NOT_FOUND', { lang }),
       );
     }
 

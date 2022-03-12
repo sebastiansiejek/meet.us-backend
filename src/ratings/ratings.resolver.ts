@@ -11,6 +11,7 @@ import { User } from '../users/entities/user.entity';
 import RatingListResponse from './dto/rating-list.response';
 import { RatingUpdate } from './dto/rating-update.input';
 import { RatingResponse } from './dto/rating-response.input';
+import { I18nLang } from 'nestjs-i18n';
 
 @Resolver()
 export class RatingsResolver {
@@ -21,11 +22,13 @@ export class RatingsResolver {
   rateEvent(
     @CurrentUser() user: User,
     @Args('rateEvent') ratingUpdate: RatingUpdate,
+    @I18nLang() lang: string,
   ): Promise<RatingResponse> {
     return this.ratingsService.rateEvent(
       ratingUpdate.eventId,
       user,
       ratingUpdate.rate,
+      lang,
     );
   }
 

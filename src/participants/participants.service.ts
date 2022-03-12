@@ -9,9 +9,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EventsService } from '../events/events.service';
 import { ParticipantResponse } from './dto/participant-response.input';
-import { User } from '../users/entities/user.entity';
-import { Event } from '../events/entities/event.entity';
-import { I18nService } from 'nestjs-i18n';
+import { User } from 'src/users/entities/user.entity';
+import { Event } from 'src/events/entities/event.entity';
+import { I18nLang, I18nService } from 'nestjs-i18n';
 import ParticipantByDateResponse from './dto/participant-by-date.response';
 import dayjs from 'dayjs';
 import { UserActivityService } from '../user-activity/user-activity.service';
@@ -31,12 +31,13 @@ export class ParticipantsService {
     eventId: string,
     user: User,
     type: number,
+    @I18nLang() lang: string,
   ): Promise<ParticipantResponse> {
     const event = await this.eventsService.findOne(eventId);
 
     if (!event) {
       throw new BadRequestException(
-        await this.i18n.translate('errors.ERROR.EVENT_NOT_FOUND'),
+        await this.i18n.translate('errors.ERROR.EVENT_NOT_FOUND', { lang }),
       );
     }
     if (type == 0) {

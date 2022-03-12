@@ -1,12 +1,7 @@
 import { eventType } from '../events/entities/event.entity';
 import { EventAddress } from './entities/event-address.entity';
 import { Participant } from './../participants/entities/participant.entity';
-import {
-  BadRequestException,
-  forwardRef,
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateEventInput } from './dto/create-event.input';
 import { UpdateEventInput } from './dto/update-event.input';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -15,11 +10,10 @@ import { Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { IEventState } from './IEvents';
 import { CreateEventAddressInput } from './dto/create-event-address.input';
-import { UserActivityService } from '../user-activity/user-activity.service';
-import { UsersService } from '../users/users.service';
-import { I18nService } from 'nestjs-i18n';
-import { NotificationsService } from '../notifications/notifications.service';
-import { Rating } from '../ratings/entities/rating.entity';
+import { UserActivityService } from 'src/user-activity/user-activity.service';
+import { UsersService } from 'src/users/users.service';
+import { I18nLang, I18nService } from 'nestjs-i18n';
+import { Rating } from 'src/ratings/entities/rating.entity';
 
 @Injectable()
 export class EventsService {
@@ -31,8 +25,6 @@ export class EventsService {
     private readonly userActivityService: UserActivityService,
     private readonly userService: UsersService,
     private readonly i18n: I18nService,
-    @Inject(forwardRef(() => NotificationsService))
-    private readonly notificationsService: NotificationsService,
   ) {}
 
   async create(createEventInput: CreateEventInput, user: User) {
@@ -47,18 +39,19 @@ export class EventsService {
     );
     event.eventAddress = address;
 
-    this.notificationsService.addNewJob(event);
     return event;
   }
 
-  async findForEdit(eventId: string, userId: string) {
+  async findForEdit(eventId: string, userId: string, @I18nLang() lang: string) {
     const event = await this.findOne(eventId);
 
     const user = await this.userService.findOne(userId);
 
     if (event.user.id != user.id) {
       throw new BadRequestException(
-        await this.i18n.translate('errors.ERROR.USER_IS_NOT_OWNER_OF_EVENT'),
+        await this.i18n.translate('errors.ERROR.USER_IS_NOT_OWNER_OF_EVENT', {
+          lang,
+        }),
       );
     }
 
@@ -230,8 +223,9 @@ export class EventsService {
       );
 
       distanceQuery = `ROUND( 6371 * acos( cos( radians(${latitude}) ) * cos( radians( events.lat ) ) * cos( radians( events.lng ) - radians(${longitude}) ) + sin( radians(${latitude}) )* sin( radians( events.lat ) ) ) ,2) <= ${distance}`;
-      if (userId) {
-        this.userActivityService.saveDistanceSerchedQuery(userId, distance);
+
+      if (loggedUser) {
+        this.userActivityService.saveDistanceSerchedQuery(loggedUser, distance);
       }
     }
     if (loggedUser) {
@@ -239,6 +233,7 @@ export class EventsService {
       const activity = await this.userActivityService.generateQuery(
         user,
         distanceQuery,
+        field,
       );
 
       events.addSelect(`${activity}`, 'events_score');
@@ -282,7 +277,7 @@ export class EventsService {
 
     if (distance && latitude && longitude && field == 'distance') {
       events.orderBy(`events_distance`, 'ASC' == sort ? 'ASC' : 'DESC');
-    } else if (field == 'score') {
+    } else if (field == 'score' || field == 'popular') {
       if (loggedUser) {
         events.orderBy(`events_score`, 'ASC' == sort ? 'ASC' : 'DESC');
       } else {
@@ -305,17 +300,18 @@ export class EventsService {
     user: User,
     eventId: string,
     updateEventInput: UpdateEventInput,
+    @I18nLang() lang: string,
   ) {
     const event = await this.findOne(eventId);
     const loggedUser = await this.userService.findOne(user.id);
 
     if (event.user.id != loggedUser.id) {
       throw new BadRequestException(
-        await this.i18n.translate('errors.ERROR.USER_IS_NOT_OWNER_OF_EVENT'),
+        await this.i18n.translate('errors.ERROR.USER_IS_NOT_OWNER_OF_EVENT', {
+          lang,
+        }),
       );
     }
-
-    this.notificationsService.deleteAllEventJobs(event);
 
     const updatedEvent = await this.eventsRepository.save({
       ...event,
@@ -329,7 +325,6 @@ export class EventsService {
 
     updatedEvent.eventAddress = address;
 
-    this.notificationsService.addNewJob(updatedEvent);
     return updatedEvent;
   }
 
@@ -427,9 +422,9 @@ export class EventsService {
         { title: `%${query}%`, description: `%${query}%` },
       )
       .where(
-        `( events.startDate > :startDate and events.startDate < :endDate or 
-        events.endDate < :startDate and events.endDate > :endDate or
-        events.startDate < :startDate and events.endDate > :startDate ) and ( events.user = :userId or loggedInParticipants.user = :userId)`,
+        `( events.startDate > :startDate and events.startDate < :endDate or
+        		events.endDate < :startDate and events.endDate > :endDate or
+        		events.startDate < :startDate and events.endDate > :startDate ) and ( events.user = :userId or loggedInParticipants.user = :userId)`,
         {
           startDate: `${startDateFormated}`,
           endDate: `${endDateFormated}`,
@@ -447,5 +442,19 @@ export class EventsService {
     const eventsMapped = await events.take(limit).skip(offset).getMany();
 
     return { events: eventsMapped, totalRecords };
+  }
+
+  async searchStartDate(start: string, end: string) {
+    return await this.eventsRepository
+      .createQueryBuilder('events')
+      .where(`(events.startDate > '${start}' AND events.startDate <= '${end}')`)
+      .getMany();
+  }
+
+  async searchEndDate(start: string, end: string) {
+    return await this.eventsRepository
+      .createQueryBuilder('events')
+      .where(`(events.endDate > '${start}' AND events.endDate <= '${end}')`)
+      .getMany();
   }
 }

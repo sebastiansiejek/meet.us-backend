@@ -1,10 +1,10 @@
 import { ParticipantsService } from './../participants/participants.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { I18nService } from 'nestjs-i18n';
-import { Event } from '../events/entities/event.entity';
-import { EventsService } from '../events/events.service';
-import { User } from '../users/entities/user.entity';
+import { I18nLang, I18nService } from 'nestjs-i18n';
+import { Event } from 'src/events/entities/event.entity';
+import { EventsService } from 'src/events/events.service';
+import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { RatingResponse } from './dto/rating-response.input';
 import { Rating } from './entities/rating.entity';
@@ -25,12 +25,13 @@ export class RatingsService {
     eventId: string,
     user: User,
     rate: number,
+    @I18nLang() lang: string,
   ): Promise<RatingResponse> {
     const event = await this.eventsService.findOne(eventId);
 
     if (!event) {
       throw new BadRequestException(
-        await this.i18n.translate('errors.ERROR.EVENT_NOT_FOUND'),
+        await this.i18n.translate('errors.ERROR.EVENT_NOT_FOUND', { lang }),
       );
     }
     const endDate = new Date(event.endDate);
@@ -38,7 +39,7 @@ export class RatingsService {
 
     if (endDate > today) {
       throw new BadRequestException(
-        await this.i18n.translate('errors.ERROR.EVENT_IS_NOT_OVER'),
+        await this.i18n.translate('errors.ERROR.EVENT_IS_NOT_OVER', { lang }),
       );
     }
 
@@ -46,7 +47,10 @@ export class RatingsService {
 
     if (!participate) {
       throw new BadRequestException(
-        await this.i18n.translate('errors.ERROR.USER_NOT_PARTICIPATE_IN_EVENT'),
+        await this.i18n.translate(
+          'errors.ERROR.USER_NOT_PARTICIPATE_IN_EVENT',
+          { lang },
+        ),
       );
     }
 

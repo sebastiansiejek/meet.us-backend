@@ -21,11 +21,17 @@
     "test:e2e": "jest --config ./test/jest-e2e.json --runInBand --detectOpenHandles",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
-    "doc": "npx @compodoc/compodoc -p tsconfig.json -s",
+    "doc:generate": "npx @compodoc/compodoc -p tsconfig.json -d ./public/documentation",
+    "doc:run": "npx @compodoc/compodoc -p tsconfig.json -s",
     "seed:config": "ts-node -r tsconfig-paths/register ./node_modules/typeorm-seeding/dist/cli.js config",
     "seed:run": "ts-node -r tsconfig-paths/register ./node_modules/typeorm-seeding/dist/cli.js seed",
     "schema:drop": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js schema:drop",
-    "schema:sync": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js schema:sync"
+    "schema:sync": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js schema:sync",
+    "postinstall": "yarn doc:generate"
+  },
+  "engines": {
+    "node": "14.x.x",
+    "npm": "8.x.x"
   },
   "dependencies": {
     "@apollo/gateway": "^0.44.1",
@@ -38,6 +44,7 @@
     "@nestjs/passport": "^8.0.1",
     "@nestjs/platform-express": "^8.2.3",
     "@nestjs/schedule": "^1.0.2",
+    "@nestjs/serve-static": "^2.2.2",
     "@nestjs/typeorm": "^8.0.2",
     "@types/cron": "^1.7.2",
     "@types/graphql-relay": "0.7.0",
@@ -68,7 +75,7 @@
   "devDependencies": {
     "@commitlint/cli": "^12.1.1",
     "@commitlint/config-conventional": "^12.1.1",
-    "@compodoc/compodoc": "^1.1.11",
+    "@compodoc/compodoc": "^1.1.18",
     "@nestjs/cli": "^7.6.0",
     "@nestjs/config": "^0.6.3",
     "@nestjs/schematics": "^7.3.0",
